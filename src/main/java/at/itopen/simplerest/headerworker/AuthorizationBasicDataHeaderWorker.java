@@ -23,16 +23,8 @@ public class AuthorizationBasicDataHeaderWorker extends AbstractHeaderWorker{
     
     @Override
     public void work(Request request) {
-        String value=request.getHeaders().get(section);
-        String[] values=value.split(seperator);
-        if (values.length>1)
-        {
-            request.getHeaders().remove(section);
-            for (String val1:values)
-            {
-                request.getHeaders().add(section,val1.trim());
-            }
-        }
+        String value=request.getHeaders().getAll("authorization").get(1);
+        //Decode Base64   User:pass
                 
         
     }
