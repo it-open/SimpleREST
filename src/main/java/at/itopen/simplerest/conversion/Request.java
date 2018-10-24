@@ -1,0 +1,219 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package at.itopen.simplerest.conversion;
+
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.handler.codec.http.HttpContent;
+import io.netty.handler.codec.http.HttpRequest;
+import io.netty.handler.codec.http.LastHttpContent;
+import io.netty.handler.codec.http.multipart.Attribute;
+import io.netty.handler.codec.http.multipart.FileUpload;
+import io.netty.handler.codec.http.multipart.HttpPostRequestDecoder;
+import io.netty.handler.codec.http.multipart.InterfaceHttpData;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+/**
+ *
+ * @author roland
+ */
+public class Request {
+
+    
+
+    private  String protocolName;
+    private  int protocolMajorVersion, protocolMinorVersion;
+    private  String method;
+    private  Uri uri;
+    private  final HttpHeaders headers;
+    private  String contentData=null;
+    private  Map<String,String> params;
+    private transient ChannelHandlerContext ctx;
+    private  List<File> files;
+    private transient HttpPostRequestDecoder httpDecoder=null;
+
+    public Request(ChannelHandlerContext ctx) {
+
+        this.ctx=ctx;
+        headers = new HttpHeaders();
+        protocolName = "EMPTY";
+        protocolMajorVersion = 0;
+        protocolMinorVersion = 0;
+        method = "NONE";
+        uri = null;
+        params=new HashMap<>();
+        files=new ArrayList<>();
+    }
+    
+    private void readChunk(HttpPostRequestDecoder httpDecoder) throws IOException  {
+    while (httpDecoder.hasNext()) {
+      InterfaceHttpData data = httpDecoder.next();
+      if (data != null) {
+        try {
+          switch (data.getHttpDataType()) {
+            case Attribute:
+              final Attribute attribute = (Attribute) data;
+              
+            case FileUpload:
+              final FileUpload fileUpload = (FileUpload) data;
+              
+              File file=new File(fileUpload.get(), fileUpload.getFilename(),fileUpload.getContentType());
+              getFiles().add(file);
+              
+              break;
+          }
+        } finally {
+          data.release();
+        }
+      }
+    }
+    }
+    
+    public void parse(Object msg)
+    {
+        if (msg instanceof HttpRequest) {
+
+            HttpRequest request = (HttpRequest) msg;
+            protocolName = request.protocolVersion().protocolName();
+            protocolMajorVersion = request.protocolVersion().majorVersion();
+            protocolMinorVersion = request.protocolVersion().minorVersion();
+            method = request.method().name();
+            uri = new Uri(request.uri());
+            params.putAll(uri.queryParam);
+            headers.addHeaders(request.headers());
+            if (method.equals("POST"))
+            {
+               httpDecoder = new HttpPostRequestDecoder((HttpRequest) msg);
+            }
+            
+
+        }
+        if (msg instanceof HttpContent) {
+
+            if (msg instanceof LastHttpContent) {
+                LastHttpContent trailer = (LastHttpContent) msg;
+                headers.addHeaders(trailer.trailingHeaders());
+            }
+
+            HttpContent content = (HttpContent) msg;
+            contentData =content.content().getCharSequence(0, content.content().capacity(), Charset.forName("UTF-8")).toString();
+            if (getHttpDecoder()!=null)
+                getHttpDecoder().offer(content);
+                
+             
+        }
+    }
+
+    public HttpPostRequestDecoder getHttpDecoder() {
+        return httpDecoder;
+    }
+    
+    
+    
+    /**
+     * @return the protocolName
+     */
+    public String getProtocolName() {
+        return protocolName;
+    }
+
+    /**
+     * @return the protocolMajorVersion
+     */
+    public int getProtocolMajorVersion() {
+        return protocolMajorVersion;
+    }
+
+    /**
+     * @return the protocolMinorVersion
+     */
+    public int getProtocolMinorVersion() {
+        return protocolMinorVersion;
+    }
+
+    public List<File> getFiles() {
+        return files;
+    }
+    
+    
+
+    /**
+     * @return the method
+     */
+    public String getMethod() {
+        return method;
+    }
+    
+    public void addParam(String key, String value)
+    {
+        params.put(key, value);
+    }
+    
+    public String getParam(String name, String defaultValue)
+    {
+        if (params.containsKey(name))
+            return params.get(name);
+        else
+            return defaultValue;
+    }
+    
+    public String getParam(String name)
+    {
+        return getParam(name, null);
+    }
+
+    /**
+     * @return the uri
+     */
+    public Uri getUri() {
+        return uri;
+    }
+
+    /**
+     * @return the headers
+     */
+    public HttpHeaders getHeaders() {
+        return headers;
+    }
+
+    /**
+     * @return the contentData
+     */
+    public String getContentData() {
+        return contentData;
+    }
+
+    public void setContentData(String contentData) {
+        this.contentData = contentData;
+    }
+    
+    public void clearContentData() {
+        this.contentData = null;
+    }
+    
+    public long getContentLength()
+    {
+        if (hasContent())
+            return contentData.length();
+        else
+            return 0;
+    }
+    
+    public boolean hasContent()
+    {
+        return contentData!=null;
+    }
+    
+    
+    
+
+}
