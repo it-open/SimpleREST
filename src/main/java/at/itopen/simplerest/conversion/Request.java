@@ -5,6 +5,7 @@
  */
 package at.itopen.simplerest.conversion;
 
+import io.netty.buffer.EmptyByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.HttpContent;
 import io.netty.handler.codec.http.HttpRequest;
@@ -19,8 +20,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -40,6 +39,7 @@ public class Request {
     private transient ChannelHandlerContext ctx;
     private  List<File> files;
     private transient HttpPostRequestDecoder httpDecoder=null;
+    private User user;
 
     public Request(ChannelHandlerContext ctx) {
 
@@ -52,6 +52,7 @@ public class Request {
         uri = null;
         params=new HashMap<>();
         files=new ArrayList<>();
+        user=new User();
     }
     
     private void readChunk(HttpPostRequestDecoder httpDecoder) throws IOException  {
@@ -77,6 +78,12 @@ public class Request {
       }
     }
     }
+
+    public User getUser() {
+        return user;
+    }
+    
+    
     
     public void parse(Object msg)
     {
@@ -105,9 +112,12 @@ public class Request {
             }
 
             HttpContent content = (HttpContent) msg;
+            if (!(content.content()instanceof EmptyByteBuf))
+            {
             contentData =content.content().getCharSequence(0, content.content().capacity(), Charset.forName("UTF-8")).toString();
             if (getHttpDecoder()!=null)
                 getHttpDecoder().offer(content);
+            }
                 
              
         }
