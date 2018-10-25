@@ -6,6 +6,7 @@
 package at.itopen.simplerest.headerworker;
 
 import at.itopen.simplerest.conversion.Request;
+import at.itopen.simplerest.security.BasicAuthUser;
 import java.util.Base64;
 
 
@@ -30,10 +31,13 @@ public class AuthorizationBasicDataHeaderWorker extends AbstractHeaderWorker{
         String[] parts=value.split(":");
         if (parts.length==2)
         {
-            request.getUser().setName(parts[0]);
-            request.getUser().setPassword(parts[1]);
+            if (request.getUser() instanceof BasicAuthUser)
+            {
+                ((BasicAuthUser)request.getUser()).setAuth(parts[0], parts[1]);
+                request.getHeaders().remove("authorization");
+            }            
         }
-        //Decode Base64   User:pass
+        
                 
         
     }

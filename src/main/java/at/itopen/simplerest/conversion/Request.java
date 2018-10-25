@@ -5,6 +5,9 @@
  */
 package at.itopen.simplerest.conversion;
 
+import at.itopen.simplerest.security.BasicUser;
+import at.itopen.simplerest.security.DefaultUser;
+import at.itopen.simplerest.security.RestSecurity;
 import io.netty.buffer.EmptyByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.HttpContent;
@@ -15,11 +18,14 @@ import io.netty.handler.codec.http.multipart.FileUpload;
 import io.netty.handler.codec.http.multipart.HttpPostRequestDecoder;
 import io.netty.handler.codec.http.multipart.InterfaceHttpData;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -39,7 +45,7 @@ public class Request {
     private transient ChannelHandlerContext ctx;
     private  List<File> files;
     private transient HttpPostRequestDecoder httpDecoder=null;
-    private User user;
+    private BasicUser user;
 
     public Request(ChannelHandlerContext ctx) {
 
@@ -52,7 +58,14 @@ public class Request {
         uri = null;
         params=new HashMap<>();
         files=new ArrayList<>();
-        user=new User();
+        try {
+            user=(BasicUser)RestSecurity.getUserClass().getConstructor().newInstance();
+        } catch (NoSuchMethodException|SecurityException|InstantiationException|InvocationTargetException|IllegalAccessException|IllegalArgumentException ex) {
+            Logger.getLogger(Request.class.getName()).log(Level.SEVERE, null, ex);
+        } 
+        if (user==null)
+            user=new DefaultUser();
+               
     }
     
     private void readChunk(HttpPostRequestDecoder httpDecoder) throws IOException  {
@@ -79,7 +92,7 @@ public class Request {
     }
     }
 
-    public User getUser() {
+    public BasicUser getUser() {
         return user;
     }
     

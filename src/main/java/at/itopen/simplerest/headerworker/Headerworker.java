@@ -26,6 +26,7 @@ public class Headerworker {
         addWorker("content-type","application/x-www-form-urlencoded",new XWwwFormUrlEncodedHeaderWorker());
         addWorker("content-type","multipart/form-data",new MulitpartFormDataHeaderWorker());
         addWorker("authorization","Basic",new AuthorizationBasicDataHeaderWorker());
+        addWorker("authorization","Bearer",new AuthorizationBearerDataHeaderWorker());
     }
     
     
