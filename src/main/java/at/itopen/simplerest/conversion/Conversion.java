@@ -19,8 +19,11 @@ public class Conversion {
     private Request request;
     private final Response response;
     private final ChannelHandlerContext ctx;
-
+    private Exception exception;
+    private long startTime=System.currentTimeMillis();
+    
     public Conversion(ChannelHandlerContext ctx) {
+        startTime=System.nanoTime();
         this.ctx=ctx;
         response=new Response();
         request=new Request(ctx);
@@ -51,6 +54,21 @@ public class Conversion {
     public Response getResponse() {
         return response;
     }
+
+    public void setException(Exception exception) {
+        this.exception = exception;
+    }
+
+    public Exception getException() {
+        return exception;
+    }
+    
+    public long getNanoDuration()
+    {
+     return System.nanoTime()-startTime;
+    }
+    
+    
     
     
     

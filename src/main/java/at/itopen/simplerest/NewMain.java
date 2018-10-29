@@ -6,7 +6,9 @@
 package at.itopen.simplerest;
 
 import at.itopen.simplerest.conversion.Conversion;
-import at.itopen.simplerest.conversion.Uri;
+import at.itopen.simplerest.path.ErrorEndpoint;
+import at.itopen.simplerest.path.IndexEndpoint;
+import at.itopen.simplerest.path.NotFoundEndpoint;
 import at.itopen.simplerest.path.RestEndpoint;
 import at.itopen.simplerest.path.RootPath;
 import java.util.List;
@@ -25,6 +27,9 @@ public class NewMain {
     public static void main(String[] args) {
         RestHttpServer ht=new RestHttpServer(8081);
         try {
+            RootPath.setINDEX(new IndexEndpoint("TestProg", "1.0", "IT-Open", "office@it-open.at"));
+            RootPath.setEXCEPTION(new ErrorEndpoint());
+            RootPath.setNOT_FOUND(new NotFoundEndpoint());
             RootPath.getROOT().addRestEndpoint(new RestEndpoint("test"){
                 @Override
                 public void Call(Conversion conversion, List<String> UrlParameter) {

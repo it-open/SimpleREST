@@ -11,8 +11,11 @@ import at.itopen.simplerest.conversion.HttpStatus;
 import at.itopen.simplerest.headerworker.Headerworker;
 import at.itopen.simplerest.path.EndpointWorker;
 import at.itopen.simplerest.path.RootPath;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.util.MinimalPrettyPrinter;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFutureListener;
@@ -38,9 +41,15 @@ import java.util.logging.Logger;
  */
 public class RestHttpRequestDispatchHandler extends ChannelInboundHandlerAdapter {
 
-    private static Logger log = Logger.getLogger(RestHttpRequestDispatchHandler.class.getName());
-    private static Gson gson = new GsonBuilder().enableComplexMapKeySerialization().setPrettyPrinting().create();
-    private Map<Integer, Conversion> connections = new HashMap<>();
+    private static final Logger LOG = Logger.getLogger(RestHttpRequestDispatchHandler.class.getName());
+    private static final ObjectMapper JSON_CONVERTER = new ObjectMapper();
+    private final Map<Integer, Conversion> connections = new HashMap<>();
+    
+    static{
+        JSON_CONVERTER.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, true);
+        JSON_CONVERTER.setDefaultPrettyPrinter(new MinimalPrettyPrinter());
+        JSON_CONVERTER.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+    }
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
@@ -58,6 +67,23 @@ public class RestHttpRequestDispatchHandler extends ChannelInboundHandlerAdapter
             ReferenceCountUtil.release(msg);
         }
     }
+    
+    private class ResponseWrapper{
+        public int code;
+        public String message;
+        public double generationMsSeconds;
+        public Object data;
+
+        public ResponseWrapper(int code, String message, long generationNanoSeconds, Object data) {
+            this.code = code;
+            this.message = message;
+            this.generationMsSeconds=generationNanoSeconds/1000000.0;
+            this.data = data;
+        }
+
+        
+        
+    }
 
     @Override
     public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
@@ -65,28 +91,41 @@ public class RestHttpRequestDispatchHandler extends ChannelInboundHandlerAdapter
         Conversion conversion = connections.get(ctx.hashCode());
         Headerworker.work(conversion.getRequest());
         EndpointWorker worker = null;
-        if (conversion.getRequest().getUri().getPath().size() == 0) {
-            if (RootPath.getINDEX()!=null)
-                worker = new EndpointWorker(RootPath.getINDEX(), null);
-        }
-        else {
-            worker = RootPath.getROOT().findEndpoint(conversion, 0, new ArrayList<>());
-        }
-        if (worker != null) {
-            conversion.getResponse().setContentType(ContentType.JSON);
-            conversion.getResponse().setStatus(HttpStatus.OK);
-            worker.work(conversion);
-        } else {
-            conversion.getResponse().setStatus(HttpStatus.NotFound);
-            if (RootPath.getNOT_FOUND() != null) {
-                conversion.getResponse().setContentType(ContentType.JSON);
-                RootPath.getNOT_FOUND().Call(conversion, null);
+        try{
+            if (conversion.getRequest().getUri().getPath().size() == 0) {
+                if (RootPath.getINDEX()!=null)
+                    worker = new EndpointWorker(RootPath.getINDEX(), null);
             }
+            else {
+                worker = RootPath.getROOT().findEndpoint(conversion, 0, new ArrayList<>());
+            }
+            if (worker != null) {
+                conversion.getResponse().setContentType(ContentType.JSON);
+                conversion.getResponse().setStatus(HttpStatus.OK);
+                worker.work(conversion);
+            } else {
+                conversion.getResponse().setStatus(HttpStatus.NotFound);
+                if (RootPath.getNOT_FOUND() != null) {
+                    conversion.getResponse().setContentType(ContentType.JSON);
+                    RootPath.getNOT_FOUND().Call(conversion, null);
+                }
+            }
+        }catch(Exception e)
+        {
+            conversion.setException(e);
+            conversion.getResponse().setStatus(HttpStatus.InternalServerError);
+            if (RootPath.getEXCEPTION()!=null){
+                    worker = new EndpointWorker(RootPath.getEXCEPTION(), null);
+                    conversion.getResponse().setContentType(ContentType.JSON);
+                    worker.work(conversion);
+            }
+            
         }
 
         if (conversion.getResponse().hasData()) {
             if (conversion.getResponse().getContentType().equals(ContentType.JSON)) {
-                String json = gson.toJson(conversion.getResponse().getData());
+                ResponseWrapper wrapper=new ResponseWrapper(conversion.getResponse().getStatus().getCode(), conversion.getResponse().getStatus().getDescription(),conversion.getNanoDuration(), conversion.getResponse().getData());
+                String json = JSON_CONVERTER.writeValueAsString(wrapper);
                 ByteBuf bb = Unpooled.copiedBuffer(json, Charset.defaultCharset());
                 writeJSON(ctx, HttpResponseStatus.valueOf(conversion.getResponse().getStatus().getCode()), bb);
             } else {

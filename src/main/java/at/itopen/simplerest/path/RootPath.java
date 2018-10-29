@@ -14,6 +14,7 @@ public class RootPath {
     private static RestPath ROOT=null;
     private static RestEndpoint NOT_FOUND=null;
     private static RestEndpoint INDEX=null;
+    private static RestEndpoint EXCEPTION=null;
 
     public static void setROOT(RestPath ROOT) {
         RootPath.ROOT = ROOT;
@@ -38,6 +39,16 @@ public class RootPath {
     public static void setINDEX(RestEndpoint INDEX) {
         RootPath.INDEX = INDEX;
     }
+
+    public static RestEndpoint getEXCEPTION() {
+        return EXCEPTION;
+    }
+
+    public static void setEXCEPTION(RestEndpoint EXCEPTION) {
+        RootPath.EXCEPTION = EXCEPTION;
+    }
+    
+    
     
     
     
