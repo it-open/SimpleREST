@@ -30,6 +30,16 @@ public class ErrorEndpoint extends RestEndpoint {
         {
             lines.add(line);
         }
+
+        public String getMessage() {
+            return message;
+        }
+
+        public List<String> getLines() {
+            return lines;
+        }
+        
+        
         
         
         

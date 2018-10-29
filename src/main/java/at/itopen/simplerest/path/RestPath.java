@@ -102,4 +102,14 @@ public class RestPath {
         return true;
     }
 
+    public List<RestEndpoint> getEndpoints() {
+        return endpoints;
+    }
+
+    public List<RestPath> getSubPaths() {
+        return subPaths;
+    }
+
+    
+    
 }
