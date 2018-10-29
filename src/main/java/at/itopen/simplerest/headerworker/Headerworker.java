@@ -27,6 +27,7 @@ public class Headerworker {
         addWorker("content-type","multipart/form-data",new MulitpartFormDataHeaderWorker());
         addWorker("authorization","Basic",new AuthorizationBasicDataHeaderWorker());
         addWorker("authorization","Bearer",new AuthorizationBearerDataHeaderWorker());
+        addWorker("content-type","application/json",new JsonDataWorker());
     }
     
     

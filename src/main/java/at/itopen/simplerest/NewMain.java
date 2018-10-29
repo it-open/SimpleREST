@@ -9,6 +9,7 @@ import at.itopen.simplerest.conversion.Conversion;
 import at.itopen.simplerest.endpoints.CRUDHelper;
 import at.itopen.simplerest.endpoints.ErrorEndpoint;
 import at.itopen.simplerest.endpoints.IndexEndpoint;
+import at.itopen.simplerest.endpoints.JsonPostEndpoint;
 import at.itopen.simplerest.endpoints.NotFoundEndpoint;
 import at.itopen.simplerest.endpoints.StructureEndpoint;
 import at.itopen.simplerest.path.RestEndpoint;
@@ -29,6 +30,8 @@ public class NewMain {
      */
     public static void main(String[] args) {
         
+       
+        
         CRUDHelper helper;
         RestHttpServer ht=new RestHttpServer(8081);
         try {
@@ -43,6 +46,8 @@ public class NewMain {
                 }
             
             });
+            
+            RootPath.getROOT().addRestEndpoint(new JsonUserEndpoint("post"));
             
             final List<String> data= new ArrayList<>();
                     data.add("Hallo");

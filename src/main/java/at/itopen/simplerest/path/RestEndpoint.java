@@ -33,6 +33,11 @@ public abstract class RestEndpoint {
         return true;
     }
     
+    public void CallEndpoint(Conversion conversion,List<String> UrlParameter)
+    {
+        Call(conversion, UrlParameter);
+    }
+    
     public abstract void Call(Conversion conversion,List<String> UrlParameter);
     
     

@@ -1,0 +1,65 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package at.itopen.simplerest.endpoints;
+
+import at.itopen.simplerest.RestHttpRequestDispatchHandler;
+import at.itopen.simplerest.conversion.Conversion;
+import at.itopen.simplerest.path.RestEndpoint;
+import java.io.IOException;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+/**
+ *
+ * @author roland
+ */
+public abstract class JsonPostEndpoint<T> extends RestEndpoint{
+
+    Class genericType=null;
+    T data;
+    
+    public JsonPostEndpoint(String endpointName) {
+        super(endpointName);
+        Type sooper = getClass().getGenericSuperclass();
+        genericType = (Class)((ParameterizedType)sooper).getActualTypeArguments()[ 0 ];
+    }
+
+    public T getData() {
+        return data;
+    }
+    
+    
+    @Override
+    public void CallEndpoint(Conversion conversion, List<String> UrlParameter) {
+        if (conversion.getRequest().getContentData()!=null)
+        {
+            try {
+                data=(T)RestHttpRequestDispatchHandler.getJSON_CONVERTER().readValue(conversion.getRequest().getContentData(), genericType);
+            } catch (IOException ex) {
+                Logger.getLogger(JsonPostEndpoint.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        super.CallEndpoint(conversion, UrlParameter); //To change body of generated methods, choose Tools | Templates.
+    }
+    
+    
+    
+    
+
+    @Override
+    protected boolean checkEndpoint(Conversion conversion) {
+        if ("POST".equals(conversion.getRequest().getMethod()))
+            return super.checkEndpoint(conversion); //To change body of generated methods, choose Tools | Templates.
+        else
+            return false;
+    }
+
+   
+
+}

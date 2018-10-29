@@ -51,6 +51,12 @@ public class RestHttpRequestDispatchHandler extends ChannelInboundHandlerAdapter
         JSON_CONVERTER.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
     }
 
+    public static ObjectMapper getJSON_CONVERTER() {
+        return JSON_CONVERTER;
+    }
+    
+    
+
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
 
@@ -107,7 +113,7 @@ public class RestHttpRequestDispatchHandler extends ChannelInboundHandlerAdapter
                 conversion.getResponse().setStatus(HttpStatus.NotFound);
                 if (RootPath.getNOT_FOUND() != null) {
                     conversion.getResponse().setContentType(ContentType.JSON);
-                    RootPath.getNOT_FOUND().Call(conversion, null);
+                    RootPath.getNOT_FOUND().CallEndpoint(conversion, null);
                 }
             }
         }catch(Exception e)

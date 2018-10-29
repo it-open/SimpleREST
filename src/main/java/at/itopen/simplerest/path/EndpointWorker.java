@@ -32,7 +32,7 @@ public class EndpointWorker {
     
     public void work(Conversion conversion)
     {
-        restEndpoint.Call(conversion, pathParameter);
+        restEndpoint.CallEndpoint(conversion, pathParameter);
     }
     
     
