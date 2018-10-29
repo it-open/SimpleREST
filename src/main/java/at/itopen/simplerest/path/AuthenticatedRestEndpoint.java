@@ -5,26 +5,10 @@
  */
 package at.itopen.simplerest.path;
 
-import at.itopen.simplerest.conversion.Conversion;
-
 /**
  *
  * @author roland
  */
-public abstract class AuthenticatedRestEndpoint extends RestEndpoint{
-    
-    public AuthenticatedRestEndpoint(String pathName) {
-        super(pathName);
-    }
-
-    @Override
-    protected boolean checkEndpoint(Conversion conversion) {
-        if (conversion.getRequest().getUser().isAuthenticated())
-            return super.checkEndpoint(conversion); //To change body of generated methods, choose Tools | Templates.
-        else
-            return false;
-    }
-    
-    
+public interface AuthenticatedRestEndpoint {
     
 }

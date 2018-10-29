@@ -25,6 +25,11 @@ public abstract class RestEndpoint {
     }
     
     protected boolean checkEndpoint(Conversion conversion) {
+        if (this instanceof AuthenticatedRestEndpoint)
+        {
+             if (!conversion.getRequest().getUser().isAuthenticated())
+                return false;
+        }
         return true;
     }
     

@@ -3,9 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package at.itopen.simplerest.path;
+package at.itopen.simplerest.endpoints;
 
 import at.itopen.simplerest.conversion.Conversion;
+import at.itopen.simplerest.path.RestEndpoint;
 import java.util.ArrayList;
 import java.util.List;
 

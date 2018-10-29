@@ -27,7 +27,7 @@ public class RestPath {
         endpoints.add(endpoint);
     }
 
-    public void addSudPath(RestPath restPath) {
+    public void addSubPath(RestPath restPath) {
         subPaths.add(restPath);
     }
 
@@ -94,6 +94,11 @@ public class RestPath {
     }
 
     protected boolean checkPath(Conversion conversion) {
+        if (this instanceof AuthenticatedRestPath)
+        {
+            if (!conversion.getRequest().getUser().isAuthenticated())
+                return false;
+        }
         return true;
     }
 

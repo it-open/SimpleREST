@@ -5,26 +5,10 @@
  */
 package at.itopen.simplerest.path;
 
-import at.itopen.simplerest.conversion.Conversion;
-
 /**
  *
  * @author roland
  */
-public class AuthenticatedRestPath extends RestPath{
-    
-    public AuthenticatedRestPath(String pathName) {
-        super(pathName);
-    }
-
-    @Override
-    protected boolean checkPath(Conversion conversion) {
-        if (conversion.getRequest().getUser().isAuthenticated())
-            return super.checkPath(conversion); //To change body of generated methods, choose Tools | Templates.
-        else
-            return false;
-    }
-    
-    
+public interface AuthenticatedRestPath {
     
 }

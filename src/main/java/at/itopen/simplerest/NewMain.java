@@ -6,9 +6,9 @@
 package at.itopen.simplerest;
 
 import at.itopen.simplerest.conversion.Conversion;
-import at.itopen.simplerest.path.ErrorEndpoint;
-import at.itopen.simplerest.path.IndexEndpoint;
-import at.itopen.simplerest.path.NotFoundEndpoint;
+import at.itopen.simplerest.endpoints.ErrorEndpoint;
+import at.itopen.simplerest.endpoints.IndexEndpoint;
+import at.itopen.simplerest.endpoints.NotFoundEndpoint;
 import at.itopen.simplerest.path.RestEndpoint;
 import at.itopen.simplerest.path.RootPath;
 import java.util.List;
