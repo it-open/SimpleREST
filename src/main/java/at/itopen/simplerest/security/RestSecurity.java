@@ -55,6 +55,7 @@ public class RestSecurity {
 
     public static void setJwtSignatureAlgorithm(SignatureAlgorithm JwtSignatureAlgorithm) {
         RestSecurity.JwtSignatureAlgorithm = JwtSignatureAlgorithm;
+        if (!SignatureAlgorithm.NONE.equals(JwtSignatureAlgorithm))
         setJwtSecretKey(Keys.secretKeyFor(JwtSignatureAlgorithm));
     }
 

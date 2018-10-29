@@ -11,4 +11,17 @@ package at.itopen.simplerest.security;
  */
 public class BasicUser {
     
+    boolean authenticated=false;
+
+    public boolean isAuthenticated() {
+        return authenticated;
+    }
+
+    public void setAuthenticated(boolean authenticated) {
+        this.authenticated = authenticated;
+    }
+
+    
+    
+    
 }

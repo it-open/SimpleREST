@@ -5,6 +5,9 @@
  */
 package at.itopen.simplerest;
 
+import at.itopen.simplerest.path.RestEndpoint;
+import at.itopen.simplerest.path.RestPath;
+import at.itopen.simplerest.path.RootPath;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelOption;
@@ -28,11 +31,13 @@ public class RestHttpServer {
 		new DefaultThreadFactory("nio-worker", Thread.MAX_PRIORITY));
 
 	public RestHttpServer() {
-		port = SystemPropertyUtil.getInt("default.port", 18080);
+		this(SystemPropertyUtil.getInt("default.port", 18080));
+                
 	}
 
 	public RestHttpServer(int port) {
 		this.port = port;
+                RootPath.setROOT(new RestPath("/"));
 	}
 
 	public void init() {

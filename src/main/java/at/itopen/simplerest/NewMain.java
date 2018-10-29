@@ -5,7 +5,11 @@
  */
 package at.itopen.simplerest;
 
+import at.itopen.simplerest.conversion.Conversion;
 import at.itopen.simplerest.conversion.Uri;
+import at.itopen.simplerest.path.RestEndpoint;
+import at.itopen.simplerest.path.RootPath;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -21,6 +25,13 @@ public class NewMain {
     public static void main(String[] args) {
         RestHttpServer ht=new RestHttpServer(8081);
         try {
+            RootPath.getROOT().addRestEndpoint(new RestEndpoint("test"){
+                @Override
+                public void Call(Conversion conversion, List<String> UrlParameter) {
+                    conversion.getResponse().setData("Super");
+                }
+            
+            });
             ht.run();
         } catch (Exception ex) {
             Logger.getLogger(NewMain.class.getName()).log(Level.SEVERE, null, ex);

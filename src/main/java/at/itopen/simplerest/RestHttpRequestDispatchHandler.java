@@ -9,6 +9,8 @@ import at.itopen.simplerest.conversion.ContentType;
 import at.itopen.simplerest.conversion.Conversion;
 import at.itopen.simplerest.conversion.HttpStatus;
 import at.itopen.simplerest.headerworker.Headerworker;
+import at.itopen.simplerest.path.EndpointWorker;
+import at.itopen.simplerest.path.RootPath;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import io.netty.buffer.ByteBuf;
@@ -25,6 +27,7 @@ import io.netty.handler.codec.http.HttpUtil;
 import io.netty.handler.codec.http.HttpVersion;
 import io.netty.util.ReferenceCountUtil;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -35,61 +38,79 @@ import java.util.logging.Logger;
  */
 public class RestHttpRequestDispatchHandler extends ChannelInboundHandlerAdapter {
 
-	private static Logger log = Logger.getLogger(RestHttpRequestDispatchHandler.class.getName());
-        private static Gson gson=new GsonBuilder().enableComplexMapKeySerialization().setPrettyPrinting().create();
-        private Map<Integer,Conversion> connections= new HashMap<>();
+    private static Logger log = Logger.getLogger(RestHttpRequestDispatchHandler.class.getName());
+    private static Gson gson = new GsonBuilder().enableComplexMapKeySerialization().setPrettyPrinting().create();
+    private Map<Integer, Conversion> connections = new HashMap<>();
 
-	@Override
-	public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+    @Override
+    public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
 
-		try {
-			if ((msg instanceof HttpMessage) && HttpUtil.is100ContinueExpected((HttpMessage)msg))
-				ctx.write(new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.CONTINUE));
-                        
-			Conversion conversion=connections.get(ctx.hashCode());
-                        conversion.parse(msg);
-                        
-                        
-                        //System.out.println(conversion.getRequest().getUri());
-		} catch(Exception ex) {
-			ReferenceCountUtil.release(msg);
-		}
-	}
+        try {
+            if ((msg instanceof HttpMessage) && HttpUtil.is100ContinueExpected((HttpMessage) msg)) {
+                ctx.write(new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.CONTINUE));
+            }
 
-	@Override
-	public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
-	
-                        Conversion conversion=connections.get(ctx.hashCode());
-                        Headerworker.work(conversion.getRequest());
-                        //Business Logic
-                        conversion.getResponse().setData(conversion.getRequest());
-                        conversion.getResponse().setContentType(ContentType.JSON);
-                        conversion.getResponse().setStatus(HttpStatus.OK);
-                        
-                        
-                        if (conversion.getResponse().hasData()) {
-                            if (conversion.getResponse().getContentType().equals(ContentType.JSON))
-                            {
-                                String json=gson.toJson(conversion.getResponse().getData());
-                                ByteBuf bb=Unpooled.copiedBuffer(json, Charset.defaultCharset());
-                                writeJSON(ctx, HttpResponseStatus.valueOf(conversion.getResponse().getStatus().getCode()), bb);
-                            }
-                            else
-                            {
-                                ByteBuf bb=null;
-                                if (conversion.getResponse().getData() instanceof String)
-                                    bb=Unpooled.copiedBuffer((String)conversion.getResponse().getData(), Charset.defaultCharset());
-                                if (conversion.getResponse().getData() instanceof byte[])
-                                    bb=Unpooled.copiedBuffer((byte[])conversion.getResponse().getData());
-                                if (bb!=null)
-                                    write(ctx,HttpResponseStatus.valueOf(conversion.getResponse().getStatus().getCode()),bb,conversion.getResponse().getContentType().getMimeType());
-                                else
-                                    write(ctx,HttpResponseStatus.SERVICE_UNAVAILABLE,Unpooled.EMPTY_BUFFER,conversion.getResponse().getContentType().getMimeType());
-                            }
-                        }
+            Conversion conversion = connections.get(ctx.hashCode());
+            conversion.parse(msg);
 
-		ctx.flush();
-	}
+            //System.out.println(conversion.getRequest().getUri());
+        } catch (Exception ex) {
+            ReferenceCountUtil.release(msg);
+        }
+    }
+
+    @Override
+    public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
+
+        Conversion conversion = connections.get(ctx.hashCode());
+        Headerworker.work(conversion.getRequest());
+        EndpointWorker worker = null;
+        if (conversion.getRequest().getUri().getPath().size() == 0) {
+            if (RootPath.getINDEX()!=null)
+                worker = new EndpointWorker(RootPath.getINDEX(), null);
+        }
+        else {
+            worker = RootPath.getROOT().findEndpoint(conversion, 0, new ArrayList<>());
+        }
+        if (worker != null) {
+            conversion.getResponse().setContentType(ContentType.JSON);
+            conversion.getResponse().setStatus(HttpStatus.OK);
+            worker.work(conversion);
+        } else {
+            conversion.getResponse().setStatus(HttpStatus.NotFound);
+            if (RootPath.getNOT_FOUND() != null) {
+                conversion.getResponse().setContentType(ContentType.JSON);
+                RootPath.getNOT_FOUND().Call(conversion, null);
+            }
+        }
+
+        if (conversion.getResponse().hasData()) {
+            if (conversion.getResponse().getContentType().equals(ContentType.JSON)) {
+                String json = gson.toJson(conversion.getResponse().getData());
+                ByteBuf bb = Unpooled.copiedBuffer(json, Charset.defaultCharset());
+                writeJSON(ctx, HttpResponseStatus.valueOf(conversion.getResponse().getStatus().getCode()), bb);
+            } else {
+                ByteBuf bb = null;
+                if (conversion.getResponse().getData() instanceof String) {
+                    bb = Unpooled.copiedBuffer((String) conversion.getResponse().getData(), Charset.defaultCharset());
+                }
+                if (conversion.getResponse().getData() instanceof byte[]) {
+                    bb = Unpooled.copiedBuffer((byte[]) conversion.getResponse().getData());
+                }
+                if (bb != null) {
+                    write(ctx, HttpResponseStatus.valueOf(conversion.getResponse().getStatus().getCode()), bb, conversion.getResponse().getContentType().getMimeType());
+                } else {
+                    write(ctx, HttpResponseStatus.SERVICE_UNAVAILABLE, Unpooled.EMPTY_BUFFER, conversion.getResponse().getContentType().getMimeType());
+                }
+            }
+            
+        }else
+        {
+            write (ctx,HttpResponseStatus.valueOf(conversion.getResponse().getStatus().getCode()),null,conversion.getResponse().getContentType().getMimeType());
+        }
+
+        ctx.flush();
+    }
 
     @Override
     public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
@@ -102,33 +123,28 @@ public class RestHttpRequestDispatchHandler extends ChannelInboundHandlerAdapter
         super.channelUnregistered(ctx); //To change body of generated methods, choose Tools | Templates.
         connections.remove(ctx.hashCode());
     }
-        
-        
 
+    private static void writeJSON(ChannelHandlerContext ctx, HttpResponseStatus status, ByteBuf content) {
+        write(ctx, status, content, "application/json; charset=utf-8");
+    }
 
+    private static void write(ChannelHandlerContext ctx, HttpResponseStatus status, ByteBuf content, String contentType) {
+        if (ctx.channel().isWritable()) {
+            FullHttpResponse msg = null;
+            if (content != null) {
+                msg = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, status, content);
+                msg.headers().set(HttpHeaderNames.CONTENT_TYPE, contentType);
+            } else {
+                msg = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, status);
+            }
 
-	private static void writeJSON(ChannelHandlerContext ctx, HttpResponseStatus status, ByteBuf content) {
-            write(ctx, status, content, "application/json; charset=utf-8");		
-	}
-        
-        private static void write(ChannelHandlerContext ctx, HttpResponseStatus status, ByteBuf content,String contentType) {
-		if (ctx.channel().isWritable()) {
-			FullHttpResponse msg = null;
-			if (content != null) {
-				msg = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, status, content);
-				msg.headers().set(HttpHeaderNames.CONTENT_TYPE, contentType);
-			} else {
-				msg = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, status);
-			}
+            if (msg.content() != null) {
+                msg.headers().set(HttpHeaderNames.CONTENT_LENGTH, msg.content().readableBytes());
+            }
 
-			if (msg.content() != null)
-				msg.headers().set(HttpHeaderNames.CONTENT_LENGTH, msg.content().readableBytes());
-
-			// not keep-alive
-			ctx.write(msg).addListener(ChannelFutureListener.CLOSE);
-		}
-	}
-
-	
+            // not keep-alive
+            ctx.write(msg).addListener(ChannelFutureListener.CLOSE);
+        }
+    }
 
 }
