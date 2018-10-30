@@ -6,7 +6,7 @@
 package at.itopen.simplerest.path;
 
 import at.itopen.simplerest.conversion.Conversion;
-import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -15,14 +15,14 @@ import java.util.List;
 public class EndpointWorker {
     
     RestEndpoint restEndpoint;
-    List<String> pathParameter;
+    Map<String,String> pathParameter;
 
-    public EndpointWorker(RestEndpoint restEndpoint, List<String> pathParameter) {
+    public EndpointWorker(RestEndpoint restEndpoint, Map<String,String> pathParameter) {
         this.restEndpoint = restEndpoint;
         this.pathParameter = pathParameter;
     }
 
-    public List<String> getPathParameter() {
+    public Map<String,String> getPathParameter() {
         return pathParameter;
     }
 

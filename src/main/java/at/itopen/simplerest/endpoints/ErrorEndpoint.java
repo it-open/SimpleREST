@@ -9,6 +9,7 @@ import at.itopen.simplerest.conversion.Conversion;
 import at.itopen.simplerest.path.RestEndpoint;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -59,7 +60,7 @@ public class ErrorEndpoint extends RestEndpoint {
     
 
     @Override
-    public void Call(Conversion conversion, List<String> UrlParameter) {
+    public void Call(Conversion conversion, Map<String,String> UrlParameter) {
         Exception exception=conversion.getException();
         data=new ErrorData(exception.getMessage());
         for (StackTraceElement stackTraceElement:exception.getStackTrace())

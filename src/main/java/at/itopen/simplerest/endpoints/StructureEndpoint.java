@@ -13,6 +13,7 @@ import at.itopen.simplerest.path.RestPath;
 import at.itopen.simplerest.path.RootPath;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -84,7 +85,7 @@ public class StructureEndpoint extends RestEndpoint {
     }
 
     @Override
-    public void Call(Conversion conversion, List<String> UrlParameter) {
+    public void Call(Conversion conversion, Map<String,String> UrlParameter) {
         PathItem root=new PathItem("/", false);
         subPath(RootPath.getROOT(),root);
         conversion.getResponse().setData(root);

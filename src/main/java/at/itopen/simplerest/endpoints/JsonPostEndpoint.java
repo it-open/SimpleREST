@@ -11,7 +11,7 @@ import at.itopen.simplerest.path.RestEndpoint;
 import java.io.IOException;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -36,7 +36,7 @@ public abstract class JsonPostEndpoint<T> extends RestEndpoint{
     
     
     @Override
-    public void CallEndpoint(Conversion conversion, List<String> UrlParameter) {
+    public void CallEndpoint(Conversion conversion, Map<String,String> UrlParameter) {
         if (conversion.getRequest().getContentData()!=null)
         {
             try {

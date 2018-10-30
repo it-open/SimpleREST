@@ -8,6 +8,7 @@ package at.itopen.simplerest.endpoints;
 import at.itopen.simplerest.conversion.Conversion;
 import at.itopen.simplerest.path.RestPath;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -21,51 +22,41 @@ public abstract class CRUDHelper {
         parentPath.addSubPath(sub);
         
 
-        parentPath.addRestEndpoint(new PostEndpoint(entry) {
+        parentPath.addRestEndpoint(new PutOrPostEndpoint(entry) {
             @Override
-            public void Call(Conversion conversion, List<String> UrlParameter) {
+            public void Call(Conversion conversion, Map<String,String> UrlParameter) {
                 CRUDHelper.this.addNewItem(conversion, UrlParameter);
             }
         });
 
-        parentPath.addRestEndpoint(new PutEndpoint(entry) {
-            @Override
-            public void Call(Conversion conversion, List<String> UrlParameter) {
-                CRUDHelper.this.addNewItem(conversion, UrlParameter);
-            }
-        });
+       
 
         parentPath.addRestEndpoint(new GetEndpoint(entry) {
             @Override
-            public void Call(Conversion conversion, List<String> UrlParameter) {
+            public void Call(Conversion conversion, Map<String,String> UrlParameter) {
                 CRUDHelper.this.getAllItem(conversion, UrlParameter);
             }
         });
 
-        sub.addRestEndpoint(new GetEndpoint("*") {
+        sub.addRestEndpoint(new GetEndpoint(":id") {
             @Override
-            public void Call(Conversion conversion, List<String> UrlParameter) {
+            public void Call(Conversion conversion, Map<String,String> UrlParameter) {
                 CRUDHelper.this.getSingeItem(conversion, UrlParameter);
             }
         });
 
-        sub.addRestEndpoint(new PostEndpoint("*") {
+        sub.addRestEndpoint(new PutOrPostEndpoint(":id") {
             @Override
-            public void Call(Conversion conversion, List<String> UrlParameter) {
+            public void Call(Conversion conversion, Map<String,String> UrlParameter) {
                 CRUDHelper.this.updateItem(conversion, UrlParameter);
             }
         });
 
-        sub.addRestEndpoint(new PutEndpoint("*") {
-            @Override
-            public void Call(Conversion conversion, List<String> UrlParameter) {
-                CRUDHelper.this.updateItem(conversion, UrlParameter);
-            }
-        });
+        
 
-        sub.addRestEndpoint(new DeleteEndpoint("*") {
+        sub.addRestEndpoint(new DeleteEndpoint(":id") {
             @Override
-            public void Call(Conversion conversion, List<String> UrlParameter) {
+            public void Call(Conversion conversion, Map<String,String> UrlParameter) {
                 CRUDHelper.this.deleteItem(conversion, UrlParameter);
             }
         });
@@ -73,14 +64,14 @@ public abstract class CRUDHelper {
     }
     
 
-    public abstract void addNewItem(Conversion conversion, List<String> UrlParameter);
+    public abstract void addNewItem(Conversion conversion, Map<String,String> UrlParameter);
 
-    public abstract void getSingeItem(Conversion conversion, List<String> UrlParameter);
+    public abstract void getSingeItem(Conversion conversion, Map<String,String> UrlParameter);
 
-    public abstract void getAllItem(Conversion conversion, List<String> UrlParameter);
+    public abstract void getAllItem(Conversion conversion, Map<String,String> UrlParameter);
 
-    public abstract void updateItem(Conversion conversion, List<String> UrlParameter);
+    public abstract void updateItem(Conversion conversion, Map<String,String> UrlParameter);
 
-    public abstract void deleteItem(Conversion conversion, List<String> UrlParameter);
+    public abstract void deleteItem(Conversion conversion, Map<String,String> UrlParameter);
 
 }

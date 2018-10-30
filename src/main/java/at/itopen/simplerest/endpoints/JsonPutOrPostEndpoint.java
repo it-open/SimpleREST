@@ -19,12 +19,12 @@ import java.util.logging.Logger;
  *
  * @author roland
  */
-public abstract class JsonPutEndpoint<T> extends RestEndpoint{
+public abstract class JsonPutOrPostEndpoint<T> extends RestEndpoint{
 
     Class genericType=null;
     T data;
     
-    public JsonPutEndpoint(String endpointName) {
+    public JsonPutOrPostEndpoint(String endpointName) {
         super(endpointName);
         Type sooper = getClass().getGenericSuperclass();
         genericType = (Class)((ParameterizedType)sooper).getActualTypeArguments()[ 0 ];
@@ -42,7 +42,7 @@ public abstract class JsonPutEndpoint<T> extends RestEndpoint{
             try {
                 data=(T)RestHttpRequestDispatchHandler.getJSON_CONVERTER().readValue(conversion.getRequest().getContentData(), genericType);
             } catch (IOException ex) {
-                Logger.getLogger(JsonPutEndpoint.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(JsonPutOrPostEndpoint.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
         super.CallEndpoint(conversion, UrlParameter); //To change body of generated methods, choose Tools | Templates.
@@ -54,7 +54,7 @@ public abstract class JsonPutEndpoint<T> extends RestEndpoint{
 
     @Override
     protected boolean checkEndpoint(Conversion conversion) {
-        if ("PUT".equals(conversion.getRequest().getMethod()))
+        if (("PUT".equals(conversion.getRequest().getMethod()))||("POST".equals(conversion.getRequest().getMethod())))
             return super.checkEndpoint(conversion); //To change body of generated methods, choose Tools | Templates.
         else
             return false;

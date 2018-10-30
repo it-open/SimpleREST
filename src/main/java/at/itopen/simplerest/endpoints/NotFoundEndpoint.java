@@ -7,8 +7,7 @@ package at.itopen.simplerest.endpoints;
 
 import at.itopen.simplerest.conversion.Conversion;
 import at.itopen.simplerest.path.RestEndpoint;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -22,7 +21,7 @@ public class NotFoundEndpoint extends RestEndpoint {
     }
     
     @Override
-    public void Call(Conversion conversion, List<String> UrlParameter) {
+    public void Call(Conversion conversion, Map<String,String> UrlParameter) {
         conversion.getResponse().setData(conversion.getRequest().getUri().toString());
         
     }

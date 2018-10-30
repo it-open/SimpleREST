@@ -7,7 +7,9 @@ package at.itopen.simplerest.path;
 
 import at.itopen.simplerest.conversion.Conversion;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -35,7 +37,7 @@ public class RestPath {
         return pathName;
     }
 
-    public EndpointWorker findEndpoint(Conversion conversion, int depth, List<String> pathParameter) {
+    public EndpointWorker findEndpoint(Conversion conversion, int depth, Map<String,String> pathParameter) {
         List<String> uriPath = conversion.getRequest().getUri().getPath();
         if (depth == (uriPath.size() - 1)) {
             EndpointWorker endpointWorker = findEndpoint(uriPath.get(depth), pathParameter, conversion);
@@ -55,12 +57,12 @@ public class RestPath {
                 }
             }
             for (RestPath restPath : subPaths) {
-                if (restPath.getPathName().equalsIgnoreCase("*")) {
+                if (restPath.getPathName().startsWith(":")) {
                     if (!restPath.checkPath(conversion)) {
                         continue;
                     }
-                    List<String> clonePathParameter = new ArrayList<>(pathParameter);
-                    clonePathParameter.add(uriPath.get(depth));
+                    Map<String,String> clonePathParameter = new HashMap<>(pathParameter);
+                    clonePathParameter.put(restPath.getPathName().substring(1),uriPath.get(depth));
                     EndpointWorker endpointWorker = restPath.findEndpoint(conversion, depth + 1, clonePathParameter);
                     if (endpointWorker != null) {
 
@@ -74,7 +76,7 @@ public class RestPath {
 
     }
 
-    private EndpointWorker findEndpoint(String name, List<String> pathParameter, Conversion conversion) {
+    private EndpointWorker findEndpoint(String name, Map<String,String> pathParameter, Conversion conversion) {
         for (RestEndpoint endpoint : endpoints) {
             if (endpoint.getEndpointName().equalsIgnoreCase(name)) {
                 if (endpoint.checkEndpoint(conversion)) {
@@ -83,8 +85,8 @@ public class RestPath {
             }
         }
         for (RestEndpoint endpoint : endpoints) {
-            if (endpoint.getEndpointName().equalsIgnoreCase("*")) {
-                pathParameter.add(name);
+            if (endpoint.getEndpointName().startsWith(":")) {
+                pathParameter.put(endpoint.getEndpointName().substring(1),name);
                 if (endpoint.checkEndpoint(conversion)) {
                     return new EndpointWorker(endpoint, pathParameter);
                 }

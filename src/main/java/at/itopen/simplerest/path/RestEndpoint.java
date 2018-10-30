@@ -7,6 +7,7 @@ package at.itopen.simplerest.path;
 
 import at.itopen.simplerest.conversion.Conversion;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -33,12 +34,12 @@ public abstract class RestEndpoint {
         return true;
     }
     
-    public void CallEndpoint(Conversion conversion,List<String> UrlParameter)
+    public void CallEndpoint(Conversion conversion,Map<String,String> UrlParameter)
     {
         Call(conversion, UrlParameter);
     }
     
-    public abstract void Call(Conversion conversion,List<String> UrlParameter);
+    public abstract void Call(Conversion conversion,Map<String,String> UrlParameter);
     
     
     

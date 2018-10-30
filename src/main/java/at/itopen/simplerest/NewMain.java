@@ -9,13 +9,13 @@ import at.itopen.simplerest.conversion.Conversion;
 import at.itopen.simplerest.endpoints.CRUDHelper;
 import at.itopen.simplerest.endpoints.ErrorEndpoint;
 import at.itopen.simplerest.endpoints.IndexEndpoint;
-import at.itopen.simplerest.endpoints.JsonPostEndpoint;
 import at.itopen.simplerest.endpoints.NotFoundEndpoint;
 import at.itopen.simplerest.endpoints.StructureEndpoint;
 import at.itopen.simplerest.path.RestEndpoint;
 import at.itopen.simplerest.path.RootPath;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -41,7 +41,7 @@ public class NewMain {
             RootPath.getROOT().addRestEndpoint(new StructureEndpoint("structure"));
             RootPath.getROOT().addRestEndpoint(new RestEndpoint("test"){
                 @Override
-                public void Call(Conversion conversion, List<String> UrlParameter) {
+                public void Call(Conversion conversion, Map<String,String> UrlParameter) {
                     conversion.getResponse().setData("Super");
                 }
             
@@ -57,29 +57,29 @@ public class NewMain {
                 
                 
                 @Override
-                public void addNewItem(Conversion conversion, List<String> UrlParameter) {
+                public void addNewItem(Conversion conversion, Map<String,String> UrlParameter) {
                     data.add("Hallo");
                 }
                 
                 @Override
-                public void getSingeItem(Conversion conversion, List<String> UrlParameter) {
-                    String index=UrlParameter.get(UrlParameter.size()-1);
+                public void getSingeItem(Conversion conversion, Map<String,String> UrlParameter) {
+                    String index=UrlParameter.get("id");
                     conversion.getResponse().setData(data.get(Integer.parseInt(index)));
                 }
                 
                 @Override
-                public void getAllItem(Conversion conversion, List<String> UrlParameter) {
+                public void getAllItem(Conversion conversion, Map<String,String> UrlParameter) {
                     conversion.getResponse().setData(data);
                 }
                 
                 @Override
-                public void updateItem(Conversion conversion, List<String> UrlParameter) {
+                public void updateItem(Conversion conversion, Map<String,String> UrlParameter) {
                     //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
                 }
                 
                 @Override
-                public void deleteItem(Conversion conversion, List<String> UrlParameter) {
-                    String index=UrlParameter.get(UrlParameter.size()-1);
+                public void deleteItem(Conversion conversion, Map<String,String> UrlParameter) {
+                    String index=UrlParameter.get("id");
                     data.remove(Integer.parseInt(index));
                 }
             };

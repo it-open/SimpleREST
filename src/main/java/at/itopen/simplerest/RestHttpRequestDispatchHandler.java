@@ -11,9 +11,7 @@ import at.itopen.simplerest.conversion.HttpStatus;
 import at.itopen.simplerest.headerworker.Headerworker;
 import at.itopen.simplerest.path.EndpointWorker;
 import at.itopen.simplerest.path.RootPath;
-import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.util.MinimalPrettyPrinter;
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import io.netty.buffer.ByteBuf;
@@ -103,7 +101,7 @@ public class RestHttpRequestDispatchHandler extends ChannelInboundHandlerAdapter
                     worker = new EndpointWorker(RootPath.getINDEX(), null);
             }
             else {
-                worker = RootPath.getROOT().findEndpoint(conversion, 0, new ArrayList<>());
+                worker = RootPath.getROOT().findEndpoint(conversion, 0, new HashMap<>());
             }
             if (worker != null) {
                 conversion.getResponse().setContentType(ContentType.JSON);

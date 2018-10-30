@@ -7,7 +7,7 @@ package at.itopen.simplerest;
 
 import at.itopen.simplerest.conversion.Conversion;
 import at.itopen.simplerest.endpoints.JsonPostEndpoint;
-import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -20,7 +20,7 @@ public class JsonUserEndpoint extends JsonPostEndpoint<JsonUser>{
     }
 
     @Override
-    public void Call(Conversion conversion, List<String> UrlParameter) {
+    public void Call(Conversion conversion, Map<String,String> UrlParameter) {
         System.out.println("User:"+getData().getUsername()+" : "+getData().getPassword());
     }
     
