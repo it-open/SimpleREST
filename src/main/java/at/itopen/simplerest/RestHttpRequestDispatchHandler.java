@@ -11,7 +11,6 @@ import at.itopen.simplerest.conversion.HttpStatus;
 import at.itopen.simplerest.headerworker.Headerworker;
 import at.itopen.simplerest.path.EndpointWorker;
 import at.itopen.simplerest.path.RootPath;
-import com.fasterxml.jackson.core.util.MinimalPrettyPrinter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import io.netty.buffer.ByteBuf;
@@ -40,12 +39,14 @@ public class RestHttpRequestDispatchHandler extends ChannelInboundHandlerAdapter
 
     private static final Logger LOG = Logger.getLogger(RestHttpRequestDispatchHandler.class.getName());
     private static final ObjectMapper JSON_CONVERTER = new ObjectMapper();
-    private final Map<Integer, Conversion> connections = new HashMap<>();
+    private final Map<String, Conversion> connections = new HashMap<>();
     
     static{
+        //JSON_CONVERTER.registerModule(new AfterburnerModule().setUseValueClassLoader(false));
         JSON_CONVERTER.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, true);
-        JSON_CONVERTER.setDefaultPrettyPrinter(new MinimalPrettyPrinter());
+        JSON_CONVERTER.setDefaultPrettyPrinter(null);
         JSON_CONVERTER.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+        JSON_CONVERTER.configure(SerializationFeature.EAGER_SERIALIZER_FETCH, true);
     }
 
     public static ObjectMapper getJSON_CONVERTER() {
@@ -62,7 +63,7 @@ public class RestHttpRequestDispatchHandler extends ChannelInboundHandlerAdapter
                 ctx.write(new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.CONTINUE));
             }
 
-            Conversion conversion = connections.get(ctx.hashCode());
+            Conversion conversion = connections.get(ctx.channel().id().asLongText());
             conversion.parse(msg);
 
             
@@ -93,10 +94,11 @@ public class RestHttpRequestDispatchHandler extends ChannelInboundHandlerAdapter
     @Override
     public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
 
-        Conversion conversion = connections.get(ctx.hashCode());
-        if ((conversion.getRequest().getHttpDecoder().isMultipart()) && (!conversion.getRequest().getHttpDecoder().hasNext()))
-            return;
-        System.out.println(conversion.getRequest().getMethod()+" "+conversion.getRequest().getUri()+" ("+ctx.hashCode()+")");
+        Conversion conversion = connections.get(ctx.channel().id().asLongText());
+        if (conversion.getRequest().getHttpDecoder()!=null)
+            if ((conversion.getRequest().getHttpDecoder().isMultipart()) && (!conversion.getRequest().getHttpDecoder().hasNext()))
+                return;
+        System.out.println(conversion.getRequest().getMethod()+" "+conversion.getRequest().getUri()+" ("+ctx.channel().id().asLongText()+")");
         Headerworker.work(conversion.getRequest());
         EndpointWorker worker = null;
         
@@ -163,13 +165,14 @@ public class RestHttpRequestDispatchHandler extends ChannelInboundHandlerAdapter
     @Override
     public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
         super.channelRegistered(ctx); //To change body of generated methods, choose Tools | Templates.
-        connections.put(ctx.hashCode(), new Conversion(ctx));
+        
+        connections.put(ctx.channel().id().asLongText(), new Conversion(ctx));
     }
 
     @Override
     public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
         super.channelUnregistered(ctx); //To change body of generated methods, choose Tools | Templates.
-        connections.remove(ctx.hashCode());
+        connections.remove(ctx.channel().id().asLongText());
     }
 
     private static void writeJSON(ChannelHandlerContext ctx, HttpResponseStatus status, ByteBuf content) {
