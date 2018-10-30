@@ -7,7 +7,9 @@ package at.itopen.simplerest;
 
 import at.itopen.simplerest.conversion.ContentType;
 import at.itopen.simplerest.conversion.Conversion;
+import at.itopen.simplerest.conversion.Cookie;
 import at.itopen.simplerest.conversion.HttpStatus;
+import at.itopen.simplerest.conversion.Response;
 import at.itopen.simplerest.headerworker.Headerworker;
 import at.itopen.simplerest.path.EndpointWorker;
 import at.itopen.simplerest.path.RootPath;
@@ -28,6 +30,7 @@ import io.netty.handler.codec.http.HttpVersion;
 import io.netty.util.ReferenceCountUtil;
 import java.nio.charset.Charset;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -132,13 +135,14 @@ public class RestHttpRequestDispatchHandler extends ChannelInboundHandlerAdapter
             }
             
         }
+        
 
         if (conversion.getResponse().hasData()) {
             if (conversion.getResponse().getContentType().equals(ContentType.JSON)) {
-                ResponseWrapper wrapper=new ResponseWrapper(conversion.getResponse().getStatus().getCode(), conversion.getResponse().getStatus().getDescription(),conversion.getNanoDuration(), conversion.getResponse().getData());
+                ResponseWrapper wrapper=new ResponseWrapper(conversion.getResponse().getStatus().getCode(), conversion.getResponse().getStatus().getDescription(),conversion.getNanoDuration(), conversion.getResponse());
                 String json = JSON_CONVERTER.writeValueAsString(wrapper);
                 ByteBuf bb = Unpooled.copiedBuffer(json, Charset.defaultCharset());
-                writeJSON(ctx, HttpResponseStatus.valueOf(conversion.getResponse().getStatus().getCode()), bb);
+                writeJSON(ctx, HttpResponseStatus.valueOf(conversion.getResponse().getStatus().getCode()), bb,conversion.getResponse());
             } else {
                 ByteBuf bb = null;
                 if (conversion.getResponse().getData() instanceof String) {
@@ -148,15 +152,15 @@ public class RestHttpRequestDispatchHandler extends ChannelInboundHandlerAdapter
                     bb = Unpooled.copiedBuffer((byte[]) conversion.getResponse().getData());
                 }
                 if (bb != null) {
-                    write(ctx, HttpResponseStatus.valueOf(conversion.getResponse().getStatus().getCode()), bb, conversion.getResponse().getContentType().getMimeType());
+                    write(ctx, HttpResponseStatus.valueOf(conversion.getResponse().getStatus().getCode()), bb, conversion.getResponse().getContentType().getMimeType(),conversion.getResponse());
                 } else {
-                    write(ctx, HttpResponseStatus.SERVICE_UNAVAILABLE, Unpooled.EMPTY_BUFFER, conversion.getResponse().getContentType().getMimeType());
+                    write(ctx, HttpResponseStatus.SERVICE_UNAVAILABLE, Unpooled.EMPTY_BUFFER, conversion.getResponse().getContentType().getMimeType(),conversion.getResponse());
                 }
             }
             
         }else
         {
-            write (ctx,HttpResponseStatus.valueOf(conversion.getResponse().getStatus().getCode()),null,conversion.getResponse().getContentType().getMimeType());
+            write (ctx,HttpResponseStatus.valueOf(conversion.getResponse().getStatus().getCode()),null,conversion.getResponse().getContentType().getMimeType(),conversion.getResponse());
         }
 
         ctx.flush();
@@ -175,11 +179,11 @@ public class RestHttpRequestDispatchHandler extends ChannelInboundHandlerAdapter
         connections.remove(ctx.channel().id().asLongText());
     }
 
-    private static void writeJSON(ChannelHandlerContext ctx, HttpResponseStatus status, ByteBuf content) {
-        write(ctx, status, content, "application/json; charset=utf-8");
+    private static void writeJSON(ChannelHandlerContext ctx, HttpResponseStatus status, ByteBuf content,Response response) {
+        write(ctx, status, content, "application/json; charset=utf-8",response);
     }
 
-    private static void write(ChannelHandlerContext ctx, HttpResponseStatus status, ByteBuf content, String contentType) {
+    private static void write(ChannelHandlerContext ctx, HttpResponseStatus status, ByteBuf content, String contentType,Response response) {
         if (ctx.channel().isWritable()) {
             FullHttpResponse msg = null;
             if (content != null) {
@@ -191,6 +195,10 @@ public class RestHttpRequestDispatchHandler extends ChannelInboundHandlerAdapter
 
             if (msg.content() != null) {
                 msg.headers().set(HttpHeaderNames.CONTENT_LENGTH, msg.content().readableBytes());
+            }
+            if (response.getCookies().size()>0)
+            {
+                msg.headers().set(HttpHeaderNames.SET_COOKIE,response.getCookieString());
             }
 
             // not keep-alive

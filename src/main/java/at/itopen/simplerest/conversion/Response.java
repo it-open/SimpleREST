@@ -5,6 +5,9 @@
  */
 package at.itopen.simplerest.conversion;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  *
  * @author roland
@@ -14,6 +17,7 @@ public class Response {
     private HttpStatus status=HttpStatus.getByCode(404);
     private ContentType contentType=ContentType.JSON;
     private Object data=null;
+    private final List<Cookie> cookies=new ArrayList<>();
     
     public void setStatus(HttpStatus status)
     {
@@ -24,6 +28,21 @@ public class Response {
         return status;
     }
 
+    public List<Cookie> getCookies() {
+        return cookies;
+    }
+    
+    public String getCookieString()
+    {
+        StringBuilder sb=new StringBuilder();
+        cookies.forEach((cookie) -> {
+            if (sb.length()>0)
+                sb.append("; ");
+            sb.append(cookie.getName()).append("=").append(cookie.getValue());
+        });
+        return sb.toString();
+    }
+    
     public void setContentType(ContentType contentType) {
         this.contentType = contentType;
     }

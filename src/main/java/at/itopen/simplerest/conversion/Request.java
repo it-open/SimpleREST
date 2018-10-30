@@ -13,11 +13,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.HttpContent;
 import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.LastHttpContent;
-import io.netty.handler.codec.http.multipart.Attribute;
-import io.netty.handler.codec.http.multipart.FileUpload;
 import io.netty.handler.codec.http.multipart.HttpPostRequestDecoder;
-import io.netty.handler.codec.http.multipart.InterfaceHttpData;
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.InetSocketAddress;
 import java.nio.charset.Charset;
@@ -42,6 +38,7 @@ public class Request {
     private final HttpHeaders headers;
     private String contentData = null;
     private Map<String, String> params;
+    private List<Cookie> cookies;
     private transient ChannelHandlerContext ctx;
     private Map<String,MultipartFile> files;
     private transient HttpPostRequestDecoder httpDecoder = null;
@@ -58,6 +55,7 @@ public class Request {
         uri = null;
         params = new HashMap<>();
         files = new HashMap<>();
+        cookies = new ArrayList<>();
         sourceIp=new IpAdress((InetSocketAddress)ctx.channel().remoteAddress());
         try {
             user = (BasicUser) RestSecurity.getUserClass().getConstructor().newInstance();
@@ -70,7 +68,15 @@ public class Request {
 
     }
 
+    public IpAdress getSourceIp() {
+        return sourceIp;
+    }
 
+    public List<Cookie> getCookies() {
+        return cookies;
+    }
+    
+    
     public BasicUser getUser() {
         return user;
     }

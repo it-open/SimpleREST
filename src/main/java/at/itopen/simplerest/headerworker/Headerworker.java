@@ -22,6 +22,7 @@ public class Headerworker {
     static {
         addWorker("authorization","",new SeperatorDataHeaderWorker("authorization"," "));
         addWorker("content-type","",new SeperatorDataHeaderWorker("content-type",";"));
+        addWorker("cookie","",new CookieDataHeaderWorker());
         addWorker("accept-language","",new SeperatorDataHeaderWorker("accept-language",";"));
         addWorker("content-type","application/x-www-form-urlencoded",new XWwwFormUrlEncodedHeaderWorker());
         addWorker("content-type","multipart/form-data",new MulitpartFormDataHeaderWorker());
