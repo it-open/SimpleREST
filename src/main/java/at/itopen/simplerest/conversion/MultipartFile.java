@@ -9,13 +9,13 @@ package at.itopen.simplerest.conversion;
  *
  * @author roland
  */
-public class File {
+public class MultipartFile {
     
     private byte[] data;
     String name;
     String contentType;
 
-    public File(byte[] data, String name, String contentType) {
+    public MultipartFile(byte[] data, String name, String contentType) {
         this.data = data;
         this.name = name;
         this.contentType = contentType;

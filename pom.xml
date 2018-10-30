@@ -5,6 +5,26 @@
     <artifactId>SimpleRest</artifactId>
     <version>0.1</version>
     <packaging>jar</packaging>
+    
+    <name>Simple REST</name>
+    <description>Fast and Easy Rest API based on netty. Simple to code and to extend</description>
+    <url>https://dev.it-open.at/open-source/simplerest</url>
+
+    <licenses>
+      <license>
+        <name>MIT License</name>
+        <url>https://choosealicense.com/licenses/mit/</url>
+        
+      </license>
+    </licenses>
+
+    <scm>
+      <url>https://dev.it-open.at/open-source/simplerest</url>
+    </scm>
+    
+    
+    
+    
     <dependencies>
         <dependency>
             <groupId>io.netty</groupId>

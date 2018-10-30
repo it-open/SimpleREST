@@ -28,7 +28,6 @@ import io.netty.handler.codec.http.HttpUtil;
 import io.netty.handler.codec.http.HttpVersion;
 import io.netty.util.ReferenceCountUtil;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -66,11 +65,13 @@ public class RestHttpRequestDispatchHandler extends ChannelInboundHandlerAdapter
             Conversion conversion = connections.get(ctx.hashCode());
             conversion.parse(msg);
 
-            //System.out.println(conversion.getRequest().getUri());
+            
         } catch (Exception ex) {
             ReferenceCountUtil.release(msg);
         }
     }
+    
+    
     
     private class ResponseWrapper{
         public int code;
@@ -93,8 +94,12 @@ public class RestHttpRequestDispatchHandler extends ChannelInboundHandlerAdapter
     public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
 
         Conversion conversion = connections.get(ctx.hashCode());
+        if ((conversion.getRequest().getHttpDecoder().isMultipart()) && (!conversion.getRequest().getHttpDecoder().hasNext()))
+            return;
+        System.out.println(conversion.getRequest().getMethod()+" "+conversion.getRequest().getUri()+" ("+ctx.hashCode()+")");
         Headerworker.work(conversion.getRequest());
         EndpointWorker worker = null;
+        
         try{
             if (conversion.getRequest().getUri().getPath().size() == 0) {
                 if (RootPath.getINDEX()!=null)

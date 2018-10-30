@@ -19,6 +19,7 @@ import io.netty.handler.codec.http.multipart.HttpPostRequestDecoder;
 import io.netty.handler.codec.http.multipart.InterfaceHttpData;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.net.InetSocketAddress;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -33,73 +34,48 @@ import java.util.logging.Logger;
  */
 public class Request {
 
-    
-
-    private  String protocolName;
-    private  int protocolMajorVersion, protocolMinorVersion;
-    private  String method;
-    private  Uri uri;
-    private  final HttpHeaders headers;
-    private  String contentData=null;
-    private  Map<String,String> params;
+    private String protocolName;
+    private int protocolMajorVersion, protocolMinorVersion;
+    private String method;
+    private Uri uri;
+    private IpAdress sourceIp=null;
+    private final HttpHeaders headers;
+    private String contentData = null;
+    private Map<String, String> params;
     private transient ChannelHandlerContext ctx;
-    private  List<File> files;
-    private transient HttpPostRequestDecoder httpDecoder=null;
+    private Map<String,MultipartFile> files;
+    private transient HttpPostRequestDecoder httpDecoder = null;
     private BasicUser user;
 
     public Request(ChannelHandlerContext ctx) {
 
-        this.ctx=ctx;
+        this.ctx = ctx;
         headers = new HttpHeaders();
         protocolName = "EMPTY";
         protocolMajorVersion = 0;
         protocolMinorVersion = 0;
         method = "NONE";
         uri = null;
-        params=new HashMap<>();
-        files=new ArrayList<>();
+        params = new HashMap<>();
+        files = new HashMap<>();
+        sourceIp=new IpAdress((InetSocketAddress)ctx.channel().remoteAddress());
         try {
-            user=(BasicUser)RestSecurity.getUserClass().getConstructor().newInstance();
-        } catch (NoSuchMethodException|SecurityException|InstantiationException|InvocationTargetException|IllegalAccessException|IllegalArgumentException ex) {
+            user = (BasicUser) RestSecurity.getUserClass().getConstructor().newInstance();
+        } catch (NoSuchMethodException | SecurityException | InstantiationException | InvocationTargetException | IllegalAccessException | IllegalArgumentException ex) {
             Logger.getLogger(Request.class.getName()).log(Level.SEVERE, null, ex);
-        } 
-        if (user==null)
-            user=new DefaultUser();
-               
-    }
-    
-    private void readChunk(HttpPostRequestDecoder httpDecoder) throws IOException  {
-    while (httpDecoder.hasNext()) {
-      InterfaceHttpData data = httpDecoder.next();
-      if (data != null) {
-        try {
-          switch (data.getHttpDataType()) {
-            case Attribute:
-              final Attribute attribute = (Attribute) data;
-              
-            case FileUpload:
-              final FileUpload fileUpload = (FileUpload) data;
-              
-              File file=new File(fileUpload.get(), fileUpload.getFilename(),fileUpload.getContentType());
-              getFiles().add(file);
-              
-              break;
-          }
-        } finally {
-          data.release();
         }
-      }
+        if (user == null) {
+            user = new DefaultUser();
+        }
+
     }
-    }
+
 
     public BasicUser getUser() {
         return user;
     }
-    
-    
-    
-    public void parse(Object msg)
-    {
+
+    public void parse(Object msg) {
         if (msg instanceof HttpRequest) {
 
             HttpRequest request = (HttpRequest) msg;
@@ -110,11 +86,9 @@ public class Request {
             uri = new Uri(request.uri());
             params.putAll(uri.queryParam);
             headers.addHeaders(request.headers());
-            if (method.equals("POST"))
-            {
-               httpDecoder = new HttpPostRequestDecoder((HttpRequest) msg);
+            if (method.equals("POST")) {
+                httpDecoder = new HttpPostRequestDecoder((HttpRequest) msg);
             }
-            
 
         }
         if (msg instanceof HttpContent) {
@@ -125,23 +99,20 @@ public class Request {
             }
 
             HttpContent content = (HttpContent) msg;
-            if (!(content.content()instanceof EmptyByteBuf))
-            {
-            contentData =content.content().getCharSequence(0, content.content().capacity(), Charset.forName("UTF-8")).toString();
-            if (getHttpDecoder()!=null)
-                getHttpDecoder().offer(content);
+            if (!(content.content() instanceof EmptyByteBuf)) {
+                contentData = content.content().getCharSequence(0, content.content().capacity(), Charset.forName("UTF-8")).toString();
+                if (getHttpDecoder() != null) {
+                    getHttpDecoder().offer(content);
+                }
             }
-                
-             
+
         }
     }
 
     public HttpPostRequestDecoder getHttpDecoder() {
         return httpDecoder;
     }
-    
-    
-    
+
     /**
      * @return the protocolName
      */
@@ -163,11 +134,9 @@ public class Request {
         return protocolMinorVersion;
     }
 
-    public List<File> getFiles() {
+    public Map<String,MultipartFile> getFiles() {
         return files;
     }
-    
-    
 
     /**
      * @return the method
@@ -175,22 +144,20 @@ public class Request {
     public String getMethod() {
         return method;
     }
-    
-    public void addParam(String key, String value)
-    {
+
+    public void addParam(String key, String value) {
         params.put(key, value);
     }
-    
-    public String getParam(String name, String defaultValue)
-    {
-        if (params.containsKey(name))
+
+    public String getParam(String name, String defaultValue) {
+        if (params.containsKey(name)) {
             return params.get(name);
-        else
+        } else {
             return defaultValue;
+        }
     }
-    
-    public String getParam(String name)
-    {
+
+    public String getParam(String name) {
         return getParam(name, null);
     }
 
@@ -218,25 +185,21 @@ public class Request {
     public void setContentData(String contentData) {
         this.contentData = contentData;
     }
-    
+
     public void clearContentData() {
         this.contentData = null;
     }
-    
-    public long getContentLength()
-    {
-        if (hasContent())
+
+    public long getContentLength() {
+        if (hasContent()) {
             return contentData.length();
-        else
+        } else {
             return 0;
+        }
     }
-    
-    public boolean hasContent()
-    {
-        return contentData!=null;
+
+    public boolean hasContent() {
+        return contentData != null;
     }
-    
-    
-    
 
 }

@@ -46,6 +46,13 @@ public class NewMain {
                 }
             
             });
+            RootPath.getROOT().addRestEndpoint(new RestEndpoint("upload"){
+                @Override
+                public void Call(Conversion conversion, Map<String,String> UrlParameter) {
+                    System.out.println(conversion.getRequest().getFiles().get("data").getName());
+                }
+            
+            });
             
             RootPath.getROOT().addRestEndpoint(new JsonUserEndpoint("post"));
             

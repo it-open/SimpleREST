@@ -5,10 +5,12 @@
  */
 package at.itopen.simplerest.headerworker;
 
+import at.itopen.simplerest.conversion.MultipartFile;
 import at.itopen.simplerest.conversion.Request;
 import io.netty.handler.codec.http.multipart.Attribute;
-import io.netty.handler.codec.http.multipart.HttpPostMultipartRequestDecoder;
+import io.netty.handler.codec.http.multipart.FileUpload;
 import io.netty.handler.codec.http.multipart.InterfaceHttpData;
+import io.netty.handler.codec.http.multipart.MixedFileUpload;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -35,6 +37,19 @@ public class MulitpartFormDataHeaderWorker extends AbstractHeaderWorker{
                         } catch (IOException ex) {
                             Logger.getLogger(MulitpartFormDataHeaderWorker.class.getName()).log(Level.SEVERE, null, ex);
                         }
+                    }
+                    if (interfaceHttpData instanceof MixedFileUpload)
+                    {
+                        MixedFileUpload mixedFileUpload=(MixedFileUpload)interfaceHttpData;
+                        try {
+                            MultipartFile multipartFile;
+                            multipartFile = new MultipartFile(mixedFileUpload.get(), mixedFileUpload.getFilename(), mixedFileUpload.getContentType());
+                            request.getFiles().put(mixedFileUpload.getName(),multipartFile);
+                        } catch (IOException ex) {
+                            Logger.getLogger(MulitpartFormDataHeaderWorker.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                        
+
                     }
                     
                 }
