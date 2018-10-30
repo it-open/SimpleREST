@@ -139,7 +139,7 @@ public class RestHttpRequestDispatchHandler extends ChannelInboundHandlerAdapter
 
         if (conversion.getResponse().hasData()) {
             if (conversion.getResponse().getContentType().equals(ContentType.JSON)) {
-                ResponseWrapper wrapper=new ResponseWrapper(conversion.getResponse().getStatus().getCode(), conversion.getResponse().getStatus().getDescription(),conversion.getNanoDuration(), conversion.getResponse());
+                ResponseWrapper wrapper=new ResponseWrapper(conversion.getResponse().getStatus().getCode(), conversion.getResponse().getStatus().getDescription(),conversion.getNanoDuration(), conversion.getResponse().getData());
                 String json = JSON_CONVERTER.writeValueAsString(wrapper);
                 ByteBuf bb = Unpooled.copiedBuffer(json, Charset.defaultCharset());
                 writeJSON(ctx, HttpResponseStatus.valueOf(conversion.getResponse().getStatus().getCode()), bb,conversion.getResponse());
