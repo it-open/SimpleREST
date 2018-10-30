@@ -32,21 +32,22 @@ public class NewMain {
         
        
         
-        CRUDHelper helper;
-        RestHttpServer ht=new RestHttpServer(8081);
+        RestHttpServer.Start(8081);
+        RestHttpServer.enableIndex("TestProg", "1.0", "IT-Open", "office@it-open.at");
+        RestHttpServer.enableExceptionHandling();
+        RestHttpServer.enableNotFoundHandling();
+        RestHttpServer.enableStructure("structure");
+        RestHttpServer.enableRestUrlList("urls");
+        
         try {
-            RootPath.setINDEX(new IndexEndpoint("TestProg", "1.0", "IT-Open", "office@it-open.at"));
-            RootPath.setEXCEPTION(new ErrorEndpoint());
-            RootPath.setNOT_FOUND(new NotFoundEndpoint());
-            RootPath.getROOT().addRestEndpoint(new StructureEndpoint("structure"));
-            RootPath.getROOT().addRestEndpoint(new RestEndpoint("test"){
+            RestHttpServer.getRootEndpoint().addRestEndpoint(new RestEndpoint("test"){
                 @Override
                 public void Call(Conversion conversion, Map<String,String> UrlParameter) {
                     conversion.getResponse().setData("Super");
                 }
             
             });
-            RootPath.getROOT().addRestEndpoint(new RestEndpoint("upload"){
+            RestHttpServer.getRootEndpoint().addRestEndpoint(new RestEndpoint("upload"){
                 @Override
                 public void Call(Conversion conversion, Map<String,String> UrlParameter) {
                     System.out.println(conversion.getRequest().getFiles().get("data").getName());
@@ -54,13 +55,13 @@ public class NewMain {
             
             });
             
-            RootPath.getROOT().addRestEndpoint(new JsonUserEndpoint("post"));
+            RestHttpServer.getRootEndpoint().addRestEndpoint(new JsonUserEndpoint("post"));
             
             final List<String> data= new ArrayList<>();
                     data.add("Hallo");
                     data.add("Roland");
             
-            helper=new CRUDHelper("data", RootPath.getROOT()) {
+            new CRUDHelper("data", RestHttpServer.getRootEndpoint()) {
                 
                 
                 @Override
@@ -90,7 +91,6 @@ public class NewMain {
                     data.remove(Integer.parseInt(index));
                 }
             };
-            ht.run();
         } catch (Exception ex) {
             Logger.getLogger(NewMain.class.getName()).log(Level.SEVERE, null, ex);
         }

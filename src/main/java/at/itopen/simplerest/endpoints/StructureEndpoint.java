@@ -40,9 +40,6 @@ public class StructureEndpoint extends RestEndpoint {
             this.auth = auth;
         }
         
-        
-        
-        
     }
     
     private class PathItem extends Item
@@ -105,11 +102,12 @@ public class StructureEndpoint extends RestEndpoint {
         for (RestEndpoint sub:path.getEndpoints())
         {
             boolean auth=item.auth || (sub instanceof AuthenticatedRestEndpoint);
-            String method="?";
+            String method="ALL";
             if (sub instanceof GetEndpoint) method="GET";
             if (sub instanceof PostEndpoint) method="POST";
             if (sub instanceof PutEndpoint) method="PUT";
             if (sub instanceof DeleteEndpoint) method="DELETE";
+            if (sub instanceof PutOrPostEndpoint) method="PUT,POST";
             
             EndPointItem pi=new EndPointItem(method,sub.getEndpointName(), auth);
             item.getSubItems().add(pi);

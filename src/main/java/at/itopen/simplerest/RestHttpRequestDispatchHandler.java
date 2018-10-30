@@ -7,7 +7,6 @@ package at.itopen.simplerest;
 
 import at.itopen.simplerest.conversion.ContentType;
 import at.itopen.simplerest.conversion.Conversion;
-import at.itopen.simplerest.conversion.Cookie;
 import at.itopen.simplerest.conversion.HttpStatus;
 import at.itopen.simplerest.conversion.Response;
 import at.itopen.simplerest.headerworker.Headerworker;
@@ -30,7 +29,6 @@ import io.netty.handler.codec.http.HttpVersion;
 import io.netty.util.ReferenceCountUtil;
 import java.nio.charset.Charset;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
