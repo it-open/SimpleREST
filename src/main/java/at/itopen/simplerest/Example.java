@@ -23,7 +23,7 @@ import java.util.logging.Logger;
  *
  * @author roland
  */
-public class NewMain {
+public class Example {
 
     /**
      * @param args the command line arguments
@@ -92,7 +92,7 @@ public class NewMain {
                 }
             };
         } catch (Exception ex) {
-            Logger.getLogger(NewMain.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Example.class.getName()).log(Level.SEVERE, null, ex);
         }
         
        
