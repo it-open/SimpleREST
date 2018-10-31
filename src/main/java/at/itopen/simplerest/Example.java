@@ -5,14 +5,13 @@
  */
 package at.itopen.simplerest;
 
+import at.itopen.simplerest.conversion.ContentType;
 import at.itopen.simplerest.conversion.Conversion;
 import at.itopen.simplerest.endpoints.CRUDHelper;
-import at.itopen.simplerest.endpoints.ErrorEndpoint;
-import at.itopen.simplerest.endpoints.IndexEndpoint;
-import at.itopen.simplerest.endpoints.NotFoundEndpoint;
-import at.itopen.simplerest.endpoints.StructureEndpoint;
+import at.itopen.simplerest.endpoints.GetEndpoint;
 import at.itopen.simplerest.path.RestEndpoint;
-import at.itopen.simplerest.path.RootPath;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -32,7 +31,7 @@ public class Example {
         
        
         
-        RestHttpServer.Start(8081);
+        RestHttpServer.Start(3000);
         RestHttpServer.enableIndex("TestProg", "1.0", "IT-Open", "office@it-open.at");
         RestHttpServer.enableExceptionHandling();
         RestHttpServer.enableNotFoundHandling();
@@ -44,6 +43,23 @@ public class Example {
                 @Override
                 public void Call(Conversion conversion, Map<String,String> UrlParameter) {
                     conversion.getResponse().setData("Super");
+                }
+            
+            });
+            RestHttpServer.getRootEndpoint().addRestEndpoint(new GetEndpoint("image"){
+                @Override
+                public void Call(Conversion conversion, Map<String,String> UrlParameter) {
+                    conversion.getResponse().setContentType(ContentType.JPEG);
+                    FileInputStream fis;
+                    try {
+                        fis = new FileInputStream("/home/roland/Bilder/Panorama.jpg");
+                        conversion.getResponse().setData(fis.readAllBytes());
+                        fis.close();
+                    } catch (IOException ex) {
+                        Logger.getLogger(Example.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    
+                    
                 }
             
             });
