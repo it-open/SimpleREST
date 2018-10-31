@@ -20,7 +20,7 @@ import java.util.Map;
  *
  * @author roland
  */
-public class StructureEndpoint extends RestEndpoint {
+public class StructureEndpoint extends GetEndpoint {
 
     
     private class Item{

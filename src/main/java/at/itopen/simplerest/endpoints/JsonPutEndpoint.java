@@ -7,7 +7,6 @@ package at.itopen.simplerest.endpoints;
 
 import at.itopen.simplerest.RestHttpRequestDispatchHandler;
 import at.itopen.simplerest.conversion.Conversion;
-import at.itopen.simplerest.path.RestEndpoint;
 import java.io.IOException;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -19,7 +18,7 @@ import java.util.logging.Logger;
  *
  * @author roland
  */
-public abstract class JsonPutEndpoint<T> extends RestEndpoint{
+public abstract class JsonPutEndpoint<T> extends PutEndpoint{
 
     Class genericType=null;
     T data;
@@ -47,19 +46,6 @@ public abstract class JsonPutEndpoint<T> extends RestEndpoint{
         }
         super.CallEndpoint(conversion, UrlParameter); //To change body of generated methods, choose Tools | Templates.
     }
-    
-    
-    
-    
-
-    @Override
-    protected boolean checkEndpoint(Conversion conversion) {
-        if ("PUT".equals(conversion.getRequest().getMethod()))
-            return super.checkEndpoint(conversion); //To change body of generated methods, choose Tools | Templates.
-        else
-            return false;
-    }
-
-   
+ 
 
 }

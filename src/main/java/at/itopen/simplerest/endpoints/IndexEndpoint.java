@@ -14,7 +14,7 @@ import java.util.Map;
  *
  * @author roland
  */
-public class IndexEndpoint extends RestEndpoint {
+public class IndexEndpoint extends GetEndpoint {
 
     
     private class IndexData {

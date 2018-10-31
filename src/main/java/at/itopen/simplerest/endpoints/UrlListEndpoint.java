@@ -20,7 +20,7 @@ import java.util.Map;
  *
  * @author roland
  */
-public class UrlListEndpoint extends RestEndpoint {
+public class UrlListEndpoint extends GetEndpoint {
 
     
    

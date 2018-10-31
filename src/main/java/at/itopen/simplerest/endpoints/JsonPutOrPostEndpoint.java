@@ -19,7 +19,7 @@ import java.util.logging.Logger;
  *
  * @author roland
  */
-public abstract class JsonPutOrPostEndpoint<T> extends RestEndpoint{
+public abstract class JsonPutOrPostEndpoint<T> extends PutOrPostEndpoint{
 
     Class genericType=null;
     T data;
@@ -48,18 +48,6 @@ public abstract class JsonPutOrPostEndpoint<T> extends RestEndpoint{
         super.CallEndpoint(conversion, UrlParameter); //To change body of generated methods, choose Tools | Templates.
     }
     
-    
-    
-    
-
-    @Override
-    protected boolean checkEndpoint(Conversion conversion) {
-        if (("PUT".equals(conversion.getRequest().getMethod()))||("POST".equals(conversion.getRequest().getMethod())))
-            return super.checkEndpoint(conversion); //To change body of generated methods, choose Tools | Templates.
-        else
-            return false;
-    }
-
    
 
 }

@@ -19,7 +19,7 @@ import java.util.logging.Logger;
  *
  * @author roland
  */
-public abstract class JsonPostEndpoint<T> extends RestEndpoint{
+public abstract class JsonPostEndpoint<T> extends PostEndpoint{
 
     Class genericType=null;
     T data;
@@ -49,17 +49,6 @@ public abstract class JsonPostEndpoint<T> extends RestEndpoint{
     }
     
     
-    
-    
-
-    @Override
-    protected boolean checkEndpoint(Conversion conversion) {
-        if ("POST".equals(conversion.getRequest().getMethod()))
-            return super.checkEndpoint(conversion); //To change body of generated methods, choose Tools | Templates.
-        else
-            return false;
-    }
-
    
 
 }
