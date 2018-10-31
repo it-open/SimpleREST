@@ -13,6 +13,10 @@ import at.itopen.simplerest.conversion.Request;
  */
 public abstract class AbstractHeaderWorker {
     
+    /**
+     *
+     * @param requst
+     */
     public abstract void work(Request requst);
     
 }

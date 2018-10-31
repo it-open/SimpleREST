@@ -22,6 +22,10 @@ public class Uri {
     Map<String,String> queryParam;
     String fragment=null;
 
+    /**
+     *
+     * @param uri
+     */
     public Uri(String uri) {
         path=new ArrayList<>();
         queryParam=new HashMap<>();
@@ -70,19 +74,37 @@ public class Uri {
         
     }
 
+    /**
+     *
+     * @return
+     */
     public String getFragment() {
         return fragment;
     }
 
+    /**
+     *
+     * @return
+     */
     public List<String> getPath() {
         return Collections.unmodifiableList(path);
     }
     
+    /**
+     *
+     * @return
+     */
     public Set<String> getParamNames()
     {
         return queryParam.keySet();
     }
     
+    /**
+     *
+     * @param name
+     * @param defaultValue
+     * @return
+     */
     public String getParam(String name, String defaultValue)
     {
         if (queryParam.containsKey(name))
@@ -91,6 +113,11 @@ public class Uri {
             return defaultValue;
     }
     
+    /**
+     *
+     * @param name
+     * @return
+     */
     public String getParam(String name)
     {
         return getParam(name, null);

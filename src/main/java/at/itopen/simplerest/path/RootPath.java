@@ -16,34 +16,66 @@ public class RootPath {
     private static RestEndpoint INDEX=null;
     private static RestEndpoint EXCEPTION=null;
 
+    /**
+     *
+     * @param ROOT
+     */
     public static void setROOT(RestPath ROOT) {
         RootPath.ROOT = ROOT;
     }
 
+    /**
+     *
+     * @return
+     */
     public static RestPath getROOT() {
         return ROOT;
     }
 
+    /**
+     *
+     * @return
+     */
     public static RestEndpoint getNOT_FOUND() {
         return NOT_FOUND;
     }
 
+    /**
+     *
+     * @param NOT_FOUND
+     */
     public static void setNOT_FOUND(RestEndpoint NOT_FOUND) {
         RootPath.NOT_FOUND = NOT_FOUND;
     }
 
+    /**
+     *
+     * @return
+     */
     public static RestEndpoint getINDEX() {
         return INDEX;
     }
 
+    /**
+     *
+     * @param INDEX
+     */
     public static void setINDEX(RestEndpoint INDEX) {
         RootPath.INDEX = INDEX;
     }
 
+    /**
+     *
+     * @return
+     */
     public static RestEndpoint getEXCEPTION() {
         return EXCEPTION;
     }
 
+    /**
+     *
+     * @param EXCEPTION
+     */
     public static void setEXCEPTION(RestEndpoint EXCEPTION) {
         RootPath.EXCEPTION = EXCEPTION;
     }

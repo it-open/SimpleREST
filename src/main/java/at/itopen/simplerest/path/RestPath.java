@@ -21,22 +21,45 @@ public class RestPath {
     private final List<RestEndpoint> endpoints = new ArrayList<>();
     private final List<RestPath> subPaths = new ArrayList<>();
 
+    /**
+     *
+     * @param pathName
+     */
     public RestPath(String pathName) {
         this.pathName = pathName;
     }
 
+    /**
+     *
+     * @param endpoint
+     */
     public void addRestEndpoint(RestEndpoint endpoint) {
         endpoints.add(endpoint);
     }
 
+    /**
+     *
+     * @param restPath
+     */
     public void addSubPath(RestPath restPath) {
         subPaths.add(restPath);
     }
 
+    /**
+     *
+     * @return
+     */
     public String getPathName() {
         return pathName;
     }
 
+    /**
+     *
+     * @param conversion
+     * @param depth
+     * @param pathParameter
+     * @return
+     */
     public EndpointWorker findEndpoint(Conversion conversion, int depth, Map<String,String> pathParameter) {
         List<String> uriPath = conversion.getRequest().getUri().getPath();
         if (depth == (uriPath.size() - 1)) {
@@ -95,6 +118,11 @@ public class RestPath {
         return null;
     }
 
+    /**
+     *
+     * @param conversion
+     * @return
+     */
     protected boolean checkPath(Conversion conversion) {
         if (this instanceof AuthenticatedRestPath)
         {
@@ -104,10 +132,18 @@ public class RestPath {
         return true;
     }
 
+    /**
+     *
+     * @return
+     */
     public List<RestEndpoint> getEndpoints() {
         return endpoints;
     }
 
+    /**
+     *
+     * @return
+     */
     public List<RestPath> getSubPaths() {
         return subPaths;
     }

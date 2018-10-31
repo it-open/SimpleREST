@@ -16,10 +16,18 @@ import java.util.Map;
  */
 public class NotFoundEndpoint extends RestEndpoint {
   
+    /**
+     *
+     */
     public NotFoundEndpoint() {
         super("NOT-FOUND");
     }
     
+    /**
+     *
+     * @param conversion
+     * @param UrlParameter
+     */
     @Override
     public void Call(Conversion conversion, Map<String,String> UrlParameter) {
         conversion.getResponse().setData(conversion.getRequest().getUri().toString());

@@ -17,14 +17,27 @@ public abstract class RestEndpoint {
     
     private String endpointName;
 
+    /**
+     *
+     * @param endpointName
+     */
     public RestEndpoint(String endpointName) {
         this.endpointName = endpointName;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getEndpointName() {
         return endpointName;
     }
     
+    /**
+     *
+     * @param conversion
+     * @return
+     */
     protected boolean checkEndpoint(Conversion conversion) {
         if (this instanceof AuthenticatedRestEndpoint)
         {
@@ -34,11 +47,21 @@ public abstract class RestEndpoint {
         return true;
     }
     
+    /**
+     *
+     * @param conversion
+     * @param UrlParameter
+     */
     public void CallEndpoint(Conversion conversion,Map<String,String> UrlParameter)
     {
         Call(conversion, UrlParameter);
     }
     
+    /**
+     *
+     * @param conversion
+     * @param UrlParameter
+     */
     public abstract void Call(Conversion conversion,Map<String,String> UrlParameter);
     
     

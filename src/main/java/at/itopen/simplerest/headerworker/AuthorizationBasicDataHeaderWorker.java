@@ -16,14 +16,17 @@ import java.util.Base64;
  */
 public class AuthorizationBasicDataHeaderWorker extends AbstractHeaderWorker{
 
- 
-
+    /**
+     *
+     */
     public AuthorizationBasicDataHeaderWorker() {
      
     }
 
-    
-    
+    /**
+     *
+     * @param request
+     */
     @Override
     public void work(Request request) {
         String value=request.getHeaders().getAll("authorization").get(1);

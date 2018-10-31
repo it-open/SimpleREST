@@ -19,19 +19,35 @@ public class Response {
     private Object data=null;
     private final List<Cookie> cookies=new ArrayList<>();
     
+    /**
+     *
+     * @param status
+     */
     public void setStatus(HttpStatus status)
     {
         this.status=status;
     }
 
+    /**
+     *
+     * @return
+     */
     public HttpStatus getStatus() {
         return status;
     }
 
+    /**
+     *
+     * @return
+     */
     public List<Cookie> getCookies() {
         return cookies;
     }
     
+    /**
+     *
+     * @return
+     */
     public String getCookieString()
     {
         StringBuilder sb=new StringBuilder();
@@ -43,22 +59,42 @@ public class Response {
         return sb.toString();
     }
     
+    /**
+     *
+     * @param contentType
+     */
     public void setContentType(ContentType contentType) {
         this.contentType = contentType;
     }
 
+    /**
+     *
+     * @return
+     */
     public ContentType getContentType() {
         return contentType;
     }
     
+    /**
+     *
+     * @param data
+     */
     public void setData(Object data) {
         this.data = data;
     }
 
+    /**
+     *
+     * @return
+     */
     public Object getData() {
         return data;
     }
     
+    /**
+     *
+     * @return
+     */
     public boolean hasData()
     {
         return data!=null;

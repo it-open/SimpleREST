@@ -17,7 +17,12 @@ import io.netty.handler.codec.http.HttpResponseEncoder;
  */
 public class RestHttpServerInitializer extends ChannelInitializer<SocketChannel> {
 
-	@Override
+    /**
+     *
+     * @param socketChannel
+     * @throws Exception
+     */
+    @Override
 	protected void initChannel(SocketChannel socketChannel) throws Exception {
 		ChannelPipeline p = socketChannel.pipeline();
 		p.addLast("http.decoder", new HttpRequestDecoder());

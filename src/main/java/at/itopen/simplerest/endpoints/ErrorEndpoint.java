@@ -48,17 +48,19 @@ public class ErrorEndpoint extends RestEndpoint {
         
     private ErrorData data;
     
-    
-    
+    /**
+     *
+     */
     public ErrorEndpoint() {
         super("ERROR");
         
     }
     
-    
-    
-    
-
+    /**
+     *
+     * @param conversion
+     * @param UrlParameter
+     */
     @Override
     public void Call(Conversion conversion, Map<String,String> UrlParameter) {
         Exception exception=conversion.getException();

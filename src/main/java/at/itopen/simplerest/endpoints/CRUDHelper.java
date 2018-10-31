@@ -16,6 +16,11 @@ import java.util.Map;
  */
 public abstract class CRUDHelper {
 
+    /**
+     *
+     * @param entry
+     * @param parentPath
+     */
     public CRUDHelper(String entry, RestPath parentPath) {
 
         RestPath sub = new RestPath(entry);
@@ -63,15 +68,39 @@ public abstract class CRUDHelper {
 
     }
     
-
+    /**
+     *
+     * @param conversion
+     * @param UrlParameter
+     */
     public abstract void addNewItem(Conversion conversion, Map<String,String> UrlParameter);
 
+    /**
+     *
+     * @param conversion
+     * @param UrlParameter
+     */
     public abstract void getSingeItem(Conversion conversion, Map<String,String> UrlParameter);
 
+    /**
+     *
+     * @param conversion
+     * @param UrlParameter
+     */
     public abstract void getAllItem(Conversion conversion, Map<String,String> UrlParameter);
 
+    /**
+     *
+     * @param conversion
+     * @param UrlParameter
+     */
     public abstract void updateItem(Conversion conversion, Map<String,String> UrlParameter);
 
+    /**
+     *
+     * @param conversion
+     * @param UrlParameter
+     */
     public abstract void deleteItem(Conversion conversion, Map<String,String> UrlParameter);
 
 }

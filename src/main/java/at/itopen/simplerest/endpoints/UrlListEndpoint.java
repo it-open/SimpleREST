@@ -22,13 +22,19 @@ import java.util.Map;
  */
 public class UrlListEndpoint extends GetEndpoint {
 
-    
-   
-    
+    /**
+     *
+     * @param endpointName
+     */
     public UrlListEndpoint(String endpointName) {
         super(endpointName);
     }
 
+    /**
+     *
+     * @param conversion
+     * @param UrlParameter
+     */
     @Override
     public void Call(Conversion conversion, Map<String,String> UrlParameter) {
         String path="/";

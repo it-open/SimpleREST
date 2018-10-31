@@ -44,6 +44,10 @@ public class Request {
     private transient HttpPostRequestDecoder httpDecoder = null;
     private BasicUser user;
 
+    /**
+     *
+     * @param ctx
+     */
     public Request(ChannelHandlerContext ctx) {
 
         this.ctx = ctx;
@@ -68,19 +72,34 @@ public class Request {
 
     }
 
+    /**
+     *
+     * @return
+     */
     public IpAdress getSourceIp() {
         return sourceIp;
     }
 
+    /**
+     *
+     * @return
+     */
     public List<Cookie> getCookies() {
         return cookies;
     }
     
-    
+    /**
+     *
+     * @return
+     */
     public BasicUser getUser() {
         return user;
     }
 
+    /**
+     *
+     * @param msg
+     */
     public void parse(Object msg) {
         if (msg instanceof HttpRequest) {
 
@@ -115,6 +134,10 @@ public class Request {
         }
     }
 
+    /**
+     *
+     * @return
+     */
     public HttpPostRequestDecoder getHttpDecoder() {
         return httpDecoder;
     }
@@ -140,6 +163,10 @@ public class Request {
         return protocolMinorVersion;
     }
 
+    /**
+     *
+     * @return
+     */
     public Map<String,MultipartFile> getFiles() {
         return files;
     }
@@ -151,10 +178,21 @@ public class Request {
         return method;
     }
 
+    /**
+     *
+     * @param key
+     * @param value
+     */
     public void addParam(String key, String value) {
         params.put(key, value);
     }
 
+    /**
+     *
+     * @param name
+     * @param defaultValue
+     * @return
+     */
     public String getParam(String name, String defaultValue) {
         if (params.containsKey(name)) {
             return params.get(name);
@@ -163,6 +201,11 @@ public class Request {
         }
     }
 
+    /**
+     *
+     * @param name
+     * @return
+     */
     public String getParam(String name) {
         return getParam(name, null);
     }
@@ -188,14 +231,25 @@ public class Request {
         return contentData;
     }
 
+    /**
+     *
+     * @param contentData
+     */
     public void setContentData(String contentData) {
         this.contentData = contentData;
     }
 
+    /**
+     *
+     */
     public void clearContentData() {
         this.contentData = null;
     }
 
+    /**
+     *
+     * @return
+     */
     public long getContentLength() {
         if (hasContent()) {
             return contentData.length();
@@ -204,6 +258,10 @@ public class Request {
         }
     }
 
+    /**
+     *
+     * @return
+     */
     public boolean hasContent() {
         return contentData != null;
     }

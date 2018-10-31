@@ -15,21 +15,38 @@ public class MultipartFile {
     String name;
     String contentType;
 
+    /**
+     *
+     * @param data
+     * @param name
+     * @param contentType
+     */
     public MultipartFile(byte[] data, String name, String contentType) {
         this.data = data;
         this.name = name;
         this.contentType = contentType;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getContentType() {
         return contentType;
     }
 
-    
+    /**
+     *
+     * @return
+     */
     public byte[] getData() {
         return data;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getName() {
         return name;
     }

@@ -21,10 +21,17 @@ public class HttpHeaders {
     
     Map<String,List<String>> data;
 
+    /**
+     *
+     */
     public HttpHeaders() {
         data=new HashMap<>();
     }
     
+    /**
+     *
+     * @param headers
+     */
     public final void addHeaders(io.netty.handler.codec.http.HttpHeaders headers)
     {
         for (String name:(Set<String>)headers.names())
@@ -35,21 +42,41 @@ public class HttpHeaders {
         }
     }
     
+    /**
+     *
+     * @return
+     */
     public Set<String> getNames()
     {
         return data.keySet();
     }
     
+    /**
+     *
+     * @param name
+     * @return
+     */
     public boolean contains(String name)
     {
         return data.containsKey(name);
     }
     
+    /**
+     *
+     * @param name
+     * @return
+     */
     public String get(String name)
     {
         return get(name,null);
     }
     
+    /**
+     *
+     * @param name
+     * @param defaultValue
+     * @return
+     */
     public String get(String name,String defaultValue)
     {
         if (contains(name))
@@ -60,6 +87,11 @@ public class HttpHeaders {
             return defaultValue;
     }
     
+    /**
+     *
+     * @param name
+     * @return
+     */
     public List<String> getAll(String name)
     {   if (data.containsKey(name))
         return data.get(name);
@@ -67,6 +99,11 @@ public class HttpHeaders {
         return new ArrayList<>();
     }
     
+    /**
+     *
+     * @param name
+     * @return
+     */
     public List<String> getAllOrEmpty(String name)
     {
         if (contains(name))
@@ -75,6 +112,11 @@ public class HttpHeaders {
             return new ArrayList<String>();
     }
     
+    /**
+     *
+     * @param name
+     * @param value
+     */
     public void put(String name, String value)
     {
         List<String> list=new ArrayList<>();
@@ -82,12 +124,23 @@ public class HttpHeaders {
         data.put(name, list);
     }
     
+    /**
+     *
+     * @param name
+     * @param value
+     */
     public void add(String name, String value)
     {
         if (!data.containsKey(name))
             data.put(name, new ArrayList<>());
         data.get(name).add(value);
     }
+
+    /**
+     *
+     * @param name
+     * @param value
+     */
     public void put(String name, String... value)
     {
         List<String> list=new ArrayList<>();
@@ -95,6 +148,10 @@ public class HttpHeaders {
         data.put(name, list);
     }
     
+    /**
+     *
+     * @param name
+     */
     public void remove(String name)
     {
         data.remove(name);

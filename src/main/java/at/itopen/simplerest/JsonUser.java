@@ -6,7 +6,7 @@
 package at.itopen.simplerest;
 
 /**
- *
+ * Example of an User (username,password) that is Pushed 
  * @author roland
  */
 public class JsonUser {

@@ -75,12 +75,19 @@ public class StructureEndpoint extends GetEndpoint {
         
     }
     
-    
-    
+    /**
+     *
+     * @param endpointName
+     */
     public StructureEndpoint(String endpointName) {
         super(endpointName);
     }
 
+    /**
+     *
+     * @param conversion
+     * @param UrlParameter
+     */
     @Override
     public void Call(Conversion conversion, Map<String,String> UrlParameter) {
         PathItem root=new PathItem("/", false);

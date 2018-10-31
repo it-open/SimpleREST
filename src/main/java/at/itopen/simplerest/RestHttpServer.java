@@ -24,7 +24,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- *
+ * The Rest HTTP Server Object handles Netty Calls and does the REST Magic
  * @author roland
  */
 public class RestHttpServer {
@@ -33,6 +33,11 @@ public class RestHttpServer {
     private final EventLoopGroup boss = new NioEventLoopGroup();
     private final EventLoopGroup worker;
 
+    /**
+     * Constructor, starts the Rest Server
+     * @param port Port to run at
+     * @return the HTTP Server. Not really needed
+     */
     public static RestHttpServer Start(int port) {
         final RestHttpServer restHttpServer = new RestHttpServer(port);
         new Thread("Start Server") {
@@ -48,52 +53,85 @@ public class RestHttpServer {
         return restHttpServer;
     }
 
+    /**
+     * Enable an index at the /. 
+     * @param programmName Name of the Programm
+     * @param apiVersion Which Version doe the APi have?
+     * @param maintainer Hwo ist the Maintainer
+     * @param email Mail of the Maintainer
+     */
     public static void enableIndex(String programmName, String apiVersion, String maintainer, String email) {
         RootPath.setINDEX(new IndexEndpoint(programmName, apiVersion, maintainer, email));
     }
 
+    /**
+     * Enable Ecxption Lgging if something happens on the API or your Code (With full Stack Trace)
+     */
     public static void enableExceptionHandling() {
         RootPath.setEXCEPTION(new ErrorEndpoint());
     }
 
+    /**
+     * Enable a 404 Json Page which tells the User that the Page has not been found
+     */
     public static void enableNotFoundHandling() {
         RootPath.setNOT_FOUND(new NotFoundEndpoint());
     }
 
-    public static void enableStructure(String structurePath) {
-        enableStructure(structurePath, null);
-    }
     
+    /**
+     * Shows the complete Structure of the REST API 
+     * @param structurePath
+     * @param path
+     */
     public static void enableStructure(String structurePath,RestPath path) {
         if (path==null)
             path=RootPath.getROOT();
         path.addRestEndpoint(new StructureEndpoint(structurePath));
     }
     
-    public static void enableRestUrlList(String urlListPath){
-        enableRestUrlList(urlListPath, null);
-    }
     
+    /**
+     * Shows a complete List of all Urls
+     * @param urlListPath
+     * @param path
+     */
     public static void enableRestUrlList(String urlListPath,RestPath path) {
         if (path==null)
             path=RootPath.getROOT();
         path.addRestEndpoint(new UrlListEndpoint(urlListPath));
     }
 
+    /**
+     * Get the Startpoint of all Rest Calls '/'
+     * Make all Sub Path on this this Path.
+     * @return
+     */
     public static RestPath getRootEndpoint() {
         return RootPath.getROOT();
     }
 
+    /**
+     *
+     */
     public RestHttpServer() {
         this(SystemPropertyUtil.getInt("default.port", 18080));
     }
 
+    /**
+     *
+     * @param port
+     */
     public RestHttpServer(int port) {
         this.port = port;
         this.worker = new NioEventLoopGroup(SystemPropertyUtil.getInt("events.workerThreads", 300), new DefaultThreadFactory("nio-worker", Thread.MAX_PRIORITY));
         RootPath.setROOT(new RestPath("/"));
     }
 
+    /**
+     *
+     * @throws Exception
+     */
     public void run() throws Exception {
         try {
             ServerBootstrap bootstrap = new ServerBootstrap();
@@ -112,11 +150,18 @@ public class RestHttpServer {
         }
     }
 
+    /**
+     *
+     */
     protected void shutdown() {
         boss.shutdownGracefully();
         worker.shutdownGracefully();
     }
 
+    /**
+     *
+     * @param bootstrap
+     */
     protected void setChannelOptions(ServerBootstrap bootstrap) {
         bootstrap.childOption(ChannelOption.MAX_MESSAGES_PER_READ, 36)
                 .childOption(ChannelOption.TCP_NODELAY, true);

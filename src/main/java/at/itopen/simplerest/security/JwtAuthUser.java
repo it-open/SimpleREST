@@ -11,6 +11,12 @@ package at.itopen.simplerest.security;
  */
 public interface JwtAuthUser {
     
+    /**
+     *
+     * @param Id
+     * @param issuer
+     * @param Subject
+     */
     public void setJwtAuth(String Id,String issuer,String Subject);
     
 }

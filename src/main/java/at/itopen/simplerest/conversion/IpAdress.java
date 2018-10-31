@@ -13,18 +13,30 @@ import java.net.InetSocketAddress;
  */
 public class IpAdress {
 
+    /**
+     *
+     * @param adress
+     * @param port
+     */
     public IpAdress(byte[] adress, int port) {
         this.adress = adress;
         this.port = port;
     }
 
+    /**
+     *
+     * @param inetSocketAddress
+     */
     public IpAdress(InetSocketAddress inetSocketAddress) {
         adress=inetSocketAddress.getAddress().getAddress();
         port=inetSocketAddress.getPort();
     }
     
-    
-
+    /**
+     *
+     * @param addr
+     * @param port
+     */
     public IpAdress(String addr, int port) {
         this.adress = new byte[4];
         String[] ipAddressInArray = addr.split("\\.");
@@ -37,18 +49,34 @@ public class IpAdress {
     byte[] adress;
     int port;
 
+    /**
+     *
+     * @return
+     */
     public byte[] getAdress() {
         return adress;
     }
 
+    /**
+     *
+     * @return
+     */
     public int getPort() {
         return port;
     }
 
+    /**
+     *
+     * @return
+     */
     public byte[] getAdressAsString() {
         return adress;
     }
 
+    /**
+     *
+     * @return
+     */
     public String toStirng() {
         long i = longIP();
         return ((i >> 24) & 0xFF) + "."
@@ -57,6 +85,10 @@ public class IpAdress {
                 + (i & 0xFF);
     }
 
+    /**
+     *
+     * @return
+     */
     public Long longIP() {
 
         long num = 0;

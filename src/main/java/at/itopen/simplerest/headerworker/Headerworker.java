@@ -31,17 +31,31 @@ public class Headerworker {
         addWorker("content-type","application/json",new JsonDataWorker());
     }
     
-    
+    /**
+     *
+     * @param key
+     * @param value
+     * @param abstractHeaderWorker
+     */
     public static void addWorker(String key,String value,AbstractHeaderWorker abstractHeaderWorker)
     {
         gotoList(key, value).add(abstractHeaderWorker);
     }
     
+    /**
+     *
+     * @param key
+     * @param value
+     */
     public static void clearWorkers(String key,String value)
     {
         gotoList(key, value).clear();
     }
     
+    /**
+     *
+     * @param request
+     */
     public static void work(Request request){
         List<String> names=new ArrayList<>();
         names.addAll(request.getHeaders().getNames());

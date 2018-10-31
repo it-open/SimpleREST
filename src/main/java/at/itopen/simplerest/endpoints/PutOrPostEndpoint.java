@@ -14,10 +14,19 @@ import at.itopen.simplerest.path.RestEndpoint;
  */
 public abstract class PutOrPostEndpoint extends RestEndpoint{
 
+    /**
+     *
+     * @param endpointName
+     */
     public PutOrPostEndpoint(String endpointName) {
         super(endpointName);
     }
 
+    /**
+     *
+     * @param conversion
+     * @return
+     */
     @Override
     protected boolean checkEndpoint(Conversion conversion) {
         if (("PUT".equals(conversion.getRequest().getMethod()))||("POST".equals(conversion.getRequest().getMethod())))

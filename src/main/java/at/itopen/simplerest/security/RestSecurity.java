@@ -36,29 +36,57 @@ public class RestSecurity {
         setJwtCompressionCodec(CompressionCodecs.DEFLATE);
     }
 
+    /**
+     *
+     * @return
+     */
     public static Class getUserClass() {
         return userClass;
     }
 
+    /**
+     *
+     * @param userClass
+     */
     public static void setUserClass(Class userClass) {
         userClass = userClass;
     }
 
+    /**
+     *
+     * @param JwtCompressionCodec
+     */
     public static void setJwtCompressionCodec(CompressionCodec JwtCompressionCodec) {
         RestSecurity.JwtCompressionCodec = JwtCompressionCodec;
     }
 
+    /**
+     *
+     * @param JwtSecretKey
+     */
     public static void setJwtSecretKey(SecretKey JwtSecretKey) {
         RestSecurity.JwtSecretKey = JwtSecretKey;
 
     }
 
+    /**
+     *
+     * @param JwtSignatureAlgorithm
+     */
     public static void setJwtSignatureAlgorithm(SignatureAlgorithm JwtSignatureAlgorithm) {
         RestSecurity.JwtSignatureAlgorithm = JwtSignatureAlgorithm;
         if (!SignatureAlgorithm.NONE.equals(JwtSignatureAlgorithm))
         setJwtSecretKey(Keys.secretKeyFor(JwtSignatureAlgorithm));
     }
 
+    /**
+     *
+     * @param Id
+     * @param issuer
+     * @param Subject
+     * @param expiration
+     * @return
+     */
     public static String JWS_BUILD(String Id, String issuer, String Subject, Date expiration) {
         JwtBuilder builder = Jwts.builder()
                 .setIssuedAt(new Date())
@@ -73,6 +101,9 @@ public class RestSecurity {
 
     }
 
+    /**
+     *
+     */
     public static class JwtInfo {
 
         /**
@@ -99,6 +130,12 @@ public class RestSecurity {
         private String issuer;
         private String Subject;
 
+        /**
+         *
+         * @param Id
+         * @param issuer
+         * @param Subject
+         */
         public JwtInfo(String Id, String issuer, String Subject) {
             this.Id = Id;
             this.issuer = issuer;
@@ -107,6 +144,11 @@ public class RestSecurity {
 
     }
 
+    /**
+     *
+     * @param JwsData
+     * @return
+     */
     public static JwtInfo JWS_DECRYPT(String JwsData) {
         Jws<Claims> jws = null;
         try {

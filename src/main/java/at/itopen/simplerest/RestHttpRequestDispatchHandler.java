@@ -33,7 +33,7 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 /**
- *
+ * The Dispatcher does the Magic. It Handles all Netty requests
  * @author roland
  */
 public class RestHttpRequestDispatchHandler extends ChannelInboundHandlerAdapter {
@@ -50,12 +50,20 @@ public class RestHttpRequestDispatchHandler extends ChannelInboundHandlerAdapter
         JSON_CONVERTER.configure(SerializationFeature.EAGER_SERIALIZER_FETCH, true);
     }
 
+    /**
+     * A Global Json Converter vrom Jackson 
+     * @return
+     */
     public static ObjectMapper getJSON_CONVERTER() {
         return JSON_CONVERTER;
     }
     
-    
-
+    /**
+     * 
+     * @param ctx
+     * @param msg
+     * @throws Exception
+     */
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
 
@@ -92,6 +100,11 @@ public class RestHttpRequestDispatchHandler extends ChannelInboundHandlerAdapter
         
     }
 
+    /**
+     *
+     * @param ctx
+     * @throws Exception
+     */
     @Override
     public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
 
@@ -164,6 +177,11 @@ public class RestHttpRequestDispatchHandler extends ChannelInboundHandlerAdapter
         ctx.flush();
     }
 
+    /**
+     *
+     * @param ctx
+     * @throws Exception
+     */
     @Override
     public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
         super.channelRegistered(ctx); //To change body of generated methods, choose Tools | Templates.
@@ -171,6 +189,11 @@ public class RestHttpRequestDispatchHandler extends ChannelInboundHandlerAdapter
         connections.put(ctx.channel().id().asLongText(), new Conversion(ctx));
     }
 
+    /**
+     *
+     * @param ctx
+     * @throws Exception
+     */
     @Override
     public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
         super.channelUnregistered(ctx); //To change body of generated methods, choose Tools | Templates.

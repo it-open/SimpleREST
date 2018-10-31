@@ -14,10 +14,19 @@ import at.itopen.simplerest.path.RestEndpoint;
  */
 public abstract class GetEndpoint extends RestEndpoint{
 
+    /**
+     *
+     * @param endpointName
+     */
     public GetEndpoint(String endpointName) {
         super(endpointName);
     }
 
+    /**
+     *
+     * @param conversion
+     * @return
+     */
     @Override
     protected boolean checkEndpoint(Conversion conversion) {
         if ("GET".equals(conversion.getRequest().getMethod()))

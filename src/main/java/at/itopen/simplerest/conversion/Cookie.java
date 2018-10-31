@@ -13,15 +13,28 @@ public class Cookie {
     
     String name,value;
 
+    /**
+     *
+     * @param name
+     * @param value
+     */
     public Cookie(String name, String value) {
         this.name = name;
         this.value = value;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getValue() {
         return value;
     }

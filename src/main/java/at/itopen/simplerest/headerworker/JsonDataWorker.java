@@ -13,6 +13,10 @@ import at.itopen.simplerest.conversion.Request;
  */
 public class JsonDataWorker extends AbstractHeaderWorker{
 
+    /**
+     *
+     * @param request
+     */
     @Override
     public void work(Request request) {
         

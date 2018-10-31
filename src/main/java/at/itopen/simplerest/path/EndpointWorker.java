@@ -17,19 +17,36 @@ public class EndpointWorker {
     RestEndpoint restEndpoint;
     Map<String,String> pathParameter;
 
+    /**
+     *
+     * @param restEndpoint
+     * @param pathParameter
+     */
     public EndpointWorker(RestEndpoint restEndpoint, Map<String,String> pathParameter) {
         this.restEndpoint = restEndpoint;
         this.pathParameter = pathParameter;
     }
 
+    /**
+     *
+     * @return
+     */
     public Map<String,String> getPathParameter() {
         return pathParameter;
     }
 
+    /**
+     *
+     * @return
+     */
     public RestEndpoint getRestEndpoint() {
         return restEndpoint;
     }
     
+    /**
+     *
+     * @param conversion
+     */
     public void work(Conversion conversion)
     {
         restEndpoint.CallEndpoint(conversion, pathParameter);

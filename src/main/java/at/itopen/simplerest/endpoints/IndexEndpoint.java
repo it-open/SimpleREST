@@ -52,17 +52,23 @@ public class IndexEndpoint extends GetEndpoint {
         
     private IndexData data;
     
-    
-    
+    /**
+     *
+     * @param programmName
+     * @param apiVersion
+     * @param maintainer
+     * @param email
+     */
     public IndexEndpoint(String programmName, String apiVersion, String maintainer, String email) {
         super("INDEX");
         data=new IndexData(programmName, apiVersion, maintainer, email);
     }
     
-    
-    
-    
-
+    /**
+     *
+     * @param conversion
+     * @param UrlParameter
+     */
     @Override
     public void Call(Conversion conversion, Map<String,String> UrlParameter) {
         conversion.getResponse().setData(data);

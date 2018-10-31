@@ -16,20 +16,39 @@ public class DefaultUser extends BasicUser implements BasicAuthUser,JwtAuthUser 
     private String name;
     private String password;
     
+    /**
+     *
+     * @param name
+     * @param password
+     */
     @Override
     public void setAuth(String name, String password) {
         this.name=name;
         this.password=password;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getPassword() {
         return password;
     }
 
+    /**
+     *
+     * @param Id
+     * @param issuer
+     * @param Subject
+     */
     @Override
     public void setJwtAuth(String Id, String issuer, String Subject) {
         this.name=name;
@@ -37,10 +56,18 @@ public class DefaultUser extends BasicUser implements BasicAuthUser,JwtAuthUser 
         this.subject=Subject;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getId() {
         return id;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getSubject() {
         return subject;
     }

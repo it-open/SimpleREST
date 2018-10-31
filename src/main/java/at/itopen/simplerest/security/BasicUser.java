@@ -13,10 +13,18 @@ public class BasicUser {
     
     boolean authenticated=false;
 
+    /**
+     *
+     * @return
+     */
     public boolean isAuthenticated() {
         return authenticated;
     }
 
+    /**
+     *
+     * @param authenticated
+     */
     public void setAuthenticated(boolean authenticated) {
         this.authenticated = authenticated;
     }

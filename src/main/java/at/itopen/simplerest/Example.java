@@ -35,8 +35,8 @@ public class Example {
         RestHttpServer.enableIndex("TestProg", "1.0", "IT-Open", "office@it-open.at");
         RestHttpServer.enableExceptionHandling();
         RestHttpServer.enableNotFoundHandling();
-        RestHttpServer.enableStructure("structure");
-        RestHttpServer.enableRestUrlList("urls");
+        RestHttpServer.enableStructure("structure",null);
+        RestHttpServer.enableRestUrlList("urls",null);
         
         try {
             RestHttpServer.getRootEndpoint().addRestEndpoint(new RestEndpoint("test"){

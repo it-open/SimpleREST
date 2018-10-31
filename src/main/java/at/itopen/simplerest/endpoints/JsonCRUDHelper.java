@@ -12,6 +12,7 @@ import java.util.Map;
 /**
  *
  * @author roland
+ * @param <T>
  */
 public abstract class JsonCRUDHelper<T> {
     
@@ -41,8 +42,11 @@ public abstract class JsonCRUDHelper<T> {
             
         }
     
-   
-
+    /**
+     *
+     * @param entry
+     * @param parentPath
+     */
     public JsonCRUDHelper(String entry, RestPath parentPath) {
 
         RestPath sub = new RestPath(entry);
@@ -80,15 +84,39 @@ public abstract class JsonCRUDHelper<T> {
 
     }
     
-
+    /**
+     *
+     * @param conversion
+     * @param UrlParameter
+     */
     public abstract void addNewItem(Conversion conversion, Map<String,String> UrlParameter);
 
+    /**
+     *
+     * @param conversion
+     * @param UrlParameter
+     */
     public abstract void getSingeItem(Conversion conversion, Map<String,String> UrlParameter);
 
+    /**
+     *
+     * @param conversion
+     * @param UrlParameter
+     */
     public abstract void getAllItem(Conversion conversion, Map<String,String> UrlParameter);
 
+    /**
+     *
+     * @param conversion
+     * @param UrlParameter
+     */
     public abstract void updateItem(Conversion conversion, Map<String,String> UrlParameter);
 
+    /**
+     *
+     * @param conversion
+     * @param UrlParameter
+     */
     public abstract void deleteItem(Conversion conversion, Map<String,String> UrlParameter);
 
 }

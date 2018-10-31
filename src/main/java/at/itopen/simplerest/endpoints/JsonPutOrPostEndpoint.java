@@ -18,23 +18,36 @@ import java.util.logging.Logger;
 /**
  *
  * @author roland
+ * @param <T>
  */
 public abstract class JsonPutOrPostEndpoint<T> extends PutOrPostEndpoint{
 
     Class genericType=null;
     T data;
     
+    /**
+     *
+     * @param endpointName
+     */
     public JsonPutOrPostEndpoint(String endpointName) {
         super(endpointName);
         Type sooper = getClass().getGenericSuperclass();
         genericType = (Class)((ParameterizedType)sooper).getActualTypeArguments()[ 0 ];
     }
 
+    /**
+     *
+     * @return
+     */
     public T getData() {
         return data;
     }
     
-    
+    /**
+     *
+     * @param conversion
+     * @param UrlParameter
+     */
     @Override
     public void CallEndpoint(Conversion conversion, Map<String,String> UrlParameter) {
         if (conversion.getRequest().getContentData()!=null)

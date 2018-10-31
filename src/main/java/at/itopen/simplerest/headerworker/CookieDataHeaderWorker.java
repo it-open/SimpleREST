@@ -14,10 +14,17 @@ import at.itopen.simplerest.conversion.Request;
  */
 public class CookieDataHeaderWorker extends AbstractHeaderWorker {
 
+    /**
+     *
+     */
     public CookieDataHeaderWorker() {
 
     }
 
+    /**
+     *
+     * @param request
+     */
     @Override
     public void work(Request request) {
 

@@ -11,6 +11,11 @@ package at.itopen.simplerest.security;
  */
 public interface BasicAuthUser {
     
+    /**
+     *
+     * @param name
+     * @param password
+     */
     public void setAuth(String name,String password);
     
 }

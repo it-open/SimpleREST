@@ -14,10 +14,19 @@ import at.itopen.simplerest.path.RestEndpoint;
  */
 public abstract class DeleteEndpoint extends RestEndpoint{
 
+    /**
+     *
+     * @param endpointName
+     */
     public DeleteEndpoint(String endpointName) {
         super(endpointName);
     }
 
+    /**
+     *
+     * @param conversion
+     * @return
+     */
     @Override
     protected boolean checkEndpoint(Conversion conversion) {
         if ("DELETE".equals(conversion.getRequest().getMethod()))

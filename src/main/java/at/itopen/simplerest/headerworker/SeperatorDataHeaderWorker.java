@@ -16,13 +16,20 @@ public class SeperatorDataHeaderWorker extends AbstractHeaderWorker{
     String section;
     String seperator;
 
+    /**
+     *
+     * @param section
+     * @param seperator
+     */
     public SeperatorDataHeaderWorker(String section, String seperator) {
         this.section = section;
         this.seperator = seperator;
     }
 
-    
-    
+    /**
+     *
+     * @param request
+     */
     @Override
     public void work(Request request) {
         String value=request.getHeaders().get(section);

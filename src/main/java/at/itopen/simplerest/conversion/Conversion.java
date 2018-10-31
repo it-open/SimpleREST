@@ -22,6 +22,10 @@ public class Conversion {
     private Exception exception;
     private long startTime=System.currentTimeMillis();
     
+    /**
+     *
+     * @param ctx
+     */
     public Conversion(ChannelHandlerContext ctx) {
         startTime=System.nanoTime();
         this.ctx=ctx;
@@ -29,6 +33,10 @@ public class Conversion {
         request=new Request(ctx);
     }
     
+    /**
+     *
+     * @param msg
+     */
     public void parse(Object msg)
     {
         try{
@@ -42,27 +50,50 @@ public class Conversion {
         }
     }
     
+    /**
+     *
+     */
     public void destroy()
     {
         ctx.flush();
     }
 
+    /**
+     *
+     * @return
+     */
     public Request getRequest() {
         return request;
     }
 
+    /**
+     *
+     * @return
+     */
     public Response getResponse() {
         return response;
     }
 
+    /**
+     *
+     * @param exception
+     */
     public void setException(Exception exception) {
         this.exception = exception;
     }
 
+    /**
+     *
+     * @return
+     */
     public Exception getException() {
         return exception;
     }
     
+    /**
+     *
+     * @return
+     */
     public long getNanoDuration()
     {
      return System.nanoTime()-startTime;
