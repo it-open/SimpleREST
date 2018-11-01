@@ -9,7 +9,11 @@ import at.itopen.simplerest.conversion.ContentType;
 import at.itopen.simplerest.conversion.Conversion;
 import at.itopen.simplerest.endpoints.CRUDHelper;
 import at.itopen.simplerest.endpoints.GetEndpoint;
+import at.itopen.simplerest.endpoints.staticfile.NoCachePolicy;
+import at.itopen.simplerest.endpoints.staticfile.StaticFileEndpoint;
 import at.itopen.simplerest.path.RestEndpoint;
+import at.itopen.simplerest.path.RestPath;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -46,6 +50,7 @@ public class Example {
                 }
             
             });
+            RestHttpServer.getRootEndpoint().addSubPath(new RestPath("html")).setCatchAllEndPoint(new StaticFileEndpoint(new File("/home/roland/src/bergland-amtstafel/web"), new NoCachePolicy()));
             RestHttpServer.getRootEndpoint().addRestEndpoint(new GetEndpoint("image"){
                 @Override
                 public void Call(Conversion conversion, Map<String,String> UrlParameter) {

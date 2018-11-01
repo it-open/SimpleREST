@@ -6,7 +6,6 @@
 package at.itopen.simplerest.path;
 
 import at.itopen.simplerest.conversion.Conversion;
-import java.util.List;
 import java.util.Map;
 
 /**

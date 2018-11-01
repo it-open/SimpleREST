@@ -20,6 +20,7 @@ public class RestPath {
     private final String pathName;
     private final List<RestEndpoint> endpoints = new ArrayList<>();
     private final List<RestPath> subPaths = new ArrayList<>();
+    private RestEndpoint catchAllEndPoint=null;
 
     /**
      *
@@ -41,8 +42,9 @@ public class RestPath {
      *
      * @param restPath
      */
-    public void addSubPath(RestPath restPath) {
+    public RestPath addSubPath(RestPath restPath) {
         subPaths.add(restPath);
+        return restPath;
     }
 
     /**
@@ -53,6 +55,11 @@ public class RestPath {
         return pathName;
     }
 
+    public void setCatchAllEndPoint(RestEndpoint catchAllEndPoint) {
+        this.catchAllEndPoint = catchAllEndPoint;
+    }
+    
+    
     /**
      *
      * @param conversion
@@ -94,6 +101,14 @@ public class RestPath {
                     }
                 }
             }
+        }
+        if (catchAllEndPoint!=null)
+        {
+            for (int i=depth;i<uriPath.size();i++)
+            {
+                pathParameter.put(""+(i-depth), uriPath.get(i));
+            }
+            return new EndpointWorker(catchAllEndPoint, pathParameter);
         }
         return null;
 
