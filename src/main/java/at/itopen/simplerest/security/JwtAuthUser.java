@@ -5,6 +5,8 @@
  */
 package at.itopen.simplerest.security;
 
+import at.itopen.simplerest.conversion.Request;
+
 /**
  *
  * @author roland
@@ -17,6 +19,6 @@ public interface JwtAuthUser {
      * @param issuer
      * @param Subject
      */
-    public void setJwtAuth(String Id,String issuer,String Subject);
+    public void setJwtAuth(Request request,String Id,String issuer,String Subject);
     
 }

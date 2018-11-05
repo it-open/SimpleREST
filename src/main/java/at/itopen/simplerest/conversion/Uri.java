@@ -98,6 +98,12 @@ public class Uri {
     {
         return queryParam.keySet();
     }
+
+    public Map<String, String> getQueryParam() {
+        return queryParam;
+    }
+    
+    
     
     /**
      *

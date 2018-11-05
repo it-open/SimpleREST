@@ -5,6 +5,8 @@
  */
 package at.itopen.simplerest.security;
 
+import at.itopen.simplerest.conversion.Request;
+
 /**
  *
  * @author roland
@@ -22,7 +24,7 @@ public class DefaultUser extends BasicUser implements BasicAuthUser,JwtAuthUser 
      * @param password
      */
     @Override
-    public void setAuth(String name, String password) {
+    public void setAuth(Request request,String name, String password) {
         this.name=name;
         this.password=password;
     }
@@ -50,7 +52,7 @@ public class DefaultUser extends BasicUser implements BasicAuthUser,JwtAuthUser 
      * @param Subject
      */
     @Override
-    public void setJwtAuth(String Id, String issuer, String Subject) {
+    public void setJwtAuth(Request request,String Id, String issuer, String Subject) {
         this.name=name;
         this.id=Id;
         this.subject=Subject;

@@ -8,7 +8,6 @@ package at.itopen.simplerest.headerworker;
 import at.itopen.simplerest.conversion.MultipartFile;
 import at.itopen.simplerest.conversion.Request;
 import io.netty.handler.codec.http.multipart.Attribute;
-import io.netty.handler.codec.http.multipart.FileUpload;
 import io.netty.handler.codec.http.multipart.InterfaceHttpData;
 import io.netty.handler.codec.http.multipart.MixedFileUpload;
 import java.io.IOException;

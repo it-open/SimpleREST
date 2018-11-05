@@ -36,7 +36,7 @@ public class AuthorizationBasicDataHeaderWorker extends AbstractHeaderWorker{
         {
             if (request.getUser() instanceof BasicAuthUser)
             {
-                ((BasicAuthUser)request.getUser()).setAuth(parts[0], parts[1]);
+                ((BasicAuthUser)request.getUser()).setAuth(request,parts[0], parts[1]);
                 request.getHeaders().remove("authorization");
             }            
         }

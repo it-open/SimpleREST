@@ -5,6 +5,8 @@
  */
 package at.itopen.simplerest.security;
 
+import at.itopen.simplerest.conversion.Request;
+
 /**
  *
  * @author roland
@@ -16,6 +18,6 @@ public interface BasicAuthUser {
      * @param name
      * @param password
      */
-    public void setAuth(String name,String password);
+    public void setAuth(Request request,String name,String password);
     
 }

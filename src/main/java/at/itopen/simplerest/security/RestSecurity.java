@@ -5,17 +5,18 @@
  */
 package at.itopen.simplerest.security;
 
-import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.CompressionCodec;
 import io.jsonwebtoken.CompressionCodecs;
 import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.Jws;
+import io.jsonwebtoken.Jwt;
 import io.jsonwebtoken.JwtBuilder;
+import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.SignatureException;
 import io.jsonwebtoken.UnsupportedJwtException;
+import io.jsonwebtoken.impl.DefaultClaims;
 import io.jsonwebtoken.security.Keys;
 import java.util.Date;
 import javax.crypto.SecretKey;
@@ -48,8 +49,8 @@ public class RestSecurity {
      *
      * @param userClass
      */
-    public static void setUserClass(Class userClass) {
-        userClass = userClass;
+    public static void setUserClass(Class newUserClass) {
+        userClass = newUserClass;
     }
 
     /**
@@ -91,11 +92,16 @@ public class RestSecurity {
         JwtBuilder builder = Jwts.builder()
                 .setIssuedAt(new Date())
                 .setId(Id)
-                .setIssuer(issuer)
-                .setSubject(Subject)
-                .setExpiration(expiration)
-                .compressWith(JwtCompressionCodec)
-                .signWith(JwtSignatureAlgorithm, JwtSecretKey);
+                .compressWith(JwtCompressionCodec);
+        if (!JwtSignatureAlgorithm.equals(SignatureAlgorithm.NONE))
+            builder.signWith(JwtSignatureAlgorithm, JwtSecretKey);
+        if (expiration!=null)
+            builder.setExpiration(expiration);
+        if (Subject!=null)
+            builder.setSubject(Subject);
+        if (issuer!=null)
+            builder.setIssuer(issuer);
+                
 
         return builder.compact();
 
@@ -150,14 +156,18 @@ public class RestSecurity {
      * @return
      */
     public static JwtInfo JWS_DECRYPT(String JwsData) {
-        Jws<Claims> jws = null;
+        Jwt jwt = null;
         try {
-            jws = Jwts.parser().setSigningKey(JwtSecretKey).parseClaimsJws(JwsData);
+            JwtParser parser=Jwts.parser();
+            if (JwtSecretKey!=null)
+                parser.setSigningKey(JwtSecretKey);
+            jwt = parser.parse(JwsData);
         } catch (ExpiredJwtException | MalformedJwtException | SignatureException | UnsupportedJwtException | IllegalArgumentException ex) {
 
         }
-        if (jws != null) {
-            return new JwtInfo(jws.getBody().getId(), jws.getBody().getIssuer(), jws.getBody().getSubject());
+        if (jwt != null) {
+            DefaultClaims body=(DefaultClaims)jwt.getBody();
+            return new JwtInfo(body.getId(), body.getIssuer(), body.getSubject());
         } else {
             return null;
         }

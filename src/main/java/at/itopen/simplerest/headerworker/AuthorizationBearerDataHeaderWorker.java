@@ -6,10 +6,8 @@
 package at.itopen.simplerest.headerworker;
 
 import at.itopen.simplerest.conversion.Request;
-import at.itopen.simplerest.security.BasicAuthUser;
 import at.itopen.simplerest.security.JwtAuthUser;
 import at.itopen.simplerest.security.RestSecurity;
-import java.util.Base64;
 
 /**
  *
@@ -34,7 +32,7 @@ public class AuthorizationBearerDataHeaderWorker extends AbstractHeaderWorker {
         RestSecurity.JwtInfo info = RestSecurity.JWS_DECRYPT(value);
         if (info != null) {
             if (request.getUser() instanceof JwtAuthUser) {
-                ((JwtAuthUser) request.getUser()).setJwtAuth(info.getId(), info.getIssuer(), info.getSubject());
+                ((JwtAuthUser) request.getUser()).setJwtAuth(request,info.getId(), info.getIssuer(), info.getSubject());
                 request.getHeaders().remove("authorization");
             }
         }

@@ -34,13 +34,13 @@ public class Request {
     private int protocolMajorVersion, protocolMinorVersion;
     private String method;
     private Uri uri;
-    private IpAdress sourceIp=null;
+    private IpAdress sourceIp = null;
     private final HttpHeaders headers;
     private String contentData = null;
     private Map<String, String> params;
     private List<Cookie> cookies;
     private transient ChannelHandlerContext ctx;
-    private Map<String,MultipartFile> files;
+    private Map<String, MultipartFile> files;
     private transient HttpPostRequestDecoder httpDecoder = null;
     private BasicUser user;
 
@@ -60,15 +60,7 @@ public class Request {
         params = new HashMap<>();
         files = new HashMap<>();
         cookies = new ArrayList<>();
-        sourceIp=new IpAdress((InetSocketAddress)ctx.channel().remoteAddress());
-        try {
-            user = (BasicUser) RestSecurity.getUserClass().getConstructor().newInstance();
-        } catch (NoSuchMethodException | SecurityException | InstantiationException | InvocationTargetException | IllegalAccessException | IllegalArgumentException ex) {
-            Logger.getLogger(Request.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        if (user == null) {
-            user = new DefaultUser();
-        }
+        sourceIp = new IpAdress((InetSocketAddress) ctx.channel().remoteAddress());
 
     }
 
@@ -87,12 +79,22 @@ public class Request {
     public List<Cookie> getCookies() {
         return cookies;
     }
-    
+
     /**
      *
      * @return
      */
     public BasicUser getUser() {
+        if (user == null) {
+            try {
+                user = (BasicUser) RestSecurity.getUserClass().getConstructor().newInstance();
+            } catch (NoSuchMethodException | SecurityException | InstantiationException | InvocationTargetException | IllegalAccessException | IllegalArgumentException ex) {
+                Logger.getLogger(Request.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            if (user == null) {
+                user = new DefaultUser();
+            }
+        }
         return user;
     }
 
@@ -167,7 +169,7 @@ public class Request {
      *
      * @return
      */
-    public Map<String,MultipartFile> getFiles() {
+    public Map<String, MultipartFile> getFiles() {
         return files;
     }
 

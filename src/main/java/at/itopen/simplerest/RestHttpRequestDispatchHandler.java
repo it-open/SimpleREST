@@ -12,6 +12,7 @@ import at.itopen.simplerest.conversion.Response;
 import at.itopen.simplerest.headerworker.Headerworker;
 import at.itopen.simplerest.path.EndpointWorker;
 import at.itopen.simplerest.path.RootPath;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import io.netty.buffer.ByteBuf;
@@ -48,6 +49,7 @@ public class RestHttpRequestDispatchHandler extends ChannelInboundHandlerAdapter
         JSON_CONVERTER.setDefaultPrettyPrinter(null);
         JSON_CONVERTER.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
         JSON_CONVERTER.configure(SerializationFeature.EAGER_SERIALIZER_FETCH, true);
+        JSON_CONVERTER.setSerializationInclusion(Include.NON_EMPTY); 
     }
 
     /**
@@ -165,13 +167,20 @@ public class RestHttpRequestDispatchHandler extends ChannelInboundHandlerAdapter
                 if (bb != null) {
                     write(ctx, HttpResponseStatus.valueOf(conversion.getResponse().getStatus().getCode()), bb, conversion.getResponse().getContentType().getMimeType(),conversion.getResponse());
                 } else {
-                    write(ctx, HttpResponseStatus.SERVICE_UNAVAILABLE, Unpooled.EMPTY_BUFFER, conversion.getResponse().getContentType().getMimeType(),conversion.getResponse());
+                    ResponseWrapper wrapper=new ResponseWrapper(conversion.getResponse().getStatus().getCode(), conversion.getResponse().getStatus().getDescription(),conversion.getNanoDuration(), conversion.getResponse().getData());
+                    String json = JSON_CONVERTER.writeValueAsString(wrapper);
+                    bb = Unpooled.copiedBuffer(json, Charset.defaultCharset());
+                    writeJSON(ctx, HttpResponseStatus.valueOf(conversion.getResponse().getStatus().getCode()), bb,conversion.getResponse());
                 }
             }
             
         }else
         {
-            write (ctx,HttpResponseStatus.valueOf(conversion.getResponse().getStatus().getCode()),null,conversion.getResponse().getContentType().getMimeType(),conversion.getResponse());
+            ResponseWrapper wrapper=new ResponseWrapper(conversion.getResponse().getStatus().getCode(), conversion.getResponse().getStatus().getDescription(),conversion.getNanoDuration(), conversion.getResponse().getData());
+            String json = JSON_CONVERTER.writeValueAsString(wrapper);
+            ByteBuf bb = Unpooled.copiedBuffer(json, Charset.defaultCharset());
+            writeJSON(ctx, HttpResponseStatus.valueOf(conversion.getResponse().getStatus().getCode()), bb,conversion.getResponse());
+            
         }
 
         ctx.flush();

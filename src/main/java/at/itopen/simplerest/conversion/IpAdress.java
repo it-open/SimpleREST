@@ -69,15 +69,19 @@ public class IpAdress {
      *
      * @return
      */
-    public byte[] getAdressAsString() {
-        return adress;
+    public String getIpAdressAsString() {
+        return toString();
+    }
+    
+    public String getLocationAsString() {
+        return getIpAdressAsString()+":"+getPort();
     }
 
     /**
      *
      * @return
      */
-    public String toStirng() {
+    public String toString() {
         long i = longIP();
         return ((i >> 24) & 0xFF) + "."
                 + ((i >> 16) & 0xFF) + "."
