@@ -13,11 +13,8 @@ import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.SignatureException;
 import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.impl.DefaultClaims;
-import io.jsonwebtoken.security.Keys;
 import java.util.Date;
 import javax.crypto.SecretKey;
 
@@ -30,10 +27,8 @@ public class RestSecurity {
     private static Class userClass = DefaultUser.class;
     private static SecretKey JwtSecretKey;
     private static CompressionCodec JwtCompressionCodec = null;
-    private static SignatureAlgorithm JwtSignatureAlgorithm;
-
+ 
     static {
-        setJwtSignatureAlgorithm(SignatureAlgorithm.NONE);
         setJwtCompressionCodec(CompressionCodecs.DEFLATE);
     }
 
@@ -70,16 +65,7 @@ public class RestSecurity {
 
     }
 
-    /**
-     *
-     * @param JwtSignatureAlgorithm
-     */
-    public static void setJwtSignatureAlgorithm(SignatureAlgorithm JwtSignatureAlgorithm) {
-        RestSecurity.JwtSignatureAlgorithm = JwtSignatureAlgorithm;
-        if (!SignatureAlgorithm.NONE.equals(JwtSignatureAlgorithm))
-        setJwtSecretKey(Keys.secretKeyFor(JwtSignatureAlgorithm));
-    }
-
+    
     /**
      *
      * @param Id
@@ -90,11 +76,12 @@ public class RestSecurity {
      */
     public static String JWS_BUILD(String Id, String issuer, String Subject, Date expiration) {
         JwtBuilder builder = Jwts.builder()
-                .setIssuedAt(new Date())
+                .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setId(Id)
                 .compressWith(JwtCompressionCodec);
-        if (!JwtSignatureAlgorithm.equals(SignatureAlgorithm.NONE))
-            builder.signWith(JwtSignatureAlgorithm, JwtSecretKey);
+       
+        if (JwtSecretKey!=null)
+            builder.signWith(JwtSecretKey);
         if (expiration!=null)
             builder.setExpiration(expiration);
         if (Subject!=null)
@@ -162,7 +149,7 @@ public class RestSecurity {
             if (JwtSecretKey!=null)
                 parser.setSigningKey(JwtSecretKey);
             jwt = parser.parse(JwsData);
-        } catch (ExpiredJwtException | MalformedJwtException | SignatureException | UnsupportedJwtException | IllegalArgumentException ex) {
+        } catch (ExpiredJwtException | MalformedJwtException | SecurityException | UnsupportedJwtException | IllegalArgumentException ex) {
 
         }
         if (jwt != null) {
