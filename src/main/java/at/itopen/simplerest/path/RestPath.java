@@ -20,7 +20,7 @@ public class RestPath {
     private final String pathName;
     private final List<RestEndpoint> endpoints = new ArrayList<>();
     private final List<RestPath> subPaths = new ArrayList<>();
-    private RestEndpoint catchAllEndPoint=null;
+    private RestEndpoint catchAllEndPoint = null;
 
     /**
      *
@@ -58,8 +58,7 @@ public class RestPath {
     public void setCatchAllEndPoint(RestEndpoint catchAllEndPoint) {
         this.catchAllEndPoint = catchAllEndPoint;
     }
-    
-    
+
     /**
      *
      * @param conversion
@@ -67,7 +66,7 @@ public class RestPath {
      * @param pathParameter
      * @return
      */
-    public EndpointWorker findEndpoint(Conversion conversion, int depth, Map<String,String> pathParameter) {
+    public EndpointWorker findEndpoint(Conversion conversion, int depth, Map<String, String> pathParameter) {
         List<String> uriPath = conversion.getRequest().getUri().getPath();
         if (depth == (uriPath.size() - 1)) {
             EndpointWorker endpointWorker = findEndpoint(uriPath.get(depth), pathParameter, conversion);
@@ -91,8 +90,8 @@ public class RestPath {
                     if (!restPath.checkPath(conversion)) {
                         continue;
                     }
-                    Map<String,String> clonePathParameter = new HashMap<>(pathParameter);
-                    clonePathParameter.put(restPath.getPathName().substring(1),uriPath.get(depth));
+                    Map<String, String> clonePathParameter = new HashMap<>(pathParameter);
+                    clonePathParameter.put(restPath.getPathName().substring(1), uriPath.get(depth));
                     EndpointWorker endpointWorker = restPath.findEndpoint(conversion, depth + 1, clonePathParameter);
                     if (endpointWorker != null) {
 
@@ -102,11 +101,9 @@ public class RestPath {
                 }
             }
         }
-        if (catchAllEndPoint!=null)
-        {
-            for (int i=depth;i<uriPath.size();i++)
-            {
-                pathParameter.put(""+(i-depth), uriPath.get(i));
+        if (catchAllEndPoint != null) {
+            for (int i = depth; i < uriPath.size(); i++) {
+                pathParameter.put("" + (i - depth), uriPath.get(i));
             }
             return new EndpointWorker(catchAllEndPoint, pathParameter);
         }
@@ -114,7 +111,34 @@ public class RestPath {
 
     }
 
-    private EndpointWorker findEndpoint(String name, Map<String,String> pathParameter, Conversion conversion) {
+    /**
+     *
+     * @param conversion
+     * @param depth
+     * @param pathParameter
+     * @return
+     */
+    public RestPath pathForLocation(String location) {
+        String path = location.split("\\/")[0];
+        String subPath = "";
+        if (location.length()>path.length())
+                subPath=location.substring(path.length() + 1);
+
+        for (RestPath restPath : subPaths) {
+            if (restPath.getPathName().equalsIgnoreCase(path)) {
+                if (subPath.isEmpty()) {
+                    return restPath;
+                } else {
+                    return restPath.pathForLocation(subPath);
+                }
+            }
+        }
+
+        return null;
+
+    }
+
+    private EndpointWorker findEndpoint(String name, Map<String, String> pathParameter, Conversion conversion) {
         for (RestEndpoint endpoint : endpoints) {
             if (endpoint.getEndpointName().equalsIgnoreCase(name)) {
                 if (endpoint.checkEndpoint(conversion)) {
@@ -124,7 +148,7 @@ public class RestPath {
         }
         for (RestEndpoint endpoint : endpoints) {
             if (endpoint.getEndpointName().startsWith(":")) {
-                pathParameter.put(endpoint.getEndpointName().substring(1),name);
+                pathParameter.put(endpoint.getEndpointName().substring(1), name);
                 if (endpoint.checkEndpoint(conversion)) {
                     return new EndpointWorker(endpoint, pathParameter);
                 }
@@ -139,10 +163,10 @@ public class RestPath {
      * @return
      */
     protected boolean checkPath(Conversion conversion) {
-        if (this instanceof AuthenticatedRestPath)
-        {
-            if (!conversion.getRequest().getUser().isAuthenticated())
+        if (this instanceof AuthenticatedRestPath) {
+            if (!conversion.getRequest().getUser().isAuthenticated()) {
                 return false;
+            }
         }
         return true;
     }
@@ -163,6 +187,4 @@ public class RestPath {
         return subPaths;
     }
 
-    
-    
 }
