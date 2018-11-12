@@ -13,7 +13,6 @@ import at.itopen.simplerest.conversion.Conversion;
  */
 public class AuthRestPath extends RestPath implements AuthenticatedRestPath{
     
-    public static boolean DEBUG_AUTH=false;
     
     public AuthRestPath(String pathName) {
         super(pathName);
