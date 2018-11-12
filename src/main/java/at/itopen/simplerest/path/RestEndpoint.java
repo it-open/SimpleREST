@@ -15,7 +15,8 @@ import java.util.Map;
 public abstract class RestEndpoint {
     
     private String endpointName;
-
+    private EndpointDocumentation endpointDocumentation;
+            
     /**
      *
      * @param endpointName
@@ -23,6 +24,15 @@ public abstract class RestEndpoint {
     public RestEndpoint(String endpointName) {
         this.endpointName = endpointName;
     }
+
+    public void setDocumentation(EndpointDocumentation endpointDocumentation) {
+        this.endpointDocumentation = endpointDocumentation;
+    }
+
+    public EndpointDocumentation getDocumentation() {
+        return endpointDocumentation;
+    }
+    
 
     /**
      *

@@ -41,6 +41,7 @@ public class Example {
         RestHttpServer.enableNotFoundHandling();
         RestHttpServer.enableStructure("structure",null);
         RestHttpServer.enableRestUrlList("urls",null);
+        RestHttpServer.enableRestDoc("doc",null);
         
         try {
             RestHttpServer.getRootEndpoint().addRestEndpoint(new RestEndpoint("test"){
@@ -82,7 +83,7 @@ public class Example {
                     data.add("Hallo");
                     data.add("Roland");
             
-            new CRUDHelper("data", RestHttpServer.getRootEndpoint()) {
+            CRUDHelper helper=new CRUDHelper("data", RestHttpServer.getRootEndpoint()) {
                 
                 
                 @Override
@@ -112,6 +113,7 @@ public class Example {
                     data.remove(Integer.parseInt(index));
                 }
             };
+            helper.Documentation(JsonUser.class, JsonUser.class, JsonUser.class, "User");
         } catch (Exception ex) {
             Logger.getLogger(Example.class.getName()).log(Level.SEVERE, null, ex);
         }

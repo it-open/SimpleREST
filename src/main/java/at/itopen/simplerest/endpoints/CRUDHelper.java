@@ -5,7 +5,10 @@
  */
 package at.itopen.simplerest.endpoints;
 
+import at.itopen.simplerest.conversion.ContentType;
 import at.itopen.simplerest.conversion.Conversion;
+import at.itopen.simplerest.path.EndpointDocumentation;
+import at.itopen.simplerest.path.RestEndpoint;
 import at.itopen.simplerest.path.RestPath;
 import java.util.List;
 import java.util.Map;
@@ -16,6 +19,8 @@ import java.util.Map;
  */
 public abstract class CRUDHelper {
 
+    
+    RestEndpoint get,put,del,getall,newp;
     /**
      *
      * @param entry
@@ -27,7 +32,7 @@ public abstract class CRUDHelper {
         parentPath.addSubPath(sub);
         
 
-        parentPath.addRestEndpoint(new PutOrPostEndpoint(entry) {
+        newp=parentPath.addRestEndpoint(new PutOrPostEndpoint(entry) {
             @Override
             public void Call(Conversion conversion, Map<String,String> UrlParameter) {
                 CRUDHelper.this.addNewItem(conversion, UrlParameter);
@@ -36,21 +41,21 @@ public abstract class CRUDHelper {
 
        
 
-        parentPath.addRestEndpoint(new GetEndpoint(entry) {
+        getall=parentPath.addRestEndpoint(new GetEndpoint(entry) {
             @Override
             public void Call(Conversion conversion, Map<String,String> UrlParameter) {
                 CRUDHelper.this.getAllItem(conversion, UrlParameter);
             }
         });
 
-        sub.addRestEndpoint(new GetEndpoint(":id") {
+        get=sub.addRestEndpoint(new GetEndpoint(":id") {
             @Override
             public void Call(Conversion conversion, Map<String,String> UrlParameter) {
                 CRUDHelper.this.getSingeItem(conversion, UrlParameter);
             }
         });
 
-        sub.addRestEndpoint(new PutOrPostEndpoint(":id") {
+        put=sub.addRestEndpoint(new PutOrPostEndpoint(":id") {
             @Override
             public void Call(Conversion conversion, Map<String,String> UrlParameter) {
                 CRUDHelper.this.updateItem(conversion, UrlParameter);
@@ -59,13 +64,23 @@ public abstract class CRUDHelper {
 
         
 
-        sub.addRestEndpoint(new DeleteEndpoint(":id") {
+        del=sub.addRestEndpoint(new DeleteEndpoint(":id") {
             @Override
             public void Call(Conversion conversion, Map<String,String> UrlParameter) {
                 CRUDHelper.this.deleteItem(conversion, UrlParameter);
             }
         });
 
+    }
+    
+    public void Documentation(Class getClass,Class putClass,Class newClass,String objectname)
+    {
+        get.setDocumentation(new EndpointDocumentation("Get a single "+objectname, ContentType.JSON, null, getClass).addPathParameter("id", "ID Number of Object"));
+        getall.setDocumentation(new EndpointDocumentation("Get all "+objectname, ContentType.JSON, null, getClass));
+        newp.setDocumentation(new EndpointDocumentation("Add a new "+objectname, ContentType.JSON, newClass, getClass));
+        put.setDocumentation(new EndpointDocumentation("Update "+objectname, ContentType.JSON, putClass, getClass).addPathParameter("id", "ID Number of Object"));
+        del.setDocumentation(new EndpointDocumentation("Remove a "+objectname, ContentType.JSON, null, getClass).addPathParameter("id", "ID Number of Object"));
+        
     }
     
     /**

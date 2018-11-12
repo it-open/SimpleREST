@@ -34,8 +34,9 @@ public class RestPath {
      *
      * @param endpoint
      */
-    public void addRestEndpoint(RestEndpoint endpoint) {
+    public RestEndpoint addRestEndpoint(RestEndpoint endpoint) {
         endpoints.add(endpoint);
+        return endpoint;
     }
 
     /**
@@ -113,9 +114,7 @@ public class RestPath {
 
     /**
      *
-     * @param conversion
-     * @param depth
-     * @param pathParameter
+     * @param location
      * @return
      */
     public RestPath pathForLocation(String location) {

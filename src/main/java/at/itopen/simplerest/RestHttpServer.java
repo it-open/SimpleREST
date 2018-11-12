@@ -5,6 +5,7 @@
  */
 package at.itopen.simplerest;
 
+import at.itopen.simplerest.endpoints.DocumentationEndpoint;
 import at.itopen.simplerest.endpoints.ErrorEndpoint;
 import at.itopen.simplerest.endpoints.IndexEndpoint;
 import at.itopen.simplerest.endpoints.NotFoundEndpoint;
@@ -100,6 +101,12 @@ public class RestHttpServer {
         if (path==null)
             path=RootPath.getROOT();
         path.addRestEndpoint(new UrlListEndpoint(urlListPath));
+    }
+    
+    public static void enableRestDoc(String urlListPath,RestPath path) {
+        if (path==null)
+            path=RootPath.getROOT();
+        path.addRestEndpoint(new DocumentationEndpoint(urlListPath));
     }
 
     /**

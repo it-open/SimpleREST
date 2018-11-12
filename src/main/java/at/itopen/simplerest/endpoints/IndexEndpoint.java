@@ -17,7 +17,7 @@ import java.util.Map;
 public class IndexEndpoint extends GetEndpoint {
 
     
-    private class IndexData {
+    public class IndexData {
         String programmName;
         String apiVersion;
         String maintainer;
@@ -74,5 +74,16 @@ public class IndexEndpoint extends GetEndpoint {
         conversion.getResponse().setData(data);
         
     }
+
+    public IndexData getData() {
+        return data;
+    }
+
+    @Override
+    public String getEndpointName() {
+        return super.getEndpointName(); //To change body of generated methods, choose Tools | Templates.
+    }
+    
+    
     
 }
