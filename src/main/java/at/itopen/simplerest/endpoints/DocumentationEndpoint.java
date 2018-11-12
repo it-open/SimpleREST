@@ -188,9 +188,9 @@ public class DocumentationEndpoint extends GetEndpoint {
         for (Method method: classe.getDeclaredMethods())
         {
             if (method.getName().toLowerCase().startsWith("get") )
-                sb.append(method.getName().substring(3)).append(": ").append(method.getReturnType().getSimpleName()).append("\n");
+                sb.append(method.getName().substring(3).toLowerCase()).append(": ").append(method.getReturnType().getSimpleName()).append("\n");
             if (method.getName().toLowerCase().startsWith("is") )
-                sb.append(method.getName().substring(2)).append(": ").append(method.getReturnType().getSimpleName()).append("\n");
+                sb.append(method.getName().substring(2).toLowerCase()).append(": ").append(method.getReturnType().getSimpleName()).append("\n");
         }
         sb.append("}\n");
         return sb.toString();
@@ -203,7 +203,7 @@ public class DocumentationEndpoint extends GetEndpoint {
         for (Method method: classe.getDeclaredMethods())
         {
             if (method.getName().toLowerCase().startsWith("set") && method.getParameterCount()==1)
-                sb.append(method.getName().substring(3)).append(": ").append(method.getParameters()[0].getType().getSimpleName()).append("\n");
+                sb.append(method.getName().substring(3).toLowerCase()).append(": ").append(method.getParameters()[0].getType().getSimpleName()).append("\n");
             
         }
         sb.append("}\n");
