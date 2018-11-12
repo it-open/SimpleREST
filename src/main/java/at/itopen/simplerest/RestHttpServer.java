@@ -117,6 +117,15 @@ public class RestHttpServer {
     public static RestPath getRootEndpoint() {
         return RootPath.getROOT();
     }
+    
+    /**
+     * Get the Startpoint of all Rest Calls '/'
+     * Make all Sub Path on this this Path.
+     * @return
+     */
+    public static RestPath getPath(String path) {
+        return RootPath.getROOT().pathForLocation(path);
+    }
 
     /**
      *

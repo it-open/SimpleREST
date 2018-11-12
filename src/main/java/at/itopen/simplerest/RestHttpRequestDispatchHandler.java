@@ -35,6 +35,7 @@ import java.util.logging.Logger;
 
 /**
  * The Dispatcher does the Magic. It Handles all Netty requests
+ *
  * @author roland
  */
 public class RestHttpRequestDispatchHandler extends ChannelInboundHandlerAdapter {
@@ -42,26 +43,30 @@ public class RestHttpRequestDispatchHandler extends ChannelInboundHandlerAdapter
     private static final Logger LOG = Logger.getLogger(RestHttpRequestDispatchHandler.class.getName());
     private static final ObjectMapper JSON_CONVERTER = new ObjectMapper();
     private final Map<String, Conversion> connections = new HashMap<>();
-    
-    static{
+
+    static {
         //JSON_CONVERTER.registerModule(new AfterburnerModule().setUseValueClassLoader(false));
         JSON_CONVERTER.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, true);
         JSON_CONVERTER.setDefaultPrettyPrinter(null);
         JSON_CONVERTER.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
         JSON_CONVERTER.configure(SerializationFeature.EAGER_SERIALIZER_FETCH, true);
-        JSON_CONVERTER.setSerializationInclusion(Include.NON_EMPTY); 
+        JSON_CONVERTER.setSerializationInclusion(Include.NON_EMPTY);
+
     }
 
+   
+
     /**
-     * A Global Json Converter vrom Jackson 
+     * A Global Json Converter vrom Jackson
+     *
      * @return
      */
     public static ObjectMapper getJSON_CONVERTER() {
         return JSON_CONVERTER;
     }
-    
+
     /**
-     * 
+     *
      * @param ctx
      * @param msg
      * @throws Exception
@@ -77,15 +82,13 @@ public class RestHttpRequestDispatchHandler extends ChannelInboundHandlerAdapter
             Conversion conversion = connections.get(ctx.channel().id().asLongText());
             conversion.parse(msg);
 
-            
         } catch (Exception ex) {
             ReferenceCountUtil.release(msg);
         }
     }
-    
-    
-    
-    private class ResponseWrapper{
+
+    private class ResponseWrapper {
+
         public int code;
         public String message;
         public double generationMsSeconds;
@@ -94,12 +97,10 @@ public class RestHttpRequestDispatchHandler extends ChannelInboundHandlerAdapter
         public ResponseWrapper(int code, String message, long generationNanoSeconds, Object data) {
             this.code = code;
             this.message = message;
-            this.generationMsSeconds=generationNanoSeconds/1000000.0;
+            this.generationMsSeconds = generationNanoSeconds / 1000000.0;
             this.data = data;
         }
 
-        
-        
     }
 
     /**
@@ -111,19 +112,21 @@ public class RestHttpRequestDispatchHandler extends ChannelInboundHandlerAdapter
     public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
 
         Conversion conversion = connections.get(ctx.channel().id().asLongText());
-        if (conversion.getRequest().getHttpDecoder()!=null)
-            if ((conversion.getRequest().getHttpDecoder().isMultipart()) && (!conversion.getRequest().getHttpDecoder().hasNext()))
+        if (conversion.getRequest().getHttpDecoder() != null) {
+            if ((conversion.getRequest().getHttpDecoder().isMultipart()) && (!conversion.getRequest().getHttpDecoder().hasNext())) {
                 return;
-        System.out.println(conversion.getRequest().getMethod()+" "+conversion.getRequest().getUri()+" ("+ctx.channel().id().asLongText()+")");
+            }
+        }
+        System.out.println(conversion.getRequest().getMethod() + " " + conversion.getRequest().getUri() + " (" + ctx.channel().id().asLongText() + ")");
         Headerworker.work(conversion.getRequest());
         EndpointWorker worker = null;
-        
-        try{
+
+        try {
             if (conversion.getRequest().getUri().getPath().size() == 0) {
-                if (RootPath.getINDEX()!=null)
+                if (RootPath.getINDEX() != null) {
                     worker = new EndpointWorker(RootPath.getINDEX(), null);
-            }
-            else {
+                }
+            } else {
                 worker = RootPath.getROOT().findEndpoint(conversion, 0, new HashMap<>());
             }
             if (worker != null) {
@@ -137,25 +140,23 @@ public class RestHttpRequestDispatchHandler extends ChannelInboundHandlerAdapter
                     RootPath.getNOT_FOUND().CallEndpoint(conversion, null);
                 }
             }
-        }catch(Exception e)
-        {
+        } catch (Exception e) {
             conversion.setException(e);
             conversion.getResponse().setStatus(HttpStatus.InternalServerError);
-            if (RootPath.getEXCEPTION()!=null){
-                    worker = new EndpointWorker(RootPath.getEXCEPTION(), null);
-                    conversion.getResponse().setContentType(ContentType.JSON);
-                    worker.work(conversion);
+            if (RootPath.getEXCEPTION() != null) {
+                worker = new EndpointWorker(RootPath.getEXCEPTION(), null);
+                conversion.getResponse().setContentType(ContentType.JSON);
+                worker.work(conversion);
             }
-            
+
         }
-        
 
         if (conversion.getResponse().hasData()) {
             if (conversion.getResponse().getContentType().equals(ContentType.JSON)) {
-                ResponseWrapper wrapper=new ResponseWrapper(conversion.getResponse().getStatus().getCode(), conversion.getResponse().getStatus().getDescription(),conversion.getNanoDuration(), conversion.getResponse().getData());
+                ResponseWrapper wrapper = new ResponseWrapper(conversion.getResponse().getStatus().getCode(), conversion.getResponse().getStatus().getDescription(), conversion.getNanoDuration(), conversion.getResponse().getData());
                 String json = JSON_CONVERTER.writeValueAsString(wrapper);
                 ByteBuf bb = Unpooled.copiedBuffer(json, Charset.defaultCharset());
-                writeJSON(ctx, HttpResponseStatus.valueOf(conversion.getResponse().getStatus().getCode()), bb,conversion.getResponse());
+                writeJSON(ctx, HttpResponseStatus.valueOf(conversion.getResponse().getStatus().getCode()), bb, conversion.getResponse());
             } else {
                 ByteBuf bb = null;
                 if (conversion.getResponse().getData() instanceof String) {
@@ -165,22 +166,21 @@ public class RestHttpRequestDispatchHandler extends ChannelInboundHandlerAdapter
                     bb = Unpooled.copiedBuffer((byte[]) conversion.getResponse().getData());
                 }
                 if (bb != null) {
-                    write(ctx, HttpResponseStatus.valueOf(conversion.getResponse().getStatus().getCode()), bb, conversion.getResponse().getContentType().getMimeType(),conversion.getResponse());
+                    write(ctx, HttpResponseStatus.valueOf(conversion.getResponse().getStatus().getCode()), bb, conversion.getResponse().getContentType().getMimeType(), conversion.getResponse());
                 } else {
-                    ResponseWrapper wrapper=new ResponseWrapper(conversion.getResponse().getStatus().getCode(), conversion.getResponse().getStatus().getDescription(),conversion.getNanoDuration(), conversion.getResponse().getData());
+                    ResponseWrapper wrapper = new ResponseWrapper(conversion.getResponse().getStatus().getCode(), conversion.getResponse().getStatus().getDescription(), conversion.getNanoDuration(), conversion.getResponse().getData());
                     String json = JSON_CONVERTER.writeValueAsString(wrapper);
                     bb = Unpooled.copiedBuffer(json, Charset.defaultCharset());
-                    writeJSON(ctx, HttpResponseStatus.valueOf(conversion.getResponse().getStatus().getCode()), bb,conversion.getResponse());
+                    writeJSON(ctx, HttpResponseStatus.valueOf(conversion.getResponse().getStatus().getCode()), bb, conversion.getResponse());
                 }
             }
-            
-        }else
-        {
-            ResponseWrapper wrapper=new ResponseWrapper(conversion.getResponse().getStatus().getCode(), conversion.getResponse().getStatus().getDescription(),conversion.getNanoDuration(), conversion.getResponse().getData());
+
+        } else {
+            ResponseWrapper wrapper = new ResponseWrapper(conversion.getResponse().getStatus().getCode(), conversion.getResponse().getStatus().getDescription(), conversion.getNanoDuration(), conversion.getResponse().getData());
             String json = JSON_CONVERTER.writeValueAsString(wrapper);
             ByteBuf bb = Unpooled.copiedBuffer(json, Charset.defaultCharset());
-            writeJSON(ctx, HttpResponseStatus.valueOf(conversion.getResponse().getStatus().getCode()), bb,conversion.getResponse());
-            
+            writeJSON(ctx, HttpResponseStatus.valueOf(conversion.getResponse().getStatus().getCode()), bb, conversion.getResponse());
+
         }
 
         ctx.flush();
@@ -194,7 +194,7 @@ public class RestHttpRequestDispatchHandler extends ChannelInboundHandlerAdapter
     @Override
     public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
         super.channelRegistered(ctx); //To change body of generated methods, choose Tools | Templates.
-        
+
         connections.put(ctx.channel().id().asLongText(), new Conversion(ctx));
     }
 
@@ -209,11 +209,11 @@ public class RestHttpRequestDispatchHandler extends ChannelInboundHandlerAdapter
         connections.remove(ctx.channel().id().asLongText());
     }
 
-    private static void writeJSON(ChannelHandlerContext ctx, HttpResponseStatus status, ByteBuf content,Response response) {
-        write(ctx, status, content, "application/json; charset=utf-8",response);
+    private static void writeJSON(ChannelHandlerContext ctx, HttpResponseStatus status, ByteBuf content, Response response) {
+        write(ctx, status, content, "application/json; charset=utf-8", response);
     }
 
-    private static void write(ChannelHandlerContext ctx, HttpResponseStatus status, ByteBuf content, String contentType,Response response) {
+    private static void write(ChannelHandlerContext ctx, HttpResponseStatus status, ByteBuf content, String contentType, Response response) {
         if (ctx.channel().isWritable()) {
             FullHttpResponse msg = null;
             if (content != null) {
@@ -226,9 +226,8 @@ public class RestHttpRequestDispatchHandler extends ChannelInboundHandlerAdapter
             if (msg.content() != null) {
                 msg.headers().set(HttpHeaderNames.CONTENT_LENGTH, msg.content().readableBytes());
             }
-            if (response.getCookies().size()>0)
-            {
-                msg.headers().set(HttpHeaderNames.SET_COOKIE,response.getCookieString());
+            if (response.getCookies().size() > 0) {
+                msg.headers().set(HttpHeaderNames.SET_COOKIE, response.getCookieString());
             }
 
             // not keep-alive
