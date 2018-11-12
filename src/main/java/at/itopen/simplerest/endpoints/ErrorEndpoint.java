@@ -24,6 +24,8 @@ public class ErrorEndpoint extends RestEndpoint {
         List<String> lines=new ArrayList<>();
 
         public ErrorData(String message) {
+            if (message==null)
+                message="Null Pointer!";
             this.message = message;
         }
         

@@ -5,14 +5,26 @@
  */
 package at.itopen.simplerest.path;
 
+import at.itopen.simplerest.conversion.Conversion;
+
 /**
  *
  * @author roland
  */
 public class AuthRestPath extends RestPath implements AuthenticatedRestPath{
     
+    public static boolean DEBUG_AUTH=false;
+    
     public AuthRestPath(String pathName) {
         super(pathName);
     }
+
+    @Override
+    protected boolean checkPath(Conversion conversion) {
+        conversion.getRequest().getUser().setAuthenticated(true);
+        return super.checkPath(conversion); //To change body of generated methods, choose Tools | Templates.
+    }
+    
+    
     
 }

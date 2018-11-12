@@ -118,6 +118,8 @@ public class RestPath {
      * @return
      */
     public RestPath pathForLocation(String location) {
+        location=location.trim();
+        if (location.startsWith("/")) location=location.substring(1);
         String path = location.split("\\/")[0];
         String subPath = "";
         if (location.length()>path.length())

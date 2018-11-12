@@ -54,8 +54,6 @@ public class RestHttpRequestDispatchHandler extends ChannelInboundHandlerAdapter
 
     }
 
-   
-
     /**
      * A Global Json Converter vrom Jackson
      *
@@ -142,13 +140,15 @@ public class RestHttpRequestDispatchHandler extends ChannelInboundHandlerAdapter
             }
         } catch (Exception e) {
             conversion.setException(e);
+        }
+
+        if (conversion.getException() != null) {
             conversion.getResponse().setStatus(HttpStatus.InternalServerError);
             if (RootPath.getEXCEPTION() != null) {
                 worker = new EndpointWorker(RootPath.getEXCEPTION(), null);
                 conversion.getResponse().setContentType(ContentType.JSON);
                 worker.work(conversion);
             }
-
         }
 
         if (conversion.getResponse().hasData()) {

@@ -10,7 +10,6 @@ import at.itopen.simplerest.conversion.Conversion;
 import at.itopen.simplerest.path.EndpointDocumentation;
 import at.itopen.simplerest.path.RestEndpoint;
 import at.itopen.simplerest.path.RestPath;
-import java.util.List;
 import java.util.Map;
 
 /**
