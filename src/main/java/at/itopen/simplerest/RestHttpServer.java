@@ -11,6 +11,7 @@ import at.itopen.simplerest.endpoints.IndexEndpoint;
 import at.itopen.simplerest.endpoints.NotFoundEndpoint;
 import at.itopen.simplerest.endpoints.StructureEndpoint;
 import at.itopen.simplerest.endpoints.UrlListEndpoint;
+import at.itopen.simplerest.path.RestEndpoint;
 import at.itopen.simplerest.path.RestPath;
 import at.itopen.simplerest.path.RootPath;
 import io.netty.bootstrap.ServerBootstrap;
@@ -63,6 +64,10 @@ public class RestHttpServer {
      */
     public static void enableIndex(String programmName, String apiVersion, String maintainer, String email) {
         RootPath.setINDEX(new IndexEndpoint(programmName, apiVersion, maintainer, email));
+    }
+    
+    public static void enableIndex(RestEndpoint restEndpoint) {
+        RootPath.setINDEX(restEndpoint);
     }
 
     /**

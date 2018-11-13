@@ -34,13 +34,21 @@ public abstract class StaticEndpoint extends RestEndpoint {
     @Override
     public void Call(Conversion conversion, Map<String, String> UrlParameter) {
         StringBuilder fileName = new StringBuilder("");
+        boolean index=true;
+        if (UrlParameter!=null)
         for (int i = 0; UrlParameter.containsKey("" + i); i++) {
             String part = UrlParameter.get("" + i);
-            if (part.equals("..")) {
+            if (part.startsWith("..")) {
                 part = "";
             }
+            index=false;
             fileName.append(getFileSeperator()).append(part);
         }
+        if (index)
+            fileName.append(getFileSeperator()).append("index.html");
+        if (fileName.toString().endsWith(getFileSeperator()))
+            fileName.append(getFileSeperator()).append("index.html");
+        
         CacheItem cacheitem = cachePolicy.get(fileName.toString());
         if (cacheitem == null) {
             byte[] data = readStatic(fileName.toString());
