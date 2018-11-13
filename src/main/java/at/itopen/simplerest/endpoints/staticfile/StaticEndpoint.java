@@ -25,6 +25,11 @@ public abstract class StaticEndpoint extends RestEndpoint {
         super("STATIC");
         this.cachePolicy = cachePolicy;
     }
+    
+    public String getFileSeperator()
+    {
+        return File.separator;
+    }
 
     @Override
     public void Call(Conversion conversion, Map<String, String> UrlParameter) {
@@ -34,7 +39,7 @@ public abstract class StaticEndpoint extends RestEndpoint {
             if (part.equals("..")) {
                 part = "";
             }
-            fileName.append(File.separator).append(part);
+            fileName.append(getFileSeperator()).append(part);
         }
         CacheItem cacheitem = cachePolicy.get(fileName.toString());
         if (cacheitem == null) {
