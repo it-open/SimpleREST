@@ -10,7 +10,6 @@ import at.itopen.simplerest.path.AuthenticatedRestEndpoint;
 import at.itopen.simplerest.path.AuthenticatedRestPath;
 import at.itopen.simplerest.path.RestEndpoint;
 import at.itopen.simplerest.path.RestPath;
-import at.itopen.simplerest.path.RootPath;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -91,7 +90,7 @@ public class StructureEndpoint extends GetEndpoint {
     @Override
     public void Call(Conversion conversion, Map<String,String> UrlParameter) {
         PathItem root=new PathItem("/", false);
-        subPath(RootPath.getROOT(),root);
+        subPath(conversion.getServer().getRootEndpoint(),root);
         conversion.getResponse().setData(root);
                 
     }

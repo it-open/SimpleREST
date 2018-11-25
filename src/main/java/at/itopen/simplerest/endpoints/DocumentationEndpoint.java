@@ -13,7 +13,6 @@ import at.itopen.simplerest.path.AuthenticatedRestPath;
 import at.itopen.simplerest.path.EndpointDocumentation;
 import at.itopen.simplerest.path.RestEndpoint;
 import at.itopen.simplerest.path.RestPath;
-import at.itopen.simplerest.path.RootPath;
 import java.lang.reflect.Method;
 import java.util.Map;
 
@@ -41,12 +40,12 @@ public class DocumentationEndpoint extends GetEndpoint {
     @Override
     public void Call(Conversion conversion, Map<String,String> UrlParameter) {
         StringBuilder out=new StringBuilder();
-        if (RootPath.getINDEX() instanceof IndexEndpoint)
-            HTMLstart(out,(IndexEndpoint)RootPath.getINDEX());
+        if (conversion.getServer().getRootEndpoint().getINDEX() instanceof IndexEndpoint)
+            HTMLstart(out,(IndexEndpoint)conversion.getServer().getRootEndpoint().getINDEX());
         else
             HTMLstart(out,null);
         String path="/";
-        subPath(RootPath.getROOT(),out,path,false);
+        subPath(conversion.getServer().getRootEndpoint(),out,path,false);
         HTMLEnd(out);
         conversion.getResponse().setContentType(ContentType.HTML);
         conversion.getResponse().setData(out.toString());

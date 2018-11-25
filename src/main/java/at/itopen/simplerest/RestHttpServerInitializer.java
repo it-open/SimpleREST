@@ -16,7 +16,14 @@ import io.netty.handler.codec.http.HttpResponseEncoder;
  * @author roland
  */
 public class RestHttpServerInitializer extends ChannelInitializer<SocketChannel> {
+    
+    RestHttpServer webserver;
 
+    public RestHttpServerInitializer(RestHttpServer webserver) {
+        this.webserver = webserver;
+    }
+    
+    
     /**
      *
      * @param socketChannel
@@ -29,7 +36,7 @@ public class RestHttpServerInitializer extends ChannelInitializer<SocketChannel>
 		//p.addLast("");
 		p.addLast("http.encoder", new HttpResponseEncoder());
 		//p.addLast("http.deflater", new HttpResponseEncoder());
-		p.addLast("http.request-handler", new RestHttpRequestDispatchHandler());
+		p.addLast("http.request-handler", new RestHttpRequestDispatchHandler(webserver));
 	}
 
 }

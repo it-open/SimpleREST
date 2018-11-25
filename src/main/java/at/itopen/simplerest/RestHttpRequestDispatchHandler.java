@@ -11,7 +11,6 @@ import at.itopen.simplerest.conversion.HttpStatus;
 import at.itopen.simplerest.conversion.Response;
 import at.itopen.simplerest.headerworker.Headerworker;
 import at.itopen.simplerest.path.EndpointWorker;
-import at.itopen.simplerest.path.RootPath;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -43,7 +42,8 @@ public class RestHttpRequestDispatchHandler extends ChannelInboundHandlerAdapter
     private static final Logger LOG = Logger.getLogger(RestHttpRequestDispatchHandler.class.getName());
     private static final ObjectMapper JSON_CONVERTER = new ObjectMapper();
     private final Map<String, Conversion> connections = new HashMap<>();
-
+    private final RestHttpServer server;
+    
     static {
         //JSON_CONVERTER.registerModule(new AfterburnerModule().setUseValueClassLoader(false));
         JSON_CONVERTER.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, true);
@@ -53,6 +53,12 @@ public class RestHttpRequestDispatchHandler extends ChannelInboundHandlerAdapter
         JSON_CONVERTER.setSerializationInclusion(Include.NON_EMPTY);
 
     }
+
+    public RestHttpRequestDispatchHandler(RestHttpServer server) {
+        this.server = server;
+    }
+    
+    
 
     /**
      * A Global Json Converter vrom Jackson
@@ -121,11 +127,11 @@ public class RestHttpRequestDispatchHandler extends ChannelInboundHandlerAdapter
 
         try {
             if (conversion.getRequest().getUri().getPath().size() == 0) {
-                if (RootPath.getINDEX() != null) {
-                    worker = new EndpointWorker(RootPath.getINDEX(), null);
+                if (conversion.getServer().getRootEndpoint().getINDEX() != null) {
+                    worker = new EndpointWorker(conversion.getServer().getRootEndpoint().getINDEX(), null);
                 }
             } else {
-                worker = RootPath.getROOT().findEndpoint(conversion, 0, new HashMap<>());
+                worker = conversion.getServer().getRootEndpoint().findEndpoint(conversion, 0, new HashMap<>());
             }
             if (worker != null) {
                 conversion.getResponse().setContentType(ContentType.JSON);
@@ -133,9 +139,9 @@ public class RestHttpRequestDispatchHandler extends ChannelInboundHandlerAdapter
                 worker.work(conversion);
             } else {
                 conversion.getResponse().setStatus(HttpStatus.NotFound);
-                if (RootPath.getNOT_FOUND() != null) {
+                if (conversion.getServer().getRootEndpoint().getNOT_FOUND() != null) {
                     conversion.getResponse().setContentType(ContentType.JSON);
-                    RootPath.getNOT_FOUND().CallEndpoint(conversion, null);
+                    conversion.getServer().getRootEndpoint().getNOT_FOUND().CallEndpoint(conversion, null);
                 }
             }
         } catch (Exception e) {
@@ -144,8 +150,8 @@ public class RestHttpRequestDispatchHandler extends ChannelInboundHandlerAdapter
 
         if (conversion.getException() != null) {
             conversion.getResponse().setStatus(HttpStatus.InternalServerError);
-            if (RootPath.getEXCEPTION() != null) {
-                worker = new EndpointWorker(RootPath.getEXCEPTION(), null);
+            if (conversion.getServer().getRootEndpoint().getEXCEPTION() != null) {
+                worker = new EndpointWorker(conversion.getServer().getRootEndpoint().getEXCEPTION(), null);
                 conversion.getResponse().setContentType(ContentType.JSON);
                 worker.work(conversion);
             }
@@ -195,7 +201,7 @@ public class RestHttpRequestDispatchHandler extends ChannelInboundHandlerAdapter
     public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
         super.channelRegistered(ctx); //To change body of generated methods, choose Tools | Templates.
 
-        connections.put(ctx.channel().id().asLongText(), new Conversion(ctx));
+        connections.put(ctx.channel().id().asLongText(), new Conversion(ctx,server));
     }
 
     /**

@@ -9,34 +9,22 @@ package at.itopen.simplerest.path;
  *
  * @author roland
  */
-public class RootPath {
+public class RootPath extends RestPath {
     
-    private static RestPath ROOT=null;
-    private static RestEndpoint NOT_FOUND=null;
-    private static RestEndpoint INDEX=null;
-    private static RestEndpoint EXCEPTION=null;
+    private  RestEndpoint NOT_FOUND=null;
+    private  RestEndpoint INDEX=null;
+    private  RestEndpoint EXCEPTION=null;
 
-    /**
-     *
-     * @param ROOT
-     */
-    public static void setROOT(RestPath ROOT) {
-        RootPath.ROOT = ROOT;
+    public RootPath() {
+        super("/");
     }
 
+   
     /**
      *
      * @return
      */
-    public static RestPath getROOT() {
-        return ROOT;
-    }
-
-    /**
-     *
-     * @return
-     */
-    public static RestEndpoint getNOT_FOUND() {
+    public  RestEndpoint getNOT_FOUND() {
         return NOT_FOUND;
     }
 
@@ -44,15 +32,15 @@ public class RootPath {
      *
      * @param NOT_FOUND
      */
-    public static void setNOT_FOUND(RestEndpoint NOT_FOUND) {
-        RootPath.NOT_FOUND = NOT_FOUND;
+    public  void setNOT_FOUND(RestEndpoint NOT_FOUND) {
+        this.NOT_FOUND = NOT_FOUND;
     }
 
     /**
      *
      * @return
      */
-    public static RestEndpoint getINDEX() {
+    public  RestEndpoint getINDEX() {
         return INDEX;
     }
 
@@ -60,15 +48,15 @@ public class RootPath {
      *
      * @param INDEX
      */
-    public static void setINDEX(RestEndpoint INDEX) {
-        RootPath.INDEX = INDEX;
+    public  void setINDEX(RestEndpoint INDEX) {
+        this.INDEX = INDEX;
     }
 
     /**
      *
      * @return
      */
-    public static RestEndpoint getEXCEPTION() {
+    public  RestEndpoint getEXCEPTION() {
         return EXCEPTION;
     }
 
@@ -76,8 +64,8 @@ public class RootPath {
      *
      * @param EXCEPTION
      */
-    public static void setEXCEPTION(RestEndpoint EXCEPTION) {
-        RootPath.EXCEPTION = EXCEPTION;
+    public  void setEXCEPTION(RestEndpoint EXCEPTION) {
+        this.EXCEPTION = EXCEPTION;
     }
     
     

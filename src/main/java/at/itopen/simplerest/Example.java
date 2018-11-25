@@ -35,24 +35,24 @@ public class Example {
         
        
         
-        RestHttpServer.Start(3000);
-        RestHttpServer.enableIndex("TestProg", "1.0", "IT-Open", "office@it-open.at");
-        RestHttpServer.enableExceptionHandling();
-        RestHttpServer.enableNotFoundHandling();
-        RestHttpServer.enableStructure("structure",null);
-        RestHttpServer.enableRestUrlList("urls",null);
-        RestHttpServer.enableRestDoc("doc",null);
+        RestHttpServer server=RestHttpServer.Start(3000);
+        server.enableIndex("TestProg", "1.0", "IT-Open", "office@it-open.at");
+        server.enableExceptionHandling();
+        server.enableNotFoundHandling();
+        server.enableStructure("structure",null);
+        server.enableRestUrlList("urls",null);
+        server.enableRestDoc("doc",null);
         
         try {
-            RestHttpServer.getRootEndpoint().addRestEndpoint(new RestEndpoint("test"){
+            server.getRootEndpoint().addRestEndpoint(new RestEndpoint("test"){
                 @Override
                 public void Call(Conversion conversion, Map<String,String> UrlParameter) {
                     conversion.getResponse().setData("Super");
                 }
             
             });
-            RestHttpServer.getRootEndpoint().addSubPath(new RestPath("html")).setCatchAllEndPoint(new StaticFileEndpoint(new File("/home/roland/src/bergland-amtstafel/web"), new NoCachePolicy()));
-            RestHttpServer.getRootEndpoint().addRestEndpoint(new GetEndpoint("image"){
+            server.getRootEndpoint().addSubPath(new RestPath("html")).setCatchAllEndPoint(new StaticFileEndpoint(new File("/home/roland/src/bergland-amtstafel/web"), new NoCachePolicy()));
+            server.getRootEndpoint().addRestEndpoint(new GetEndpoint("image"){
                 @Override
                 public void Call(Conversion conversion, Map<String,String> UrlParameter) {
                     conversion.getResponse().setContentType(ContentType.JPEG);
@@ -69,7 +69,7 @@ public class Example {
                 }
             
             });
-            RestHttpServer.getRootEndpoint().addRestEndpoint(new RestEndpoint("upload"){
+            server.getRootEndpoint().addRestEndpoint(new RestEndpoint("upload"){
                 @Override
                 public void Call(Conversion conversion, Map<String,String> UrlParameter) {
                     System.out.println(conversion.getRequest().getFiles().get("data").getName());
@@ -77,13 +77,13 @@ public class Example {
             
             });
             
-            RestHttpServer.getRootEndpoint().addRestEndpoint(new JsonUserEndpoint("post"));
+            server.getRootEndpoint().addRestEndpoint(new JsonUserEndpoint("post"));
             
             final List<String> data= new ArrayList<>();
                     data.add("Hallo");
                     data.add("Roland");
             
-            CRUDHelper helper=new CRUDHelper("data", RestHttpServer.getRootEndpoint()) {
+            CRUDHelper helper=new CRUDHelper("data", server.getRootEndpoint()) {
                 
                 
                 @Override

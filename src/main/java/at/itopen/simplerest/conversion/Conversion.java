@@ -5,6 +5,7 @@
  */
 package at.itopen.simplerest.conversion;
 
+import at.itopen.simplerest.RestHttpServer;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.util.ReferenceCountUtil;
 import java.util.logging.Level;
@@ -21,16 +22,18 @@ public class Conversion {
     private final ChannelHandlerContext ctx;
     private Exception exception;
     private long startTime=System.currentTimeMillis();
+    private RestHttpServer server;
     
     /**
      *
      * @param ctx
      */
-    public Conversion(ChannelHandlerContext ctx) {
+    public Conversion(ChannelHandlerContext ctx,RestHttpServer server) {
         startTime=System.nanoTime();
         this.ctx=ctx;
         response=new Response();
         request=new Request(ctx);
+        this.server=server;
     }
     
     /**
@@ -98,6 +101,12 @@ public class Conversion {
     {
      return System.nanoTime()-startTime;
     }
+
+    public RestHttpServer getServer() {
+        return server;
+    }
+    
+    
     
     
     

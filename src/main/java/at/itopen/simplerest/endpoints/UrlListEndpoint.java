@@ -10,7 +10,6 @@ import at.itopen.simplerest.path.AuthenticatedRestEndpoint;
 import at.itopen.simplerest.path.AuthenticatedRestPath;
 import at.itopen.simplerest.path.RestEndpoint;
 import at.itopen.simplerest.path.RestPath;
-import at.itopen.simplerest.path.RootPath;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -39,7 +38,7 @@ public class UrlListEndpoint extends GetEndpoint {
     public void Call(Conversion conversion, Map<String,String> UrlParameter) {
         String path="/";
         List<String> endpoints=new ArrayList<>();
-        subPath(RootPath.getROOT(),endpoints,path,false);
+        subPath(conversion.getServer().getRootEndpoint(),endpoints,path,false);
         conversion.getResponse().setData(endpoints);
                 
     }

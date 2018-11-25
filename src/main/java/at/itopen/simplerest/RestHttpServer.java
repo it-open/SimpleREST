@@ -34,6 +34,7 @@ public class RestHttpServer {
     private final int port;
     private final EventLoopGroup boss = new NioEventLoopGroup();
     private final EventLoopGroup worker;
+    private final RootPath root=new RootPath();
 
     /**
      * Constructor, starts the Rest Server
@@ -62,26 +63,26 @@ public class RestHttpServer {
      * @param maintainer Hwo ist the Maintainer
      * @param email Mail of the Maintainer
      */
-    public static void enableIndex(String programmName, String apiVersion, String maintainer, String email) {
-        RootPath.setINDEX(new IndexEndpoint(programmName, apiVersion, maintainer, email));
+    public  void enableIndex(String programmName, String apiVersion, String maintainer, String email) {
+        root.setINDEX(new IndexEndpoint(programmName, apiVersion, maintainer, email));
     }
     
-    public static void enableIndex(RestEndpoint restEndpoint) {
-        RootPath.setINDEX(restEndpoint);
+    public  void enableIndex(RestEndpoint restEndpoint) {
+        root.setINDEX(restEndpoint);
     }
 
     /**
      * Enable Ecxption Lgging if something happens on the API or your Code (With full Stack Trace)
      */
-    public static void enableExceptionHandling() {
-        RootPath.setEXCEPTION(new ErrorEndpoint());
+    public  void enableExceptionHandling() {
+        root.setEXCEPTION(new ErrorEndpoint());
     }
 
     /**
      * Enable a 404 Json Page which tells the User that the Page has not been found
      */
-    public static void enableNotFoundHandling() {
-        RootPath.setNOT_FOUND(new NotFoundEndpoint());
+    public  void enableNotFoundHandling() {
+        root.setNOT_FOUND(new NotFoundEndpoint());
     }
 
     
@@ -90,9 +91,9 @@ public class RestHttpServer {
      * @param structurePath
      * @param path
      */
-    public static void enableStructure(String structurePath,RestPath path) {
+    public  void enableStructure(String structurePath,RestPath path) {
         if (path==null)
-            path=RootPath.getROOT();
+            path=root;
         path.addRestEndpoint(new StructureEndpoint(structurePath));
     }
     
@@ -102,15 +103,15 @@ public class RestHttpServer {
      * @param urlListPath
      * @param path
      */
-    public static void enableRestUrlList(String urlListPath,RestPath path) {
+    public  void enableRestUrlList(String urlListPath,RestPath path) {
         if (path==null)
-            path=RootPath.getROOT();
+            path=root;
         path.addRestEndpoint(new UrlListEndpoint(urlListPath));
     }
     
-    public static void enableRestDoc(String urlListPath,RestPath path) {
+    public  void enableRestDoc(String urlListPath,RestPath path) {
         if (path==null)
-            path=RootPath.getROOT();
+            path=root;
         path.addRestEndpoint(new DocumentationEndpoint(urlListPath));
     }
 
@@ -119,17 +120,18 @@ public class RestHttpServer {
      * Make all Sub Path on this this Path.
      * @return
      */
-    public static RestPath getRootEndpoint() {
-        return RootPath.getROOT();
+    public  RootPath getRootEndpoint() {
+        return root;
     }
     
     /**
      * Get the Startpoint of all Rest Calls '/'
      * Make all Sub Path on this this Path.
+     * @param path
      * @return
      */
-    public static RestPath getPath(String path) {
-        return RootPath.getROOT().pathForLocation(path);
+    public  RestPath getPath(String path) {
+        return root.pathForLocation(path);
     }
 
     /**
@@ -146,7 +148,7 @@ public class RestHttpServer {
     public RestHttpServer(int port) {
         this.port = port;
         this.worker = new NioEventLoopGroup(SystemPropertyUtil.getInt("events.workerThreads", 300), new DefaultThreadFactory("nio-worker", Thread.MAX_PRIORITY));
-        RootPath.setROOT(new RestPath("/"));
+        
     }
 
     /**
@@ -157,7 +159,7 @@ public class RestHttpServer {
         try {
             ServerBootstrap bootstrap = new ServerBootstrap();
             bootstrap.group(boss, worker).channel(NioServerSocketChannel.class).childHandler(
-                    new RestHttpServerInitializer());
+                    new RestHttpServerInitializer(RestHttpServer.this));
             setChannelOptions(bootstrap);
 
             Channel ch = bootstrap.bind(port).sync().channel();
