@@ -245,6 +245,10 @@ public class RestHttpRequestDispatchHandler extends ChannelInboundHandlerAdapter
             if (response.getCookies().size() > 0) {
                 msg.headers().set(HttpHeaderNames.SET_COOKIE, response.getCookieString());
             }
+            for (Map.Entry<String,String> headerField:response.getHeaderData().entrySet())
+            {
+                msg.headers().set(headerField.getKey(), headerField.getValue());
+            }
 
             // not keep-alive
             ctx.write(msg).addListener(ChannelFutureListener.CLOSE);

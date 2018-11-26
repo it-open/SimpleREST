@@ -53,8 +53,7 @@ public abstract class StaticEndpoint extends RestEndpoint {
         if (cacheitem == null) {
             byte[] data = readStatic(fileName.toString());
             if (data != null) {
-                String mimeType = URLConnection.guessContentTypeFromName(fileName.toString());
-                ContentType ct = ContentType.fromMimeType(mimeType);
+                ContentType ct = ContentType.fromFileName(fileName.toString());
                 cacheitem = new CacheItem(ct, fileName.toString(), data);
                 cachePolicy.offer(cacheitem);
                 conversion.getResponse().setContentType(ct);

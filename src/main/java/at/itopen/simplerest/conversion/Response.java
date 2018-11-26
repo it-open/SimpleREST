@@ -6,7 +6,9 @@
 package at.itopen.simplerest.conversion;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -16,6 +18,7 @@ public class Response {
     
     private HttpStatus status=HttpStatus.getByCode(404);
     private ContentType contentType=ContentType.JSON;
+    private Map<String,String> headerData=new HashMap<>();
     private Object data=null;
     private final List<Cookie> cookies=new ArrayList<>();
     private boolean wrapJson=true;
@@ -53,6 +56,16 @@ public class Response {
     public boolean isConvertStringToJson() {
         return convertStringToJson;
     }
+    
+    public void setHeader(String key,String value)
+    {
+        headerData.put(key, value);
+    }
+
+    public Map<String, String> getHeaderData() {
+        return headerData;
+    }
+    
     
     
 
