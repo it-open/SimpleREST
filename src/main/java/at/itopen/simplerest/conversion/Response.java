@@ -18,6 +18,8 @@ public class Response {
     private ContentType contentType=ContentType.JSON;
     private Object data=null;
     private final List<Cookie> cookies=new ArrayList<>();
+    private boolean wrapJson=true;
+    private boolean convertStringToJson=true;
     
     /**
      *
@@ -35,6 +37,24 @@ public class Response {
     public HttpStatus getStatus() {
         return status;
     }
+    
+    public void setWrapJson(boolean wrapJson) {
+        this.wrapJson = wrapJson;
+    }
+
+    public boolean isWrapJson() {
+        return wrapJson;
+    }
+
+    public void setConvertStringToJson(boolean convertStringToJson) {
+        this.convertStringToJson = convertStringToJson;
+    }
+
+    public boolean isConvertStringToJson() {
+        return convertStringToJson;
+    }
+    
+    
 
     /**
      *
@@ -72,6 +92,22 @@ public class Response {
      * @return
      */
     public ContentType getContentType() {
+        return contentType;
+    }
+    
+    public ContentType guessandSetContentTypefromData()
+    {
+        if (data instanceof byte[])
+            contentType=ContentType.fromByteArray((byte[])data);
+        return contentType;
+    }
+    
+    public ContentType guessandSetContentTypefromData(ContentType defaultContentType)
+    {
+        if (data instanceof byte[])
+            contentType=ContentType.fromByteArray((byte[])data);
+        if (contentType.equals(ContentType.OTHER))
+            contentType=defaultContentType;
         return contentType;
     }
     

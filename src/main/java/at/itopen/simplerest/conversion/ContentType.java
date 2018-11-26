@@ -5,8 +5,13 @@
  */
 package at.itopen.simplerest.conversion;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.net.URLConnection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * List of all Content Types
@@ -3583,6 +3588,7 @@ public enum ContentType {
 	EMPTY("application/octet-stream", "other"),
 	/** default if no specific match to the mime-type */
 	OTHER("application/octet-stream", "other"),
+        UNKOWN(null, null),
 	// end
 	;
 
@@ -3674,6 +3680,27 @@ public enum ContentType {
 			return type;
 		}
 	}
+        
+        public static ContentType fromFileName(String fileName) {
+		int pos=fileName.lastIndexOf(".");
+                if (pos==-1) return OTHER;
+                String fileExtension=fileName.substring(pos+1);
+                return fromFileExtension(fileExtension);
+                
+		
+	}
+        
+        public static ContentType fromByteArray(byte[] data)
+        {
+            try {
+                ByteArrayInputStream bais=new ByteArrayInputStream(data);
+                String mimeType = URLConnection.guessContentTypeFromStream(bais);
+                return ContentType.fromMimeType(mimeType);
+            } catch (IOException ex) {
+                Logger.getLogger(ContentType.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            return ContentType.OTHER;
+        }
 
 	
 

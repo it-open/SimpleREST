@@ -43,7 +43,7 @@ public class RestHttpRequestDispatchHandler extends ChannelInboundHandlerAdapter
     private static final ObjectMapper JSON_CONVERTER = new ObjectMapper();
     private final Map<String, Conversion> connections = new HashMap<>();
     private final RestHttpServer server;
-    
+
     static {
         //JSON_CONVERTER.registerModule(new AfterburnerModule().setUseValueClassLoader(false));
         JSON_CONVERTER.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, true);
@@ -57,8 +57,6 @@ public class RestHttpRequestDispatchHandler extends ChannelInboundHandlerAdapter
     public RestHttpRequestDispatchHandler(RestHttpServer server) {
         this.server = server;
     }
-    
-    
 
     /**
      * A Global Json Converter vrom Jackson
@@ -159,8 +157,20 @@ public class RestHttpRequestDispatchHandler extends ChannelInboundHandlerAdapter
 
         if (conversion.getResponse().hasData()) {
             if (conversion.getResponse().getContentType().equals(ContentType.JSON)) {
-                ResponseWrapper wrapper = new ResponseWrapper(conversion.getResponse().getStatus().getCode(), conversion.getResponse().getStatus().getDescription(), conversion.getNanoDuration(), conversion.getResponse().getData());
-                String json = JSON_CONVERTER.writeValueAsString(wrapper);
+                String json = "";
+                if (conversion.getResponse().isWrapJson()) {
+                    ResponseWrapper wrapper = new ResponseWrapper(conversion.getResponse().getStatus().getCode(), conversion.getResponse().getStatus().getDescription(), conversion.getNanoDuration(), conversion.getResponse().getData());
+                    json = JSON_CONVERTER.writeValueAsString(wrapper);
+                } else if (conversion.getResponse().getData() instanceof String) {
+                    if (conversion.getResponse().isConvertStringToJson()) {
+                        json = JSON_CONVERTER.writeValueAsString(conversion.getResponse().getData());
+                    } else {
+                        json = (String) conversion.getResponse().getData();
+                    }
+
+                } else {
+                    json = JSON_CONVERTER.writeValueAsString(conversion.getResponse().getData());
+                }
                 ByteBuf bb = Unpooled.copiedBuffer(json, Charset.defaultCharset());
                 writeJSON(ctx, HttpResponseStatus.valueOf(conversion.getResponse().getStatus().getCode()), bb, conversion.getResponse());
             } else {
@@ -201,7 +211,7 @@ public class RestHttpRequestDispatchHandler extends ChannelInboundHandlerAdapter
     public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
         super.channelRegistered(ctx); //To change body of generated methods, choose Tools | Templates.
 
-        connections.put(ctx.channel().id().asLongText(), new Conversion(ctx,server));
+        connections.put(ctx.channel().id().asLongText(), new Conversion(ctx, server));
     }
 
     /**

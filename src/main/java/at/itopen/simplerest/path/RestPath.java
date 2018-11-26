@@ -47,6 +47,16 @@ public class RestPath {
         subPaths.add(restPath);
         return restPath;
     }
+    
+    /**
+     *
+     * @param restPath
+     */
+    public RestPath addSubPath(String restPathName) {
+        RestPath restPath=new RestPath(restPathName);
+        subPaths.add(restPath);
+        return restPath;
+    }
 
     /**
      *
