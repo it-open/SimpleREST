@@ -30,7 +30,9 @@ public class MulitpartFormDataHeaderWorker extends AbstractHeaderWorker{
         if (request.getHttpDecoder()!=null)
             {
                 //System.out.println(request.getHttpDecoder().isMultipart());
-                for (InterfaceHttpData interfaceHttpData: request.getHttpDecoder().getBodyHttpDatas())
+                while (request.getHttpDecoder().hasNext())
+                {
+                InterfaceHttpData interfaceHttpData= request.getHttpDecoder().next();
                 {
                     if (interfaceHttpData instanceof Attribute)
                     {
@@ -55,6 +57,7 @@ public class MulitpartFormDataHeaderWorker extends AbstractHeaderWorker{
 
                     }
                     
+                }
                 }
               
             }

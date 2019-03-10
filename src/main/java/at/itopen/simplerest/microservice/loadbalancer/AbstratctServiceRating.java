@@ -3,25 +3,25 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package at.itopen.simplerest.endpoints.staticfile;
+package at.itopen.simplerest.microservice.loadbalancer;
 
 /**
  *
  * @author roland
  */
-public interface CachePolicyInterface {
-    
-    /**
-     *
-     * @param cacheItem
-     */
-    public void offer(CacheItem cacheItem);
+public abstract class AbstratctServiceRating {
 
     /**
      *
-     * @param Name
+     * @param service
      * @return
      */
-    public CacheItem get(String Name);
-    
+    public abstract double rate(Service service);
+
+    /**
+     *
+     * @return
+     */
+    public abstract double wearleveling();
+
 }

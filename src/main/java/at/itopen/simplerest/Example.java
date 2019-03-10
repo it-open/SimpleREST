@@ -56,11 +56,10 @@ public class Example {
                 @Override
                 public void Call(Conversion conversion, Map<String,String> UrlParameter) {
                     conversion.getResponse().setContentType(ContentType.JPEG);
-                    FileInputStream fis;
+                    File fis;
                     try {
-                        fis = new FileInputStream("/home/roland/Bilder/Panorama.jpg");
-                        conversion.getResponse().setData(fis.readAllBytes());
-                        fis.close();
+                        fis = new File("/home/roland/Bilder/Panorama.jpg");
+                        conversion.getResponse().setData(java.nio.file.Files.readAllBytes(fis.toPath()));
                     } catch (IOException ex) {
                         Logger.getLogger(Example.class.getName()).log(Level.SEVERE, null, ex);
                     }

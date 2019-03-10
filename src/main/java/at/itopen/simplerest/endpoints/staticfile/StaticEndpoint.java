@@ -21,11 +21,19 @@ public abstract class StaticEndpoint extends RestEndpoint {
 
     private final CachePolicyInterface cachePolicy;
 
+    /**
+     *
+     * @param cachePolicy
+     */
     public StaticEndpoint(CachePolicyInterface cachePolicy) {
         super("STATIC");
         this.cachePolicy = cachePolicy;
     }
     
+    /**
+     *
+     * @return
+     */
     public String getFileSeperator()
     {
         return File.separator;
@@ -68,6 +76,11 @@ public abstract class StaticEndpoint extends RestEndpoint {
 
     }
 
+    /**
+     *
+     * @param fileName
+     * @return
+     */
     public abstract byte[] readStatic(String fileName);
 
 }

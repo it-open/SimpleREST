@@ -72,6 +72,13 @@ public abstract class CRUDHelper {
 
     }
     
+    /**
+     *
+     * @param getClass
+     * @param putClass
+     * @param newClass
+     * @param objectname
+     */
     public void Documentation(Class getClass,Class putClass,Class newClass,String objectname)
     {
         get.setDocumentation(new EndpointDocumentation("Get a single "+objectname, ContentType.JSON, null, getClass).addPathParameter("id", "ID Number of Object"));

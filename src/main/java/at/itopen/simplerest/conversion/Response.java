@@ -41,27 +41,52 @@ public class Response {
         return status;
     }
     
+    /**
+     *
+     * @param wrapJson
+     */
     public void setWrapJson(boolean wrapJson) {
         this.wrapJson = wrapJson;
     }
 
+    /**
+     *
+     * @return
+     */
     public boolean isWrapJson() {
         return wrapJson;
     }
 
+    /**
+     *
+     * @param convertStringToJson
+     */
     public void setConvertStringToJson(boolean convertStringToJson) {
         this.convertStringToJson = convertStringToJson;
     }
 
+    /**
+     *
+     * @return
+     */
     public boolean isConvertStringToJson() {
         return convertStringToJson;
     }
     
+    /**
+     *
+     * @param key
+     * @param value
+     */
     public void setHeader(String key,String value)
     {
         headerData.put(key, value);
     }
 
+    /**
+     *
+     * @return
+     */
     public Map<String, String> getHeaderData() {
         return headerData;
     }
@@ -108,6 +133,10 @@ public class Response {
         return contentType;
     }
     
+    /**
+     *
+     * @return
+     */
     public ContentType guessandSetContentTypefromData()
     {
         if (data instanceof byte[])
@@ -115,6 +144,36 @@ public class Response {
         return contentType;
     }
     
+    /**
+     *
+     * @param name
+     * @return
+     */
+    public ContentType guessandSetContentTypefromDataOrName(String name)
+    {
+        return guessandSetContentTypefromData(guessContentTypefromName(name));
+    }
+    
+    /**
+     *
+     * @param name
+     * @return
+     */
+    public ContentType guessContentTypefromName(String name)
+    {
+        ContentType erg=ContentType.OTHER;
+        if (name.contains("."))
+            erg=ContentType.fromFileName(name);
+        else
+            erg=ContentType.fromFileExtension(name);
+        return erg;
+    }
+    
+    /**
+     *
+     * @param defaultContentType
+     * @return
+     */
     public ContentType guessandSetContentTypefromData(ContentType defaultContentType)
     {
         if (data instanceof byte[])

@@ -52,6 +52,7 @@ public abstract class JsonCRUDHelper<T> {
      *
      * @param entry
      * @param parentPath
+     * @param dataClass
      */
     public JsonCRUDHelper(String entry, RestPath parentPath,Class dataClass) {
 
@@ -90,6 +91,13 @@ public abstract class JsonCRUDHelper<T> {
 
     }
     
+    /**
+     *
+     * @param getClass
+     * @param putClass
+     * @param newClass
+     * @param objectname
+     */
     public void Documentation(Class getClass,Class putClass,Class newClass,String objectname)
     {
         get.setDocumentation(new EndpointDocumentation("Get a single "+objectname, ContentType.JSON, null, getClass).addPathParameter("id", "ID Number of Object"));
@@ -104,6 +112,7 @@ public abstract class JsonCRUDHelper<T> {
      *
      * @param conversion
      * @param UrlParameter
+     * @param data
      */
     public abstract void addNewItem(Conversion conversion, Map<String,String> UrlParameter,T data);
 
@@ -111,6 +120,7 @@ public abstract class JsonCRUDHelper<T> {
      *
      * @param conversion
      * @param UrlParameter
+     * @param id
      */
     public abstract void getSingeItem(Conversion conversion, Map<String,String> UrlParameter,String id);
 
@@ -125,6 +135,8 @@ public abstract class JsonCRUDHelper<T> {
      *
      * @param conversion
      * @param UrlParameter
+     * @param data
+     * @param id
      */
     public abstract void updateItem(Conversion conversion, Map<String,String> UrlParameter,T data,String id);
 
@@ -132,6 +144,7 @@ public abstract class JsonCRUDHelper<T> {
      *
      * @param conversion
      * @param UrlParameter
+     * @param id
      */
     public abstract void deleteItem(Conversion conversion, Map<String,String> UrlParameter,String id);
 

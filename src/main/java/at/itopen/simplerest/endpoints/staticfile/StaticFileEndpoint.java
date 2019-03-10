@@ -5,9 +5,7 @@
  */
 package at.itopen.simplerest.endpoints.staticfile;
 
-import at.itopen.simplerest.Example;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -20,22 +18,33 @@ public class StaticFileEndpoint extends StaticEndpoint {
 
     private final File basePath;
 
+    /**
+     *
+     * @param basePath
+     * @param cachePolicy
+     */
     public StaticFileEndpoint(File basePath, CachePolicyInterface cachePolicy) {
         super(cachePolicy);
         this.basePath = basePath;
     }
 
+    /**
+     *
+     * @param fileName
+     * @return
+     */
     @Override
     public byte[] readStatic(String fileName) {
-        String name = basePath.getAbsolutePath() + fileName;
-        try (FileInputStream fis = new FileInputStream(name)) {
-            byte[] data = fis.readAllBytes();
+        try {
+            String name = basePath.getAbsolutePath() + fileName;
+            File in=new File(name);
+            if (!in.exists()) return null;
+            byte[] data=java.nio.file.Files.readAllBytes(in.toPath());
             return data;
         } catch (IOException ex) {
-            Logger.getLogger(Example.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(StaticFileEndpoint.class.getName()).log(Level.SEVERE, null, ex);
         }
         return null;
-
     }
 
 }

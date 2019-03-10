@@ -20,6 +20,7 @@ public class DefaultUser extends BasicUser implements BasicAuthUser,JwtAuthUser 
     
     /**
      *
+     * @param request
      * @param name
      * @param password
      */
@@ -47,6 +48,7 @@ public class DefaultUser extends BasicUser implements BasicAuthUser,JwtAuthUser 
 
     /**
      *
+     * @param request
      * @param Id
      * @param issuer
      * @param Subject

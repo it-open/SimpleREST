@@ -15,6 +15,7 @@ public interface BasicAuthUser {
     
     /**
      *
+     * @param request
      * @param name
      * @param password
      */

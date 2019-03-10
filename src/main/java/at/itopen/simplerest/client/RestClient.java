@@ -3,25 +3,19 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package at.itopen.simplerest.endpoints.staticfile;
+package at.itopen.simplerest.client;
 
 /**
  *
  * @author roland
  */
-public interface CachePolicyInterface {
-    
-    /**
-     *
-     * @param cacheItem
-     */
-    public void offer(CacheItem cacheItem);
+public class RestClient {
 
     /**
      *
-     * @param Name
      * @return
      */
-    public CacheItem get(String Name);
-    
+    public static RestBuilder builder() {
+        return new RestBuilder();
+    }
 }

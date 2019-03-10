@@ -15,6 +15,10 @@ import java.util.Map;
  */
 public class InfoEndpoint extends RestEndpoint{
 
+    /**
+     *
+     * @param name
+     */
     public InfoEndpoint(String name) {
         super(name);
     }

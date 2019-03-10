@@ -21,6 +21,13 @@ import java.util.Map;
  */
 public class GenericsHelper {
 
+    /**
+     *
+     * @param instance
+     * @param classOfInterest
+     * @param parameterIndex
+     * @return
+     */
     public static Class<?> findSubClassParameterType(Object instance, Class<?> classOfInterest, int parameterIndex) {
         Map<Type, Type> typeMap = new HashMap<Type, Type>();
         Class<?> instanceClass = instance.getClass();

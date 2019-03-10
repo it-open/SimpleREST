@@ -73,6 +73,10 @@ public class IpAdress {
         return toString();
     }
     
+    /**
+     *
+     * @return
+     */
     public String getLocationAsString() {
         return getIpAdressAsString()+":"+getPort();
     }

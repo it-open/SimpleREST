@@ -19,6 +19,10 @@ public class RestHttpServerInitializer extends ChannelInitializer<SocketChannel>
     
     RestHttpServer webserver;
 
+    /**
+     *
+     * @param webserver
+     */
     public RestHttpServerInitializer(RestHttpServer webserver) {
         this.webserver = webserver;
     }

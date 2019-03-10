@@ -28,6 +28,7 @@ public class Conversion {
     /**
      *
      * @param ctx
+     * @param server
      */
     public Conversion(ChannelHandlerContext ctx,RestHttpServer server) {
         startTime=System.nanoTime();
@@ -103,6 +104,10 @@ public class Conversion {
      return System.nanoTime()-startTime;
     }
 
+    /**
+     *
+     * @return
+     */
     public RestHttpServer getServer() {
         return server;
     }

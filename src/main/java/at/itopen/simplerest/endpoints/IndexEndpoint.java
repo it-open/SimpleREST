@@ -16,13 +16,22 @@ import java.util.Map;
  */
 public class IndexEndpoint extends GetEndpoint {
 
-    
+    /**
+     *
+     */
     public class IndexData {
         String programmName;
         String apiVersion;
         String maintainer;
         String email;
 
+        /**
+         *
+         * @param programmName
+         * @param apiVersion
+         * @param maintainer
+         * @param email
+         */
         public IndexData(String programmName, String apiVersion, String maintainer, String email) {
             this.programmName = programmName;
             this.apiVersion = apiVersion;
@@ -30,18 +39,34 @@ public class IndexEndpoint extends GetEndpoint {
             this.email = email;
         }
 
+        /**
+         *
+         * @return
+         */
         public String getApiVersion() {
             return apiVersion;
         }
 
+        /**
+         *
+         * @return
+         */
         public String getEmail() {
             return email;
         }
 
+        /**
+         *
+         * @return
+         */
         public String getMaintainer() {
             return maintainer;
         }
 
+        /**
+         *
+         * @return
+         */
         public String getProgrammName() {
             return programmName;
         }
@@ -75,6 +100,10 @@ public class IndexEndpoint extends GetEndpoint {
         
     }
 
+    /**
+     *
+     * @return
+     */
     public IndexData getData() {
         return data;
     }

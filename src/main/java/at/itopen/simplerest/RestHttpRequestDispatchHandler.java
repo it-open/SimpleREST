@@ -12,6 +12,7 @@ import at.itopen.simplerest.conversion.Response;
 import at.itopen.simplerest.headerworker.Headerworker;
 import at.itopen.simplerest.path.EndpointWorker;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import io.netty.buffer.ByteBuf;
@@ -51,9 +52,14 @@ public class RestHttpRequestDispatchHandler extends ChannelInboundHandlerAdapter
         JSON_CONVERTER.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
         JSON_CONVERTER.configure(SerializationFeature.EAGER_SERIALIZER_FETCH, true);
         JSON_CONVERTER.setSerializationInclusion(Include.NON_EMPTY);
+        JSON_CONVERTER.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
     }
 
+    /**
+     *
+     * @param server
+     */
     public RestHttpRequestDispatchHandler(RestHttpServer server) {
         this.server = server;
     }
@@ -89,7 +95,7 @@ public class RestHttpRequestDispatchHandler extends ChannelInboundHandlerAdapter
         }
     }
 
-    private class ResponseWrapper {
+    private static class ResponseWrapper {
 
         public int code;
         public String message;
@@ -119,12 +125,24 @@ public class RestHttpRequestDispatchHandler extends ChannelInboundHandlerAdapter
                 return;
             }
         }
+        process(conversion, ctx);
+
+        ctx.flush();
+    }
+
+    /**
+     *
+     * @param conversion
+     * @param ctx
+     * @throws Exception
+     */
+    public static void process(Conversion conversion, ChannelHandlerContext ctx) throws Exception {
         System.out.println(conversion.getRequest().getMethod() + " " + conversion.getRequest().getUri() + " (" + ctx.channel().id().asLongText() + ")");
         Headerworker.work(conversion.getRequest());
         EndpointWorker worker = null;
 
         try {
-            if (conversion.getRequest().getUri().getPath().size() == 0) {
+            if (conversion.getRequest().getUri().getPath().isEmpty()) {
                 if (conversion.getServer().getRootEndpoint().getINDEX() != null) {
                     worker = new EndpointWorker(conversion.getServer().getRootEndpoint().getINDEX(), null);
                 }
@@ -198,8 +216,6 @@ public class RestHttpRequestDispatchHandler extends ChannelInboundHandlerAdapter
             writeJSON(ctx, HttpResponseStatus.valueOf(conversion.getResponse().getStatus().getCode()), bb, conversion.getResponse());
 
         }
-
-        ctx.flush();
     }
 
     /**
@@ -245,8 +261,7 @@ public class RestHttpRequestDispatchHandler extends ChannelInboundHandlerAdapter
             if (response.getCookies().size() > 0) {
                 msg.headers().set(HttpHeaderNames.SET_COOKIE, response.getCookieString());
             }
-            for (Map.Entry<String,String> headerField:response.getHeaderData().entrySet())
-            {
+            for (Map.Entry<String, String> headerField : response.getHeaderData().entrySet()) {
                 msg.headers().set(headerField.getKey(), headerField.getValue());
             }
 

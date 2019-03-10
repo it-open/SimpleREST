@@ -40,6 +40,14 @@ public class AuthorizationBasicDataHeaderWorker extends AbstractHeaderWorker{
                 request.getHeaders().remove("authorization");
             }            
         }
+        if (parts.length==1)
+        {
+            if (request.getUser() instanceof BasicAuthUser)
+            {
+                ((BasicAuthUser)request.getUser()).setAuth(request,parts[0], null);
+                request.getHeaders().remove("authorization");
+            }            
+        }
         
                 
         

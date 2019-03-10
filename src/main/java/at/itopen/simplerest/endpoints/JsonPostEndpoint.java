@@ -7,7 +7,6 @@ package at.itopen.simplerest.endpoints;
 
 import at.itopen.simplerest.RestHttpRequestDispatchHandler;
 import at.itopen.simplerest.conversion.Conversion;
-import at.itopen.simplerest.path.RestEndpoint;
 import java.io.IOException;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -20,11 +19,11 @@ import java.util.logging.Logger;
  * @author roland
  * @param <T>
  */
-public abstract class JsonPostEndpoint<T> extends PostEndpoint{
+public abstract class JsonPostEndpoint<T> extends PostEndpoint {
 
-    Class genericType=null;
+    Class genericType = null;
     T data;
-    
+
     /**
      *
      * @param endpointName
@@ -32,7 +31,7 @@ public abstract class JsonPostEndpoint<T> extends PostEndpoint{
     public JsonPostEndpoint(String endpointName) {
         super(endpointName);
         Type sooper = getClass().getGenericSuperclass();
-        genericType = (Class)((ParameterizedType)sooper).getActualTypeArguments()[ 0 ];
+        genericType = (Class) ((ParameterizedType) sooper).getActualTypeArguments()[0];
     }
 
     /**
@@ -42,26 +41,22 @@ public abstract class JsonPostEndpoint<T> extends PostEndpoint{
     public T getData() {
         return data;
     }
-    
+
     /**
      *
      * @param conversion
      * @param UrlParameter
      */
     @Override
-    public void CallEndpoint(Conversion conversion, Map<String,String> UrlParameter) {
-        if (conversion.getRequest().getContentData()!=null)
-        {
+    public void CallEndpoint(Conversion conversion, Map<String, String> UrlParameter) {
+        if (conversion.getRequest().getContentData() != null) {
             try {
-                data=(T)RestHttpRequestDispatchHandler.getJSON_CONVERTER().readValue(conversion.getRequest().getContentData(), genericType);
+                data = (T) RestHttpRequestDispatchHandler.getJSON_CONVERTER().readValue(conversion.getRequest().getContentData(), genericType);
             } catch (IOException ex) {
                 Logger.getLogger(JsonPostEndpoint.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
         super.CallEndpoint(conversion, UrlParameter); //To change body of generated methods, choose Tools | Templates.
     }
-    
-    
-   
 
 }

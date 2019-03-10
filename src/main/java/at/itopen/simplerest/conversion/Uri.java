@@ -5,12 +5,16 @@
  */
 package at.itopen.simplerest.conversion;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -29,6 +33,11 @@ public class Uri {
     public Uri(String uri) {
         path=new ArrayList<>();
         queryParam=new HashMap<>();
+        try {
+            uri=URLDecoder.decode(uri, "UTF-8");
+        } catch (UnsupportedEncodingException ex) {
+            Logger.getLogger(Uri.class.getName()).log(Level.SEVERE, null, ex);
+        }
         uri=decodeFragment(uri);
         uri=decodeParams(uri);
         decodePath(uri);
@@ -99,6 +108,10 @@ public class Uri {
         return queryParam.keySet();
     }
 
+    /**
+     *
+     * @return
+     */
     public Map<String, String> getQueryParam() {
         return queryParam;
     }

@@ -18,6 +18,12 @@ public class CacheItem {
     private final byte[] data;
     private final long cacheTime;
 
+    /**
+     *
+     * @param type
+     * @param name
+     * @param data
+     */
     public CacheItem(ContentType type, String name, byte[] data) {
         this.type = type;
         this.name = name;
@@ -25,18 +31,34 @@ public class CacheItem {
         cacheTime = System.currentTimeMillis();
     }
 
+    /**
+     *
+     * @return
+     */
     public long getCacheTime() {
         return cacheTime;
     }
 
+    /**
+     *
+     * @return
+     */
     public byte[] getData() {
         return data;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     *
+     * @return
+     */
     public ContentType getType() {
         return type;
     }

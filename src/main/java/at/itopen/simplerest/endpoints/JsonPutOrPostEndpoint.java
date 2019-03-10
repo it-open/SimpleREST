@@ -7,10 +7,7 @@ package at.itopen.simplerest.endpoints;
 
 import at.itopen.simplerest.RestHttpRequestDispatchHandler;
 import at.itopen.simplerest.conversion.Conversion;
-import at.itopen.simplerest.conversion.GenericsHelper;
 import java.io.IOException;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -33,6 +30,7 @@ public abstract class JsonPutOrPostEndpoint<T> extends PutOrPostEndpoint{
     /**
      *
      * @param endpointName
+     * @param dataClass
      */
     public JsonPutOrPostEndpoint(String endpointName,Class dataClass) {
         super(endpointName);

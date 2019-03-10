@@ -5,26 +5,47 @@
  */
 package at.itopen.simplerest.path;
 
+import at.itopen.simplerest.RestHttpServer;
+
 /**
  *
  * @author roland
  */
 public class RootPath extends RestPath {
-    
-    private  RestEndpoint NOT_FOUND=null;
-    private  RestEndpoint INDEX=null;
-    private  RestEndpoint EXCEPTION=null;
 
+    private RestEndpoint NOT_FOUND = null;
+    private RestEndpoint INDEX = null;
+    private RestEndpoint EXCEPTION = null;
+    private RestHttpServer server;
+
+    /**
+     *
+     */
     public RootPath() {
         super("/");
     }
 
-   
     /**
      *
      * @return
      */
-    public  RestEndpoint getNOT_FOUND() {
+    public RestHttpServer getRestHttpServer() {
+        return server;
+    }
+
+    /**
+     *
+     * @param server
+     */
+    public void setRestHttpServer(RestHttpServer server) {
+        this.server = server;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public RestEndpoint getNOT_FOUND() {
         return NOT_FOUND;
     }
 
@@ -32,7 +53,7 @@ public class RootPath extends RestPath {
      *
      * @param NOT_FOUND
      */
-    public  void setNOT_FOUND(RestEndpoint NOT_FOUND) {
+    public void setNOT_FOUND(RestEndpoint NOT_FOUND) {
         this.NOT_FOUND = NOT_FOUND;
     }
 
@@ -40,7 +61,7 @@ public class RootPath extends RestPath {
      *
      * @return
      */
-    public  RestEndpoint getINDEX() {
+    public RestEndpoint getINDEX() {
         return INDEX;
     }
 
@@ -48,7 +69,7 @@ public class RootPath extends RestPath {
      *
      * @param INDEX
      */
-    public  void setINDEX(RestEndpoint INDEX) {
+    public void setINDEX(RestEndpoint INDEX) {
         this.INDEX = INDEX;
     }
 
@@ -56,7 +77,7 @@ public class RootPath extends RestPath {
      *
      * @return
      */
-    public  RestEndpoint getEXCEPTION() {
+    public RestEndpoint getEXCEPTION() {
         return EXCEPTION;
     }
 
@@ -64,16 +85,8 @@ public class RootPath extends RestPath {
      *
      * @param EXCEPTION
      */
-    public  void setEXCEPTION(RestEndpoint EXCEPTION) {
+    public void setEXCEPTION(RestEndpoint EXCEPTION) {
         this.EXCEPTION = EXCEPTION;
     }
-    
-    
-    
-    
-    
-    
-    
-    
-    
+
 }

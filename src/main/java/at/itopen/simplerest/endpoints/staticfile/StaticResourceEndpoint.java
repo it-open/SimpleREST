@@ -19,23 +19,41 @@ public class StaticResourceEndpoint extends StaticEndpoint {
 
     private final String resourcePath;
 
+    /**
+     *
+     * @param resourcePath
+     * @param cachePolicy
+     */
     public StaticResourceEndpoint(String resourcePath, CachePolicyInterface cachePolicy) {
         super(cachePolicy);
         this.resourcePath = resourcePath;
     }
 
+    /**
+     *
+     * @return
+     */
     @Override
     public String getFileSeperator() {
         return "/";
     }
     
-
+    /**
+     *
+     * @param fileName
+     * @return
+     */
     @Override
     public byte[] readStatic(String fileName) {
         String name = resourcePath + fileName;
         return readResourceFile(name);
     }
     
+    /**
+     *
+     * @param name
+     * @return
+     */
     public byte[] readResourceFile(final String name) {
         try {
             InputStream is = getClass().getResourceAsStream(name);

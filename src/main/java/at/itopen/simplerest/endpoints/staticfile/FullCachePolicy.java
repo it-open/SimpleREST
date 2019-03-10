@@ -16,11 +16,20 @@ public class FullCachePolicy implements CachePolicyInterface{
     
     private final Map<String,CacheItem> cacheData=new HashMap<>();
 
+    /**
+     *
+     * @param cacheItem
+     */
     @Override
     public void offer(CacheItem cacheItem) {
         cacheData.put(cacheItem.getName(), cacheItem);
     }
 
+    /**
+     *
+     * @param Name
+     * @return
+     */
     @Override
     public CacheItem get(String Name) {
         if (cacheData.containsKey(Name)) 

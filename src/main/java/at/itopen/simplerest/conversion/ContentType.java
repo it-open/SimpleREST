@@ -19,6 +19,10 @@ import java.util.logging.Logger;
  */
 public enum ContentType {
 
+    /**
+     *
+     */
+    TS("video/MP2T","ts","ts"),
 	/** Adobe Illustrator (may look like a PDF) */
 	AI("application/vnd.adobe.illustrator", "ai"),
 	/** AIFF audio format */
@@ -3583,12 +3587,17 @@ public enum ContentType {
      *
      */
     HBS("text/x-handlebars-template", "hbs", "hbs"),
+    
 
 	/** default if no content */
 	EMPTY("application/octet-stream", "other"),
 	/** default if no specific match to the mime-type */
 	OTHER("application/octet-stream", "other"),
-        UNKOWN(null, null),
+
+    /**
+     *
+     */
+    UNKOWN(null, null),
 	// end
 	;
 
@@ -3681,7 +3690,12 @@ public enum ContentType {
 		}
 	}
         
-        public static ContentType fromFileName(String fileName) {
+    /**
+     *
+     * @param fileName
+     * @return
+     */
+    public static ContentType fromFileName(String fileName) {
 		int pos=fileName.lastIndexOf(".");
                 if (pos==-1) return OTHER;
                 String fileExtension=fileName.substring(pos+1);
@@ -3690,7 +3704,12 @@ public enum ContentType {
 		
 	}
         
-        public static ContentType fromByteArray(byte[] data)
+    /**
+     *
+     * @param data
+     * @return
+     */
+    public static ContentType fromByteArray(byte[] data)
         {
             try {
                 ByteArrayInputStream bais=new ByteArrayInputStream(data);

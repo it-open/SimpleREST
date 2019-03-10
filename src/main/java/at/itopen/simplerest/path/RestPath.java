@@ -21,6 +21,7 @@ public class RestPath {
     private final List<RestEndpoint> endpoints = new ArrayList<>();
     private final List<RestPath> subPaths = new ArrayList<>();
     private RestEndpoint catchAllEndPoint = null;
+    private RestPath parent;
 
     /**
      *
@@ -33,27 +34,33 @@ public class RestPath {
     /**
      *
      * @param endpoint
+     * @return
      */
     public RestEndpoint addRestEndpoint(RestEndpoint endpoint) {
         endpoints.add(endpoint);
+        endpoint.setParent(this);
         return endpoint;
     }
 
     /**
      *
      * @param restPath
+     * @return
      */
     public RestPath addSubPath(RestPath restPath) {
         subPaths.add(restPath);
+        restPath.setParent(this);
         return restPath;
     }
-    
+
     /**
      *
-     * @param restPath
+     * @param restPathName
+     * @return
      */
     public RestPath addSubPath(String restPathName) {
-        RestPath restPath=new RestPath(restPathName);
+        RestPath restPath = new RestPath(restPathName);
+        restPath.setParent(this);
         subPaths.add(restPath);
         return restPath;
     }
@@ -66,8 +73,40 @@ public class RestPath {
         return pathName;
     }
 
+    /**
+     *
+     * @param catchAllEndPoint
+     */
     public void setCatchAllEndPoint(RestEndpoint catchAllEndPoint) {
         this.catchAllEndPoint = catchAllEndPoint;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public RestPath getParent() {
+        return parent;
+    }
+
+    /**
+     *
+     * @param parent
+     */
+    public void setParent(RestPath parent) {
+        this.parent = parent;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public RootPath getRootPath() {
+        if (!(this instanceof RootPath)) {
+            return getParent().getRootPath();
+        } else {
+            return (RootPath) this;
+        }
     }
 
     /**
@@ -128,12 +167,15 @@ public class RestPath {
      * @return
      */
     public RestPath pathForLocation(String location) {
-        location=location.trim();
-        if (location.startsWith("/")) location=location.substring(1);
+        location = location.trim();
+        if (location.startsWith("/")) {
+            location = location.substring(1);
+        }
         String path = location.split("\\/")[0];
         String subPath = "";
-        if (location.length()>path.length())
-                subPath=location.substring(path.length() + 1);
+        if (location.length() > path.length()) {
+            subPath = location.substring(path.length() + 1);
+        }
 
         for (RestPath restPath : subPaths) {
             if (restPath.getPathName().equalsIgnoreCase(path)) {

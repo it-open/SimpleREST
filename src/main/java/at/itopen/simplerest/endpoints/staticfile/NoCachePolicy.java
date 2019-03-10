@@ -11,11 +11,20 @@ package at.itopen.simplerest.endpoints.staticfile;
  */
 public class NoCachePolicy implements CachePolicyInterface{
 
+    /**
+     *
+     * @param cacheItem
+     */
     @Override
     public void offer(CacheItem cacheItem) {
         
     }
 
+    /**
+     *
+     * @param Name
+     * @return
+     */
     @Override
     public CacheItem get(String Name) {
         return null;

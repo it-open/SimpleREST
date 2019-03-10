@@ -11,6 +11,8 @@ import at.itopen.simplerest.endpoints.IndexEndpoint;
 import at.itopen.simplerest.endpoints.NotFoundEndpoint;
 import at.itopen.simplerest.endpoints.StructureEndpoint;
 import at.itopen.simplerest.endpoints.UrlListEndpoint;
+import at.itopen.simplerest.microservice.loadbalancer.LoadBalancer;
+import at.itopen.simplerest.microservice.loadbalancer.LoadBalancerConfig;
 import at.itopen.simplerest.path.RestEndpoint;
 import at.itopen.simplerest.path.RestPath;
 import at.itopen.simplerest.path.RootPath;
@@ -27,6 +29,7 @@ import java.util.logging.Logger;
 
 /**
  * The Rest HTTP Server Object handles Netty Calls and does the REST Magic
+ *
  * @author roland
  */
 public class RestHttpServer {
@@ -34,10 +37,12 @@ public class RestHttpServer {
     private final int port;
     private final EventLoopGroup boss = new NioEventLoopGroup();
     private final EventLoopGroup worker;
-    private final RootPath root=new RootPath();
+    private final RootPath root = new RootPath();
+    private LoadBalancer loadBalancer = null;
 
     /**
      * Constructor, starts the Rest Server
+     *
      * @param port Port to run at
      * @return the HTTP Server. Not really needed
      */
@@ -57,80 +62,119 @@ public class RestHttpServer {
     }
 
     /**
-     * Enable an index at the /. 
+     * Enable an index at the /.
+     *
      * @param programmName Name of the Programm
      * @param apiVersion Which Version doe the APi have?
      * @param maintainer Hwo ist the Maintainer
      * @param email Mail of the Maintainer
      */
-    public  void enableIndex(String programmName, String apiVersion, String maintainer, String email) {
+    public void enableIndex(String programmName, String apiVersion, String maintainer, String email) {
         root.setINDEX(new IndexEndpoint(programmName, apiVersion, maintainer, email));
     }
-    
-    public  void enableIndex(RestEndpoint restEndpoint) {
+
+    /**
+     *
+     * @param restEndpoint
+     */
+    public void enableIndex(RestEndpoint restEndpoint) {
         root.setINDEX(restEndpoint);
     }
 
     /**
-     * Enable Ecxption Lgging if something happens on the API or your Code (With full Stack Trace)
+     *
+     * @param config
      */
-    public  void enableExceptionHandling() {
+    public void enableLoadBalancer(LoadBalancerConfig config) {
+        if (loadBalancer != null) {
+            System.out.println("Load Balancer already configured. Dont do it a second time. Could break!");
+        }
+        loadBalancer = new LoadBalancer(config);
+    }
+
+    /**
+     *
+     * @return
+     */
+    public LoadBalancer getLoadBalancer() {
+        if (loadBalancer == null) {
+            System.out.println("Configure Load Balancer first");
+        }
+        return loadBalancer;
+    }
+
+    /**
+     * Enable Ecxption Lgging if something happens on the API or your Code (With
+     * full Stack Trace)
+     */
+    public void enableExceptionHandling() {
         root.setEXCEPTION(new ErrorEndpoint());
     }
 
     /**
-     * Enable a 404 Json Page which tells the User that the Page has not been found
+     * Enable a 404 Json Page which tells the User that the Page has not been
+     * found
      */
-    public  void enableNotFoundHandling() {
+    public void enableNotFoundHandling() {
         root.setNOT_FOUND(new NotFoundEndpoint());
     }
 
-    
     /**
-     * Shows the complete Structure of the REST API 
+     * Shows the complete Structure of the REST API
+     *
      * @param structurePath
      * @param path
      */
-    public  void enableStructure(String structurePath,RestPath path) {
-        if (path==null)
-            path=root;
+    public void enableStructure(String structurePath, RestPath path) {
+        if (path == null) {
+            path = root;
+        }
         path.addRestEndpoint(new StructureEndpoint(structurePath));
     }
-    
-    
+
     /**
      * Shows a complete List of all Urls
+     *
      * @param urlListPath
      * @param path
      */
-    public  void enableRestUrlList(String urlListPath,RestPath path) {
-        if (path==null)
-            path=root;
+    public void enableRestUrlList(String urlListPath, RestPath path) {
+        if (path == null) {
+            path = root;
+        }
         path.addRestEndpoint(new UrlListEndpoint(urlListPath));
     }
-    
-    public  void enableRestDoc(String urlListPath,RestPath path) {
-        if (path==null)
-            path=root;
+
+    /**
+     *
+     * @param urlListPath
+     * @param path
+     */
+    public void enableRestDoc(String urlListPath, RestPath path) {
+        if (path == null) {
+            path = root;
+        }
         path.addRestEndpoint(new DocumentationEndpoint(urlListPath));
     }
 
     /**
-     * Get the Startpoint of all Rest Calls '/'
-     * Make all Sub Path on this this Path.
+     * Get the Startpoint of all Rest Calls '/' Make all Sub Path on this this
+     * Path.
+     *
      * @return
      */
-    public  RootPath getRootEndpoint() {
+    public RootPath getRootEndpoint() {
         return root;
     }
-    
+
     /**
-     * Get the Startpoint of all Rest Calls '/'
-     * Make all Sub Path on this this Path.
+     * Get the Startpoint of all Rest Calls '/' Make all Sub Path on this this
+     * Path.
+     *
      * @param path
      * @return
      */
-    public  RestPath getPath(String path) {
+    public RestPath getPath(String path) {
         return root.pathForLocation(path);
     }
 
@@ -148,7 +192,6 @@ public class RestHttpServer {
     public RestHttpServer(int port) {
         this.port = port;
         this.worker = new NioEventLoopGroup(SystemPropertyUtil.getInt("events.workerThreads", 300), new DefaultThreadFactory("nio-worker", Thread.MAX_PRIORITY));
-        
     }
 
     /**
@@ -156,6 +199,7 @@ public class RestHttpServer {
      * @throws Exception
      */
     public void run() throws Exception {
+        this.root.setRestHttpServer(this);
         try {
             ServerBootstrap bootstrap = new ServerBootstrap();
             bootstrap.group(boss, worker).channel(NioServerSocketChannel.class).childHandler(
@@ -188,6 +232,14 @@ public class RestHttpServer {
     protected void setChannelOptions(ServerBootstrap bootstrap) {
         bootstrap.childOption(ChannelOption.MAX_MESSAGES_PER_READ, 36)
                 .childOption(ChannelOption.TCP_NODELAY, true);
+    }
+
+    /**
+     *
+     * @return
+     */
+    public int getPort() {
+        return port;
     }
 
 }
