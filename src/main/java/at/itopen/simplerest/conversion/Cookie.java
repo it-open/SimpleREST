@@ -10,8 +10,10 @@ package at.itopen.simplerest.conversion;
  * @author roland
  */
 public class Cookie {
-    
-    String name,value;
+
+    private final String name;
+    private final String value;
+    private int maxseconds;
 
     /**
      *
@@ -21,6 +23,13 @@ public class Cookie {
     public Cookie(String name, String value) {
         this.name = name;
         this.value = value;
+        this.maxseconds = 5 * 60;
+    }
+
+    public Cookie(String name, String value, int maxseconds) {
+        this.name = name;
+        this.value = value;
+        this.maxseconds = maxseconds;
     }
 
     /**
@@ -38,7 +47,9 @@ public class Cookie {
     public String getValue() {
         return value;
     }
-    
-    
-    
+
+    public int getMaxseconds() {
+        return maxseconds;
+    }
+
 }

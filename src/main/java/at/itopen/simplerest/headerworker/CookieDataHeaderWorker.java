@@ -32,19 +32,18 @@ public class CookieDataHeaderWorker extends AbstractHeaderWorker {
         Request request = conversion.getRequest();
 
         String value = request.getHeaders().get("cookie");
-        String[] values = value.split("=");
-        if (values.length > 1) {
-            for (String val1 : values) {
-                String[] parts = val1.trim().split("=");
-                if (parts.length == 2) {
-                    Cookie cookie = new Cookie(parts[0], parts[1]);
-                    request.getCookies().add(cookie);
-                    if (request.getUser() instanceof CookieAuthUser) {
-                        ((CookieAuthUser) request.getUser()).setCookieAuth(conversion, cookie);
-                    }
+        String[] values = value.split(";");
+        for (String val1 : values) {
+            String[] parts = val1.trim().split("=");
+            if (parts.length == 2) {
+                Cookie cookie = new Cookie(parts[0], parts[1]);
+                request.getCookies().add(cookie);
+                if (request.getUser() instanceof CookieAuthUser) {
+                    ((CookieAuthUser) request.getUser()).setCookieAuth(conversion, cookie);
                 }
             }
         }
+
         request.getHeaders().remove("cookie");
     }
 

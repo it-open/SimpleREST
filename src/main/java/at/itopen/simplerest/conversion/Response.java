@@ -121,7 +121,7 @@ public class Response {
             if (sb.length() > 0) {
                 sb.append("; ");
             }
-            sb.append(cookie.getName()).append("=").append(cookie.getValue());
+            sb.append(cookie.getName()).append("=").append(cookie.getValue()).append(";path=/;max-age=").append(cookie.getMaxseconds()).append(";");
         });
         return sb.toString();
     }
