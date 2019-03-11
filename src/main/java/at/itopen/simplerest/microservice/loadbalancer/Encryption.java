@@ -33,6 +33,17 @@ public class Encryption {
      * @return
      */
     public static String AESencrypt(String key, String initVector, String value) {
+        return Base64.encodeBase64URLSafeString(AESencrypt(key, initVector, value.getBytes()));
+    }
+
+    /**
+     *
+     * @param key
+     * @param initVector
+     * @param value
+     * @return
+     */
+    public static byte[] AESencrypt(String key, String initVector, byte[] value) {
         try {
             IvParameterSpec iv = new IvParameterSpec(initVector.getBytes("UTF-8"));
             SecretKeySpec skeySpec = new SecretKeySpec(key.getBytes("UTF-8"), "AES");
@@ -40,9 +51,7 @@ public class Encryption {
             Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING");
             cipher.init(Cipher.ENCRYPT_MODE, skeySpec, iv);
 
-            byte[] encrypted = cipher.doFinal(value.getBytes());
-
-            return Base64.encodeBase64URLSafeString(encrypted);
+            return cipher.doFinal(value);
         } catch (UnsupportedEncodingException | InvalidAlgorithmParameterException | InvalidKeyException | NoSuchAlgorithmException | BadPaddingException | IllegalBlockSizeException | NoSuchPaddingException ex) {
             ex.printStackTrace();
         }
@@ -58,6 +67,17 @@ public class Encryption {
      * @return
      */
     public static String AESdecrypt(String key, String initVector, String encrypted) {
+        return new String(AESdecrypt(key, initVector, Base64.decodeBase64(encrypted)));
+    }
+
+    /**
+     *
+     * @param key
+     * @param initVector
+     * @param encrypted
+     * @return
+     */
+    public static byte[] AESdecrypt(String key, String initVector, byte[] encrypted) {
         try {
             IvParameterSpec iv = new IvParameterSpec(initVector.getBytes("UTF-8"));
             SecretKeySpec skeySpec = new SecretKeySpec(key.getBytes("UTF-8"), "AES");
@@ -65,9 +85,8 @@ public class Encryption {
             Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING");
             cipher.init(Cipher.DECRYPT_MODE, skeySpec, iv);
 
-            byte[] original = cipher.doFinal(Base64.decodeBase64(encrypted));
+            return cipher.doFinal(encrypted);
 
-            return new String(original);
         } catch (UnsupportedEncodingException | InvalidAlgorithmParameterException | InvalidKeyException | NoSuchAlgorithmException | BadPaddingException | IllegalBlockSizeException | NoSuchPaddingException ex) {
             ex.printStackTrace();
         }
