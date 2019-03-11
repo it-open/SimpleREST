@@ -174,6 +174,12 @@ public class Services {
         }
         for (List<Service> list : services.values()) {
             for (Service service : list) {
+                if (service == null) {
+                    continue;
+                }
+                if (service.getStatus() == null) {
+                    continue;
+                }
                 if (service.getStatus().equals(Service.SERVICE_STATUS.ACTIVE)) {
                     return false;
                 }

@@ -20,6 +20,7 @@ public class Test1 {
         RestHttpServer server = RestHttpServer.Start(9001);
         LoadBalancerConfig config = new LoadBalancerConfig(server, "http://<IP>:<PORT>/", "test2");
         config.addInitialDiscoverUrl("http://127.0.0.1:9000");
+        config.setSharedSecret("Roland Schuller");
         server.enableLoadBalancer(config);
     }
 

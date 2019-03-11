@@ -153,6 +153,12 @@ public final class LoadBalancer {
             });
         } else {
             for (Service service : getServices().getAllServices()) {
+                if (service == null) {
+                    continue;
+                }
+                if (service.getStatus() == null) {
+                    continue;
+                }
                 if (!service.getStatus().equals(Service.SERVICE_STATUS.ACTIVE)) {
                     checkService(service.getBaseurl());
                     continue;
@@ -164,6 +170,33 @@ public final class LoadBalancer {
         }
     }
 
+    public String encryptUrl(RestDiscoverQuestion restDiscoverQuestion) {
+
+        String key = getConfig().getServiceid();
+        String initv = "" + restDiscoverQuestion.getTimestamp();
+        while (initv.length() < 16) {
+            initv += "-";
+        }
+        if (getConfig().getSharedSecret() != null) {
+            key = Encryption.AESencrypt(getConfig().getSharedSecret(), initv, key);
+        }
+
+        return key;
+    }
+
+    public String decryptUrl(RestDiscoverQuestion restDiscoverQuestion, String key) {
+
+        String initv = "" + restDiscoverQuestion.getTimestamp();
+        while (initv.length() < 16) {
+            initv += "-";
+        }
+        if (getConfig().getSharedSecret() != null) {
+            key = Encryption.AESdecrypt(getConfig().getSharedSecret(), initv, key);
+        }
+
+        return key;
+    }
+
     /**
      *
      * @param url
@@ -173,12 +206,11 @@ public final class LoadBalancer {
             if (!url.endsWith("/")) {
                 url += "/";
             }
-            String key = getConfig().getServiceid();
-            if (getConfig().getSharedSecret() != null) {
-                key = AES.encrypt(getConfig().getSharedSecret(), key.substring(0, 15), key);
-            }
+            RestDiscoverQuestion restDiscoverQuestion = buildRestDiscoverQuestion();
+            String key = encryptUrl(restDiscoverQuestion);
+
             url += "loadbalancer/" + key + "/remote";
-            RestResponse response = restBuilder.POST(url).setJson(RestHttpRequestDispatchHandler.getJSON_CONVERTER().writeValueAsString(RestDiscoverQuestion.makeQuestion(this))).work();
+            RestResponse response = restBuilder.POST(url).setJson(RestHttpRequestDispatchHandler.getJSON_CONVERTER().writeValueAsString(restDiscoverQuestion)).work();
             if (response == null) {
                 return;
             }
@@ -218,6 +250,30 @@ public final class LoadBalancer {
         } catch (IOException ex) {
             Logger.getLogger(LoadBalancer.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+
+    public RestDiscoverQuestion buildRestDiscoverQuestion() {
+        return new RestDiscoverQuestion(getConfig().getServiceid(), getConfig().getBaseurl());
+    }
+
+    public RestDiscoverAnswer buildRestDiscoverAnswer() {
+
+        Service me = new Service();
+        me.setLastseen(System.currentTimeMillis());
+        me.setInfo(SystemCheck.getInstance().getaktSystemInfoData());
+        me.setBaseurl(getConfig().getBaseurl());
+        me.setType(getConfig().getServicetype());
+        me.setId(getConfig().getServiceid());
+        RestDiscoverAnswer rda = new RestDiscoverAnswer();
+        if (isAvailable()) {
+            rda.services.add(RestService.fromService(me));
+        }
+        getServices().getAllActiveServices().forEach((s) -> {
+            rda.services.add(RestService.fromService(s));
+        });
+
+        rda.timestamp = System.currentTimeMillis();
+        return rda;
     }
 
 }

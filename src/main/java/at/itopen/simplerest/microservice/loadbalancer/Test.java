@@ -21,6 +21,7 @@ public class Test {
         
         LoadBalancerConfig config = new LoadBalancerConfig(server, "http://<IP>:<PORT>/", "test1");
         config.addInitialDiscoverUrl("http://127.0.0.1:9001");
+        config.setSharedSecret("Roland Schuller");
         server.enableLoadBalancer(config);
     }
     

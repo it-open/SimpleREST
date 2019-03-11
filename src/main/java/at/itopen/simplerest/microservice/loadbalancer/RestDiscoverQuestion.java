@@ -13,17 +13,21 @@ public class RestDiscoverQuestion {
 
     private String senderid;
     private String senderbaseurl;
+    private long timestamp;
 
     /**
      *
+     * @param senderid
+     * @param senderbaseurl
      * @param lb
-     * @return
      */
-    public static RestDiscoverQuestion makeQuestion(LoadBalancer lb) {
-        RestDiscoverQuestion rdq = new RestDiscoverQuestion();
-        rdq.setSenderbaseurl(lb.getConfig().getBaseurl());
-        rdq.setSenderid(lb.getConfig().getServiceid());
-        return rdq;
+    public RestDiscoverQuestion(String senderid, String senderbaseurl) {
+        this.senderid = senderid;
+        this.senderbaseurl = senderbaseurl;
+        this.timestamp = System.currentTimeMillis();
+    }
+
+    public RestDiscoverQuestion() {
     }
 
     /**
@@ -52,6 +56,14 @@ public class RestDiscoverQuestion {
      */
     public void setSenderbaseurl(String senderbaseurl) {
         this.senderbaseurl = senderbaseurl;
+    }
+
+    public long getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(long timestamp) {
+        this.timestamp = timestamp;
     }
 
 }

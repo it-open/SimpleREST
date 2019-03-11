@@ -30,20 +30,18 @@ public class RestDiscover extends JsonPostEndpoint<RestDiscoverQuestion> {
         LoadBalancer lb = getRootPath().getRestHttpServer().getLoadBalancer();
 
         RestDiscoverQuestion question = getData();
+        String security = UrlParameter.get("security");
 
-        String key = question.getSenderid();
-        if (lb.getConfig().getSharedSecret() != null) {
-            key = AES.encrypt(lb.getConfig().getSharedSecret(), key.substring(0, 15), key);
-        }
-        if (UrlParameter.get("security").equals(key)) {
+        String key = lb.decryptUrl(question, security);
+        if (question.getSenderid().equals(key)) {
 
             if (lb.getServices().getServiceById(question.getSenderid()) == null) {
                 lb.addUndiscovered(question.getSenderbaseurl());
             }
 
-            RestDiscoverAnswer answer = RestDiscoverAnswer.buildAnswer(lb);
+            RestDiscoverAnswer answer = lb.buildRestDiscoverAnswer();
             conversion.getResponse().setWrapJson(false);
-            conversion.getResponse().setData(RestDiscoverAnswer.buildAnswer(lb));
+            conversion.getResponse().setData(answer);
         } else {
             conversion.getResponse().setStatus(HttpStatus.NotFound);
         }
