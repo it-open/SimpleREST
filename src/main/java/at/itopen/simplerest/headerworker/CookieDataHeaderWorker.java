@@ -7,6 +7,7 @@ package at.itopen.simplerest.headerworker;
 
 import at.itopen.simplerest.conversion.Cookie;
 import at.itopen.simplerest.conversion.Request;
+import at.itopen.simplerest.security.CookieAuthUser;
 
 /**
  *
@@ -34,7 +35,11 @@ public class CookieDataHeaderWorker extends AbstractHeaderWorker {
             for (String val1 : values) {
                 String[] parts = val1.trim().split("=");
                 if (parts.length == 2) {
-                    request.getCookies().add(new Cookie(parts[0], parts[1]));
+                    Cookie cookie = new Cookie(parts[0], parts[1]);
+                    request.getCookies().add(cookie);
+                    if (request.getUser() instanceof CookieAuthUser) {
+                        ((CookieAuthUser) request.getUser()).setCookieAuth(request, cookie);
+                    }
                 }
             }
         }

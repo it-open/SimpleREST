@@ -5,14 +5,11 @@
  */
 package at.itopen.simplerest.endpoints;
 
-import at.itopen.simplerest.RestHttpRequestDispatchHandler;
+import at.itopen.simplerest.Json;
 import at.itopen.simplerest.conversion.Conversion;
-import java.io.IOException;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -50,11 +47,7 @@ public abstract class JsonPostEndpoint<T> extends PostEndpoint {
     @Override
     public void CallEndpoint(Conversion conversion, Map<String, String> UrlParameter) {
         if (conversion.getRequest().getContentData() != null) {
-            try {
-                data = (T) RestHttpRequestDispatchHandler.getJSON_CONVERTER().readValue(conversion.getRequest().getContentData(), genericType);
-            } catch (IOException ex) {
-                Logger.getLogger(JsonPostEndpoint.class.getName()).log(Level.SEVERE, null, ex);
-            }
+            data = (T) Json.fromString(conversion.getRequest().getContentData(), genericType);
         }
         super.CallEndpoint(conversion, UrlParameter); //To change body of generated methods, choose Tools | Templates.
     }

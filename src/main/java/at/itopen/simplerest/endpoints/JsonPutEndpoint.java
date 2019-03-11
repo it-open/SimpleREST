@@ -5,25 +5,22 @@
  */
 package at.itopen.simplerest.endpoints;
 
-import at.itopen.simplerest.RestHttpRequestDispatchHandler;
+import at.itopen.simplerest.Json;
 import at.itopen.simplerest.conversion.Conversion;
-import java.io.IOException;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
  * @author roland
  * @param <T>
  */
-public abstract class JsonPutEndpoint<T> extends PutEndpoint{
+public abstract class JsonPutEndpoint<T> extends PutEndpoint {
 
-    Class genericType=null;
+    Class genericType = null;
     T data;
-    
+
     /**
      *
      * @param endpointName
@@ -31,7 +28,7 @@ public abstract class JsonPutEndpoint<T> extends PutEndpoint{
     public JsonPutEndpoint(String endpointName) {
         super(endpointName);
         Type sooper = getClass().getGenericSuperclass();
-        genericType = (Class)((ParameterizedType)sooper).getActualTypeArguments()[ 0 ];
+        genericType = (Class) ((ParameterizedType) sooper).getActualTypeArguments()[0];
     }
 
     /**
@@ -41,24 +38,18 @@ public abstract class JsonPutEndpoint<T> extends PutEndpoint{
     public T getData() {
         return data;
     }
-    
+
     /**
      *
      * @param conversion
      * @param UrlParameter
      */
     @Override
-    public void CallEndpoint(Conversion conversion, Map<String,String> UrlParameter) {
-        if (conversion.getRequest().getContentData()!=null)
-        {
-            try {
-                data=(T)RestHttpRequestDispatchHandler.getJSON_CONVERTER().readValue(conversion.getRequest().getContentData(), genericType);
-            } catch (IOException ex) {
-                Logger.getLogger(JsonPutEndpoint.class.getName()).log(Level.SEVERE, null, ex);
-            }
+    public void CallEndpoint(Conversion conversion, Map<String, String> UrlParameter) {
+        if (conversion.getRequest().getContentData() != null) {
+            data = (T) Json.fromString(conversion.getRequest().getContentData(), genericType);
         }
         super.CallEndpoint(conversion, UrlParameter); //To change body of generated methods, choose Tools | Templates.
     }
- 
 
 }

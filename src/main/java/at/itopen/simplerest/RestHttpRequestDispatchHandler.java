@@ -11,10 +11,6 @@ import at.itopen.simplerest.conversion.HttpStatus;
 import at.itopen.simplerest.conversion.Response;
 import at.itopen.simplerest.headerworker.Headerworker;
 import at.itopen.simplerest.path.EndpointWorker;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFutureListener;
@@ -41,20 +37,8 @@ import java.util.logging.Logger;
 public class RestHttpRequestDispatchHandler extends ChannelInboundHandlerAdapter {
 
     private static final Logger LOG = Logger.getLogger(RestHttpRequestDispatchHandler.class.getName());
-    private static final ObjectMapper JSON_CONVERTER = new ObjectMapper();
     private final Map<String, Conversion> connections = new HashMap<>();
     private final RestHttpServer server;
-
-    static {
-        //JSON_CONVERTER.registerModule(new AfterburnerModule().setUseValueClassLoader(false));
-        JSON_CONVERTER.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, true);
-        JSON_CONVERTER.setDefaultPrettyPrinter(null);
-        JSON_CONVERTER.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
-        JSON_CONVERTER.configure(SerializationFeature.EAGER_SERIALIZER_FETCH, true);
-        JSON_CONVERTER.setSerializationInclusion(Include.NON_EMPTY);
-        JSON_CONVERTER.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-
-    }
 
     /**
      *
@@ -62,15 +46,6 @@ public class RestHttpRequestDispatchHandler extends ChannelInboundHandlerAdapter
      */
     public RestHttpRequestDispatchHandler(RestHttpServer server) {
         this.server = server;
-    }
-
-    /**
-     * A Global Json Converter vrom Jackson
-     *
-     * @return
-     */
-    public static ObjectMapper getJSON_CONVERTER() {
-        return JSON_CONVERTER;
     }
 
     /**
@@ -178,16 +153,16 @@ public class RestHttpRequestDispatchHandler extends ChannelInboundHandlerAdapter
                 String json = "";
                 if (conversion.getResponse().isWrapJson()) {
                     ResponseWrapper wrapper = new ResponseWrapper(conversion.getResponse().getStatus().getCode(), conversion.getResponse().getStatus().getDescription(), conversion.getNanoDuration(), conversion.getResponse().getData());
-                    json = JSON_CONVERTER.writeValueAsString(wrapper);
+                    json = Json.toString(wrapper);
                 } else if (conversion.getResponse().getData() instanceof String) {
                     if (conversion.getResponse().isConvertStringToJson()) {
-                        json = JSON_CONVERTER.writeValueAsString(conversion.getResponse().getData());
+                        json = Json.toString(conversion.getResponse().getData());
                     } else {
                         json = (String) conversion.getResponse().getData();
                     }
 
                 } else {
-                    json = JSON_CONVERTER.writeValueAsString(conversion.getResponse().getData());
+                    json = Json.toString(conversion.getResponse().getData());
                 }
                 ByteBuf bb = Unpooled.copiedBuffer(json, Charset.defaultCharset());
                 writeJSON(ctx, HttpResponseStatus.valueOf(conversion.getResponse().getStatus().getCode()), bb, conversion.getResponse());
@@ -203,7 +178,7 @@ public class RestHttpRequestDispatchHandler extends ChannelInboundHandlerAdapter
                     write(ctx, HttpResponseStatus.valueOf(conversion.getResponse().getStatus().getCode()), bb, conversion.getResponse().getContentType().getMimeType(), conversion.getResponse());
                 } else {
                     ResponseWrapper wrapper = new ResponseWrapper(conversion.getResponse().getStatus().getCode(), conversion.getResponse().getStatus().getDescription(), conversion.getNanoDuration(), conversion.getResponse().getData());
-                    String json = JSON_CONVERTER.writeValueAsString(wrapper);
+                    String json = Json.toString(wrapper);
                     bb = Unpooled.copiedBuffer(json, Charset.defaultCharset());
                     writeJSON(ctx, HttpResponseStatus.valueOf(conversion.getResponse().getStatus().getCode()), bb, conversion.getResponse());
                 }
@@ -211,7 +186,7 @@ public class RestHttpRequestDispatchHandler extends ChannelInboundHandlerAdapter
 
         } else {
             ResponseWrapper wrapper = new ResponseWrapper(conversion.getResponse().getStatus().getCode(), conversion.getResponse().getStatus().getDescription(), conversion.getNanoDuration(), conversion.getResponse().getData());
-            String json = JSON_CONVERTER.writeValueAsString(wrapper);
+            String json = Json.toString(wrapper);
             ByteBuf bb = Unpooled.copiedBuffer(json, Charset.defaultCharset());
             writeJSON(ctx, HttpResponseStatus.valueOf(conversion.getResponse().getStatus().getCode()), bb, conversion.getResponse());
 

@@ -129,12 +129,7 @@ public class LoadBalancerConfig {
      * @param sharedSecret
      */
     public void setSharedSecret(String sharedSecret) {
-        if (sharedSecret != null) {
-            while (sharedSecret.length() < (128 / 8)) {
-                sharedSecret += "-"; // padding;
-            }
-        }
-        this.sharedSecret = sharedSecret;
+        this.sharedSecret = Encryption.correctKEY(sharedSecret);
     }
 
     /**

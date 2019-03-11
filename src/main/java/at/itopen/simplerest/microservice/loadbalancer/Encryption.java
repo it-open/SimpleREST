@@ -73,4 +73,25 @@ public class Encryption {
         return null;
     }
 
+    private static String pad(String source, int length, String padding) {
+        if (source == null) {
+            return null;
+        }
+        while (source.length() < length) {
+            source += padding; // padding;
+        }
+        if (source.length() > length) {
+            source = source.substring(0, length);
+        }
+        return source;
+    }
+
+    public static String correctKEY(String key) {
+        return pad(key, 128 / 8, "-");
+    }
+
+    public static String correctINITV(String key) {
+        return pad(key, 16, "-");
+    }
+
 }

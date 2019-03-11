@@ -5,9 +5,8 @@
  */
 package at.itopen.simplerest.client;
 
-import at.itopen.simplerest.RestHttpRequestDispatchHandler;
+import at.itopen.simplerest.Json;
 import com.fasterxml.jackson.databind.JsonNode;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Locale;
 import java.util.logging.Level;
@@ -21,18 +20,18 @@ import org.apache.http.util.EntityUtils;
  * @author roland
  */
 public class RestResponse {
-    
-    private byte[] data=null;
+
+    private byte[] data = null;
     private final HttpResponse res;
-    
+
     /**
      *
      * @param res
      */
     public RestResponse(HttpResponse res) {
-        this.res=res;
+        this.res = res;
         try {
-            data=EntityUtils.toByteArray(res.getEntity());
+            data = EntityUtils.toByteArray(res.getEntity());
         } catch (IOException ex) {
             Logger.getLogger(RestResponse.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -45,7 +44,7 @@ public class RestResponse {
     public byte[] getData() {
         return data;
     }
-    
+
     /**
      *
      * @return
@@ -53,78 +52,67 @@ public class RestResponse {
     public String getDataAsString() {
         return new String(data);
     }
-    
+
     /**
      *
      * @return
      */
-    public JsonNode getJSON()
-    {
+    public JsonNode getJSON() {
         try {
-            return RestHttpRequestDispatchHandler.getJSON_CONVERTER().readTree(getDataAsString());
+            return Json.getJSON_CONVERTER().readTree(getDataAsString());
         } catch (IOException ex) {
             Logger.getLogger(RestResponse.class.getName()).log(Level.SEVERE, getDataAsString(), ex);
         }
         return null;
     }
-    
+
     /**
      *
      * @return
      */
-    public int getStatusCode()
-    {
+    public int getStatusCode() {
         return res.getStatusLine().getStatusCode();
     }
-    
+
     /**
      *
      * @return
      */
-    public String getStatusText()
-    {
+    public String getStatusText() {
         return res.getStatusLine().getReasonPhrase();
     }
-    
+
     /**
      *
      * @return
      */
-    public ProtocolVersion getProtocolVersion()
-    {
+    public ProtocolVersion getProtocolVersion() {
         return res.getProtocolVersion();
     }
-    
+
     /**
      *
      * @return
      */
-    public Locale getLocale()
-    {
+    public Locale getLocale() {
         return res.getLocale();
     }
-    
+
     /**
      *
      * @param name
      * @return
      */
-    public String getHeader(String name)
-    {
+    public String getHeader(String name) {
         return res.getFirstHeader(name).getValue();
     }
-    
+
     /**
      *
      * @return
      */
-    public long getContentLength()
-    {
+    public long getContentLength() {
         return res.getEntity().getContentLength();
     }
-                
-                
-    
-    
-    
+
 }

@@ -5,7 +5,7 @@
  */
 package at.itopen.simplerest.microservice.loadbalancer;
 
-import at.itopen.simplerest.RestHttpRequestDispatchHandler;
+import at.itopen.simplerest.Json;
 import at.itopen.simplerest.client.RestBuilder;
 import at.itopen.simplerest.client.RestResponse;
 import java.io.IOException;
@@ -173,10 +173,8 @@ public final class LoadBalancer {
     public String encryptUrl(RestDiscoverQuestion restDiscoverQuestion) {
 
         String key = getConfig().getServiceid();
-        String initv = "" + restDiscoverQuestion.getTimestamp();
-        while (initv.length() < 16) {
-            initv += "-";
-        }
+        String initv = Encryption.correctINITV("" + restDiscoverQuestion.getTimestamp());
+
         if (getConfig().getSharedSecret() != null) {
             key = Encryption.AESencrypt(getConfig().getSharedSecret(), initv, key);
         }
@@ -186,10 +184,7 @@ public final class LoadBalancer {
 
     public String decryptUrl(RestDiscoverQuestion restDiscoverQuestion, String key) {
 
-        String initv = "" + restDiscoverQuestion.getTimestamp();
-        while (initv.length() < 16) {
-            initv += "-";
-        }
+        String initv = Encryption.correctINITV("" + restDiscoverQuestion.getTimestamp());
         if (getConfig().getSharedSecret() != null) {
             key = Encryption.AESdecrypt(getConfig().getSharedSecret(), initv, key);
         }
@@ -210,12 +205,12 @@ public final class LoadBalancer {
             String key = encryptUrl(restDiscoverQuestion);
 
             url += "loadbalancer/" + key + "/remote";
-            RestResponse response = restBuilder.POST(url).setJson(RestHttpRequestDispatchHandler.getJSON_CONVERTER().writeValueAsString(restDiscoverQuestion)).work();
+            RestResponse response = restBuilder.POST(url).setJson(Json.toString(restDiscoverQuestion)).work();
             if (response == null) {
                 return;
             }
             if (response.getStatusCode() == 200) {
-                RestDiscoverAnswer answer = RestHttpRequestDispatchHandler.getJSON_CONVERTER().readValue(response.getDataAsString(), RestDiscoverAnswer.class);
+                RestDiscoverAnswer answer = Json.fromString(response.getDataAsString(), RestDiscoverAnswer.class);
                 long timediff = System.currentTimeMillis() - answer.getTimestamp();
 
                 for (RestService restService : answer.getServices()) {
