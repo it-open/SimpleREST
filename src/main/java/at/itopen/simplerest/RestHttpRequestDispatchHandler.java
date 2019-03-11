@@ -74,12 +74,14 @@ public class RestHttpRequestDispatchHandler extends ChannelInboundHandlerAdapter
 
         public int code;
         public String message;
+        public String info;
         public double generationMsSeconds;
         public Object data;
 
-        public ResponseWrapper(int code, String message, long generationNanoSeconds, Object data) {
+        public ResponseWrapper(int code, String message, String info, long generationNanoSeconds, Object data) {
             this.code = code;
             this.message = message;
+            this.info = info;
             this.generationMsSeconds = generationNanoSeconds / 1000000.0;
             this.data = data;
         }
@@ -152,7 +154,7 @@ public class RestHttpRequestDispatchHandler extends ChannelInboundHandlerAdapter
             if (conversion.getResponse().getContentType().equals(ContentType.JSON)) {
                 String json = "";
                 if (conversion.getResponse().isWrapJson()) {
-                    ResponseWrapper wrapper = new ResponseWrapper(conversion.getResponse().getStatus().getCode(), conversion.getResponse().getStatus().getDescription(), conversion.getNanoDuration(), conversion.getResponse().getData());
+                    ResponseWrapper wrapper = new ResponseWrapper(conversion.getResponse().getStatus().getCode(), conversion.getResponse().getStatus().getDescription(), conversion.getResponse().getStatusMessage(), conversion.getNanoDuration(), conversion.getResponse().getData());
                     json = Json.toString(wrapper);
                 } else if (conversion.getResponse().getData() instanceof String) {
                     if (conversion.getResponse().isConvertStringToJson()) {
@@ -177,7 +179,7 @@ public class RestHttpRequestDispatchHandler extends ChannelInboundHandlerAdapter
                 if (bb != null) {
                     write(ctx, HttpResponseStatus.valueOf(conversion.getResponse().getStatus().getCode()), bb, conversion.getResponse().getContentType().getMimeType(), conversion.getResponse());
                 } else {
-                    ResponseWrapper wrapper = new ResponseWrapper(conversion.getResponse().getStatus().getCode(), conversion.getResponse().getStatus().getDescription(), conversion.getNanoDuration(), conversion.getResponse().getData());
+                    ResponseWrapper wrapper = new ResponseWrapper(conversion.getResponse().getStatus().getCode(), conversion.getResponse().getStatus().getDescription(), conversion.getResponse().getStatusMessage(), conversion.getNanoDuration(), conversion.getResponse().getData());
                     String json = Json.toString(wrapper);
                     bb = Unpooled.copiedBuffer(json, Charset.defaultCharset());
                     writeJSON(ctx, HttpResponseStatus.valueOf(conversion.getResponse().getStatus().getCode()), bb, conversion.getResponse());
@@ -185,7 +187,7 @@ public class RestHttpRequestDispatchHandler extends ChannelInboundHandlerAdapter
             }
 
         } else {
-            ResponseWrapper wrapper = new ResponseWrapper(conversion.getResponse().getStatus().getCode(), conversion.getResponse().getStatus().getDescription(), conversion.getNanoDuration(), conversion.getResponse().getData());
+            ResponseWrapper wrapper = new ResponseWrapper(conversion.getResponse().getStatus().getCode(), conversion.getResponse().getStatus().getDescription(), conversion.getResponse().getStatusMessage(), conversion.getNanoDuration(), conversion.getResponse().getData());
             String json = Json.toString(wrapper);
             ByteBuf bb = Unpooled.copiedBuffer(json, Charset.defaultCharset());
             writeJSON(ctx, HttpResponseStatus.valueOf(conversion.getResponse().getStatus().getCode()), bb, conversion.getResponse());
