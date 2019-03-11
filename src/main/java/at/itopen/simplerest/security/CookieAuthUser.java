@@ -5,8 +5,8 @@
  */
 package at.itopen.simplerest.security;
 
+import at.itopen.simplerest.conversion.Conversion;
 import at.itopen.simplerest.conversion.Cookie;
-import at.itopen.simplerest.conversion.Request;
 
 /**
  *
@@ -16,9 +16,9 @@ public interface CookieAuthUser {
 
     /**
      *
-     * @param request
+     * @param conversion
      * @param cookie
      */
-    public void setCookieAuth(Request request, Cookie cookie);
+    public void setCookieAuth(Conversion conversion, Cookie cookie);
 
 }

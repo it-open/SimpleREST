@@ -5,13 +5,14 @@
  */
 package at.itopen.simplerest.headerworker;
 
+import at.itopen.simplerest.conversion.Conversion;
 import at.itopen.simplerest.conversion.Request;
 
 /**
  *
  * @author roland
  */
-public class SeperatorDataHeaderWorker extends AbstractHeaderWorker{
+public class SeperatorDataHeaderWorker extends AbstractHeaderWorker {
 
     String section;
     String seperator;
@@ -31,22 +32,17 @@ public class SeperatorDataHeaderWorker extends AbstractHeaderWorker{
      * @param request
      */
     @Override
-    public void work(Request request) {
-        String value=request.getHeaders().get(section);
-        String[] values=value.split(seperator);
-        if (values.length>1)
-        {
+    public void work(Conversion conversion) {
+        Request request = conversion.getRequest();
+        String value = request.getHeaders().get(section);
+        String[] values = value.split(seperator);
+        if (values.length > 1) {
             request.getHeaders().remove(section);
-            for (String val1:values)
-            {
-                request.getHeaders().add(section,val1.trim());
+            for (String val1 : values) {
+                request.getHeaders().add(section, val1.trim());
             }
         }
-                
-        
-    }
-    
-   
 
-    
+    }
+
 }

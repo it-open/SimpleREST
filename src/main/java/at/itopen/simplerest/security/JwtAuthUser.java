@@ -5,21 +5,21 @@
  */
 package at.itopen.simplerest.security;
 
-import at.itopen.simplerest.conversion.Request;
+import at.itopen.simplerest.conversion.Conversion;
 
 /**
  *
  * @author roland
  */
 public interface JwtAuthUser {
-    
+
     /**
      *
-     * @param request
+     * @param conversion
      * @param Id
      * @param issuer
      * @param Subject
      */
-    public void setJwtAuth(Request request,String Id,String issuer,String Subject);
-    
+    public void setJwtAuth(Conversion conversion, String Id, String issuer, String Subject);
+
 }

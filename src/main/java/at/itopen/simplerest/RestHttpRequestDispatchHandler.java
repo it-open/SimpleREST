@@ -113,7 +113,7 @@ public class RestHttpRequestDispatchHandler extends ChannelInboundHandlerAdapter
      */
     public static void process(Conversion conversion, ChannelHandlerContext ctx) throws Exception {
         System.out.println(conversion.getRequest().getMethod() + " " + conversion.getRequest().getUri() + " (" + ctx.channel().id().asLongText() + ")");
-        Headerworker.work(conversion.getRequest());
+        Headerworker.work(conversion);
         EndpointWorker worker = null;
 
         try {

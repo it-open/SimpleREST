@@ -5,26 +5,23 @@
  */
 package at.itopen.simplerest.headerworker;
 
+import at.itopen.simplerest.conversion.Conversion;
 import at.itopen.simplerest.conversion.Request;
 
 /**
  *
  * @author roland
  */
-public class JsonDataWorker extends AbstractHeaderWorker{
+public class JsonDataWorker extends AbstractHeaderWorker {
 
     /**
      *
      * @param request
      */
     @Override
-    public void work(Request request) {
-        
-        
-        
-    }
-    
-  
+    public void work(Conversion conversion) {
+        Request request = conversion.getRequest();
 
-    
+    }
+
 }

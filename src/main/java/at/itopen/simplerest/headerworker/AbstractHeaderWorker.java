@@ -5,18 +5,18 @@
  */
 package at.itopen.simplerest.headerworker;
 
-import at.itopen.simplerest.conversion.Request;
+import at.itopen.simplerest.conversion.Conversion;
 
 /**
  *
  * @author roland
  */
 public abstract class AbstractHeaderWorker {
-    
+
     /**
      *
-     * @param requst
+     * @param conversion
      */
-    public abstract void work(Request requst);
-    
+    public abstract void work(Conversion conversion);
+
 }

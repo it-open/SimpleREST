@@ -5,6 +5,7 @@
  */
 package at.itopen.simplerest.headerworker;
 
+import at.itopen.simplerest.conversion.Conversion;
 import at.itopen.simplerest.conversion.Request;
 import at.itopen.simplerest.security.JwtAuthUser;
 import at.itopen.simplerest.security.RestSecurity;
@@ -27,12 +28,13 @@ public class AuthorizationBearerDataHeaderWorker extends AbstractHeaderWorker {
      * @param request
      */
     @Override
-    public void work(Request request) {
+    public void work(Conversion conversion) {
+        Request request = conversion.getRequest();
         String value = request.getHeaders().getAll("authorization").get(1);
         RestSecurity.JwtInfo info = RestSecurity.JWS_DECRYPT(value);
         if (info != null) {
             if (request.getUser() instanceof JwtAuthUser) {
-                ((JwtAuthUser) request.getUser()).setJwtAuth(request,info.getId(), info.getIssuer(), info.getSubject());
+                ((JwtAuthUser) request.getUser()).setJwtAuth(conversion, info.getId(), info.getIssuer(), info.getSubject());
                 request.getHeaders().remove("authorization");
             }
         }
