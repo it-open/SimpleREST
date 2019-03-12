@@ -16,7 +16,7 @@ import java.util.Map;
  * @author roland
  */
 public class Services {
-
+    
     private final Map<String, List<Service>> services = new HashMap<>();
     private AbstratctServiceRating rating = null;
     private LoadBalancer loadBalancer;
@@ -39,7 +39,7 @@ public class Services {
                 services.put(service.getType(), new ArrayList<>());
             }
             services.get(service.getType()).add(service);
-
+            
         }
     }
 
@@ -49,7 +49,7 @@ public class Services {
      * @param baseurl
      */
     public void addService(String id, String baseurl) {
-
+        
     }
 
     /**
@@ -107,6 +107,10 @@ public class Services {
      */
     public void removeService(Service service) {
         services.get(service.getType()).remove(service);
+    }
+    
+    public void serviceError(Service service) {
+        getServiceById(service.getId()).setRating(0);
     }
 
     /**
@@ -187,5 +191,5 @@ public class Services {
         }
         return true;
     }
-
+    
 }

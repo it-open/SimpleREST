@@ -8,6 +8,7 @@ package at.itopen.simplerest.microservice.loadbalancer;
 import at.itopen.simplerest.Json;
 import at.itopen.simplerest.client.RestBuilder;
 import at.itopen.simplerest.client.RestResponse;
+import at.itopen.simplerest.microservice.client.LoadBalancedRestClient;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -72,6 +73,10 @@ public final class LoadBalancer {
         config.getRestHttpServer().getRootEndpoint().addSubPath("loadbalancer").addSubPath(":security").addRestEndpoint(new RestDiscover("remote"));
         config.getRestHttpServer().getRootEndpoint().addSubPath("loadbalancer").addRestEndpoint(new RestStatus("status"));
 
+    }
+
+    public LoadBalancedRestClient RestClient(String url, LoadBalancedRestClient.REST_METHOD method) {
+        return new LoadBalancedRestClient(config.getRestHttpServer(), url, method);
     }
 
     /**

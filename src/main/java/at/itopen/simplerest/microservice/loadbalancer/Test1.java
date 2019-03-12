@@ -6,6 +6,9 @@
 package at.itopen.simplerest.microservice.loadbalancer;
 
 import at.itopen.simplerest.RestHttpServer;
+import at.itopen.simplerest.conversion.Conversion;
+import at.itopen.simplerest.endpoints.GetEndpoint;
+import java.util.Map;
 
 /**
  *
@@ -22,6 +25,12 @@ public class Test1 {
         config.addInitialDiscoverUrl("http://127.0.0.1:9000");
         config.setSharedSecret("Roland Schuller");
         server.enableLoadBalancer(config);
+        server.getRootEndpoint().addRestEndpoint(new GetEndpoint("ping") {
+            @Override
+            public void Call(Conversion conversion, Map<String, String> UrlParameter) {
+                System.out.println("Ping:" + conversion.getRequest().getParam("num"));
+            }
+        });
     }
 
 }
