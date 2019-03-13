@@ -121,14 +121,19 @@ public class LoadBalancedRestClient {
         return this;
     }
 
-    private RestResponse work(String url) throws Exception {
+    private RestResponse work(Service service, String url) throws Exception {
+        String serviceurl = service.getBaseurl();
+        restHttpServer.getLoadBalancer().getServices().logAccess(service);
+        if (!serviceurl.endsWith("/")) {
+            serviceurl += "/";
+        }
         DefaultHttpClient httpClient = new DefaultHttpClient();
         HttpResponse response = null;
         try {
 
             if (method.equals(REST_METHOD.POST) || method.equals(REST_METHOD.PUT)) {
 
-                HttpPost postRequest = new HttpPost(url);
+                HttpPost postRequest = new HttpPost(serviceurl + url);
                 HttpEntity entity;
 
                 if (json == null) {
@@ -188,6 +193,7 @@ public class LoadBalancedRestClient {
             }
 
         } catch (IOException ex) {
+            restHttpServer.getLoadBalancer().getServices().serviceError(service);
             Logger.getLogger(LoadBalancedRestClient.class.getName()).log(Level.SEVERE, null, ex);
             throw new Exception(ex);
         } finally {
@@ -196,40 +202,25 @@ public class LoadBalancedRestClient {
         return new RestResponse(response);
     }
 
-    private String service2url(String service) {
-        String baseUrl = restHttpServer.getLoadBalancer().getServices().getBaseUrlsForServiceType(service);
-        if (baseUrl != null) {
-            if (!baseUrl.endsWith("/")) {
-                baseUrl += "/";
-            }
-            return baseUrl;
-        } else {
-            return null;
-        }
+    private Service serviceSelect(String servicetype) {
+        Service service = restHttpServer.getLoadBalancer().getServices().getRandomForServiceType(servicetype);
+        return service;
     }
 
-    private String serviceid2url(String serviceid) {
+    private Service serviceid2Service(String serviceid) {
         Service service = restHttpServer.getLoadBalancer().getServices().getServiceById(serviceid);
         if (service == null) {
             return null;
         }
-        String baseUrl = service.getBaseurl();
-        if (baseUrl != null) {
-            if (!baseUrl.endsWith("/")) {
-                baseUrl += "/";
-            }
-            return baseUrl;
-        } else {
-            return null;
-        }
+        return service;
     }
 
     public RestResponse toSingleService(String servicetype, boolean retryonfail) {
         while (true) {
-            String serviceurl = service2url(servicetype);
+            Service service = serviceSelect(servicetype);
             if (url != null) {
                 try {
-                    return work(serviceurl + url);
+                    return work(service, url);
                 } catch (Exception ex) {
                     Logger.getLogger(LoadBalancedRestClient.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -246,10 +237,10 @@ public class LoadBalancedRestClient {
             @Override
             public void run() {
                 while (true) {
-                    String serviceurl = service2url(servicetype);
+                    Service service = serviceSelect(servicetype);
                     if (url != null) {
                         try {
-                            work(serviceurl + url);
+                            work(service, url);
                         } catch (Exception ex) {
                             Logger.getLogger(LoadBalancedRestClient.class.getName()).log(Level.SEVERE, null, ex);
                         }
@@ -264,10 +255,10 @@ public class LoadBalancedRestClient {
 
     public RestResponse toDistinctService(String serviceid, boolean retryonfail) {
         while (true) {
-            String serviceurl = serviceid2url(serviceid);
+            Service service = serviceid2Service(serviceid);
             if (url != null) {
                 try {
-                    return work(serviceurl + url);
+                    return work(service, url);
                 } catch (Exception ex) {
                     Logger.getLogger(LoadBalancedRestClient.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -284,10 +275,10 @@ public class LoadBalancedRestClient {
             @Override
             public void run() {
                 while (true) {
-                    String serviceurl = serviceid2url(serviceid);
+                    Service service = serviceid2Service(serviceid);
                     if (url != null) {
                         try {
-                            work(serviceurl + url);
+                            work(service, url);
                         } catch (Exception ex) {
                             Logger.getLogger(LoadBalancedRestClient.class.getName()).log(Level.SEVERE, null, ex);
                         }
@@ -309,13 +300,11 @@ public class LoadBalancedRestClient {
                         continue;
                     }
                     while (true) {
-                        String serviceurl = service.getBaseurl();
+
                         if (url != null) {
                             try {
-                                if (!serviceurl.endsWith("/")) {
-                                    serviceurl += "/";
-                                }
-                                work(serviceurl + url);
+
+                                work(service, url);
                                 break;
                             } catch (Exception ex) {
                                 Logger.getLogger(LoadBalancedRestClient.class.getName()).log(Level.SEVERE, null, ex);
@@ -336,13 +325,11 @@ public class LoadBalancedRestClient {
             public void run() {
                 for (Service service : restHttpServer.getLoadBalancer().getServices().getAllActiveServices()) {
                     while (true) {
-                        String serviceurl = service.getBaseurl();
+
                         if (url != null) {
                             try {
-                                if (!serviceurl.endsWith("/")) {
-                                    serviceurl += "/";
-                                }
-                                work(serviceurl + url);
+
+                                work(service, url);
                                 break;
                             } catch (Exception ex) {
                                 Logger.getLogger(LoadBalancedRestClient.class.getName()).log(Level.SEVERE, null, ex);

@@ -18,10 +18,4 @@ public abstract class AbstratctServiceRating {
      */
     public abstract double rate(Service service);
 
-    /**
-     *
-     * @return
-     */
-    public abstract double wearleveling();
-
 }

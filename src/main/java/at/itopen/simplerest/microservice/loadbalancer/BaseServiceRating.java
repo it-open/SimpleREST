@@ -42,13 +42,4 @@ public class BaseServiceRating extends AbstratctServiceRating {
 
     }
 
-    /**
-     *
-     * @return
-     */
-    @Override
-    public double wearleveling() {
-        return 0.1;
-    }
-
 }
