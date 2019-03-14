@@ -6,6 +6,7 @@
 package at.itopen.simplerest.microservice.client;
 
 import at.itopen.simplerest.RestHttpServer;
+import at.itopen.simplerest.client.RestClient.REST_METHOD;
 import at.itopen.simplerest.client.RestFile;
 import at.itopen.simplerest.microservice.loadbalancer.Service;
 import java.io.IOException;
@@ -34,9 +35,6 @@ public class LoadBalancedRestClient {
     String url;
     Map<String, String> params = new HashMap<>();
 
-    public static enum REST_METHOD {
-        GET, PUT, POST, DELETE
-    };
     REST_METHOD method;
     String json = null;
     Map<String, RestFile> files = new HashMap<>();

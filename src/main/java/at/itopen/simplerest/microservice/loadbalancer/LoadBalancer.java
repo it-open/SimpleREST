@@ -6,10 +6,9 @@
 package at.itopen.simplerest.microservice.loadbalancer;
 
 import at.itopen.simplerest.Json;
-import at.itopen.simplerest.client.RestBuilder;
+import at.itopen.simplerest.client.RestClient;
 import at.itopen.simplerest.client.RestResponse;
 import at.itopen.simplerest.microservice.client.LoadBalancedRestClient;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -22,7 +21,6 @@ import java.util.logging.Logger;
 public final class LoadBalancer {
 
     private final LoadBalancerConfig config;
-    private final RestBuilder restBuilder = new RestBuilder();
     private List<String> undiscovered = new ArrayList<>();
     private boolean available = true;
     private final Services services;
@@ -75,7 +73,7 @@ public final class LoadBalancer {
 
     }
 
-    public LoadBalancedRestClient RestClient(String url, LoadBalancedRestClient.REST_METHOD method) {
+    public LoadBalancedRestClient RestClient(String url, RestClient.REST_METHOD method) {
         return new LoadBalancedRestClient(config.getRestHttpServer(), url, method);
     }
 
@@ -210,7 +208,8 @@ public final class LoadBalancer {
             String key = encryptUrl(restDiscoverQuestion);
 
             url += "loadbalancer/" + key + "/remote";
-            RestResponse response = restBuilder.POST(url).setJson(Json.toString(restDiscoverQuestion)).work();
+
+            RestResponse response = new RestClient(url, RestClient.REST_METHOD.POST).setJson(Json.toString(restDiscoverQuestion)).toSingle(false);
             if (response == null) {
                 return;
             }
@@ -243,11 +242,8 @@ public final class LoadBalancer {
                 }
 
             }
-        } catch (java.net.ConnectException ex) {
-            // No Connection to Host. Could be normal
-        } catch (java.net.SocketException ex) {
-            // Socket gone. Could be normal
-        } catch (IOException ex) {
+
+        } catch (Exception ex) {
             Logger.getLogger(LoadBalancer.class.getName()).log(Level.SEVERE, null, ex);
         }
     }

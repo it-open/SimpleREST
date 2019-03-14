@@ -6,6 +6,7 @@
 package at.itopen.simplerest.microservice.loadbalancer;
 
 import at.itopen.simplerest.RestHttpServer;
+import at.itopen.simplerest.client.RestClient;
 import at.itopen.simplerest.conversion.Conversion;
 import at.itopen.simplerest.endpoints.GetEndpoint;
 import at.itopen.simplerest.microservice.client.LoadBalancedRestClient;
@@ -39,7 +40,7 @@ public class Test11 {
         } catch (InterruptedException ex) {
             Logger.getLogger(Test11.class.getName()).log(Level.SEVERE, null, ex);
         }
-        LoadBalancedRestClient rc = server.getLoadBalancer().RestClient("ping", LoadBalancedRestClient.REST_METHOD.GET);
+        LoadBalancedRestClient rc = server.getLoadBalancer().RestClient("ping", RestClient.REST_METHOD.GET);
         rc.setParameter("num", "100");
         rc.toAllServicesFireAndForget(false);
     }
