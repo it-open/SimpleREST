@@ -8,6 +8,7 @@ package at.itopen.simplerest.microservice.client;
 import at.itopen.simplerest.RestHttpServer;
 import at.itopen.simplerest.client.RestClient.REST_METHOD;
 import at.itopen.simplerest.client.RestFile;
+import at.itopen.simplerest.client.RestResponse;
 import at.itopen.simplerest.microservice.loadbalancer.Service;
 import java.io.IOException;
 import java.util.HashMap;
@@ -127,6 +128,7 @@ public class LoadBalancedRestClient {
         }
         DefaultHttpClient httpClient = new DefaultHttpClient();
         HttpResponse response = null;
+        long start = System.nanoTime();
         try {
 
             if (method.equals(REST_METHOD.POST) || method.equals(REST_METHOD.PUT)) {
@@ -192,12 +194,11 @@ public class LoadBalancedRestClient {
 
         } catch (IOException ex) {
             restHttpServer.getLoadBalancer().getServices().serviceError(service);
-            Logger.getLogger(LoadBalancedRestClient.class.getName()).log(Level.SEVERE, null, ex);
-            throw new Exception(ex);
+            return null;
         } finally {
             httpClient.close();
         }
-        return new RestResponse(response);
+        return new RestResponse(response, start);
     }
 
     private Service serviceSelect(String servicetype) {

@@ -119,6 +119,7 @@ public class RestClient {
 
         DefaultHttpClient httpClient = new DefaultHttpClient();
         HttpResponse response = null;
+        long start = System.nanoTime();
         try {
 
             if (method.equals(REST_METHOD.POST) || method.equals(REST_METHOD.PUT)) {
@@ -183,12 +184,11 @@ public class RestClient {
             }
 
         } catch (IOException ex) {
-            Logger.getLogger(RestClient.class.getName()).log(Level.SEVERE, null, ex);
-            throw new Exception(ex);
+            return null;
         } finally {
             httpClient.close();
         }
-        return new RestResponse(response);
+        return new RestResponse(response, start);
     }
 
     public RestResponse toSingle(boolean retryonfail) {
