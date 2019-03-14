@@ -5,6 +5,7 @@
  */
 package at.itopen.simplerest.client;
 
+import at.itopen.simplerest.Json;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -51,6 +52,30 @@ public class RestClient {
     }
 
     private final Map<String, String> headers = new HashMap<>();
+
+    public Map<String, RestFile> getFiles() {
+        return files;
+    }
+
+    public Map<String, String> getHeaders() {
+        return headers;
+    }
+
+    public String getJson() {
+        return json;
+    }
+
+    public REST_METHOD getMethod() {
+        return method;
+    }
+
+    public Map<String, String> getParams() {
+        return params;
+    }
+
+    public String getUrl() {
+        return url;
+    }
 
     /**
      *
@@ -102,6 +127,10 @@ public class RestClient {
             throw new RuntimeException("No JSON allowed on GET or DELETE");
         }
         return this;
+    }
+
+    public RestClient setJson(Object object) {
+        return setJson(Json.toString(object));
     }
 
     /**

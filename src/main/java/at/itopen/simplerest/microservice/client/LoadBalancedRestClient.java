@@ -6,13 +6,12 @@
 package at.itopen.simplerest.microservice.client;
 
 import at.itopen.simplerest.RestHttpServer;
+import at.itopen.simplerest.client.RestClient;
 import at.itopen.simplerest.client.RestClient.REST_METHOD;
 import at.itopen.simplerest.client.RestFile;
 import at.itopen.simplerest.client.RestResponse;
 import at.itopen.simplerest.microservice.loadbalancer.Service;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.http.HttpEntity;
@@ -30,15 +29,9 @@ import org.apache.http.impl.client.DefaultHttpClient;
  *
  * @author roland
  */
-public class LoadBalancedRestClient {
+public class LoadBalancedRestClient extends RestClient {
 
     RestHttpServer restHttpServer;
-    String url;
-    Map<String, String> params = new HashMap<>();
-
-    REST_METHOD method;
-    String json = null;
-    Map<String, RestFile> files = new HashMap<>();
 
     /**
      *
@@ -47,77 +40,9 @@ public class LoadBalancedRestClient {
      * @param method
      */
     public LoadBalancedRestClient(RestHttpServer restHttpServer, String url, REST_METHOD method) {
+        super(url, method);
         this.restHttpServer = restHttpServer;
-        if (url.startsWith("/")) {
-            url = url.substring(1);
-        }
-        this.url = url;
-        this.method = method;
-    }
 
-    private final Map<String, String> headers = new HashMap<>();
-
-    /**
-     *
-     * @param key
-     * @param value
-     * @return
-     */
-    public LoadBalancedRestClient setParameter(String key, String value) {
-        if (json != null) {
-            throw new RuntimeException("JSON already set. No Parameters allowed!");
-        }
-        params.put(key, value);
-        return this;
-    }
-
-    /**
-     *
-     * @param name
-     * @param file
-     * @return
-     */
-    public LoadBalancedRestClient addFile(String name, RestFile file) {
-        if (json != null) {
-            throw new RuntimeException("JSON already set. No Files allowed!");
-        }
-        if (method.equals(REST_METHOD.POST) || method.equals(REST_METHOD.PUT)) {
-            files.put(name, file);
-        } else {
-            throw new RuntimeException("Files only Allowed on GET or PUT");
-        }
-        return this;
-    }
-
-    /**
-     *
-     * @param json
-     * @return
-     */
-    public LoadBalancedRestClient setJson(String json) {
-        if (!params.isEmpty()) {
-            throw new RuntimeException("Parameters already set. No JSON allowed!");
-        }
-        if (!files.isEmpty()) {
-            throw new RuntimeException("Files already set. No JSON allowed!");
-        }
-        if (method.equals(REST_METHOD.POST) || method.equals(REST_METHOD.PUT)) {
-            this.json = json;
-        } else {
-            throw new RuntimeException("No JSON allowed on GET or DELETE");
-        }
-        return this;
-    }
-
-    /**
-     *
-     * @param key
-     * @param Value
-     * @return
-     */
-    public LoadBalancedRestClient setHeader(String key, String Value) {
-        headers.put(key, Value);
-        return this;
     }
 
     private RestResponse work(Service service, String url) throws Exception {
@@ -131,25 +56,25 @@ public class LoadBalancedRestClient {
         long start = System.nanoTime();
         try {
 
-            if (method.equals(REST_METHOD.POST) || method.equals(REST_METHOD.PUT)) {
+            if (getMethod().equals(REST_METHOD.POST) || getMethod().equals(REST_METHOD.PUT)) {
 
                 HttpPost postRequest = new HttpPost(serviceurl + url);
                 HttpEntity entity;
 
-                if (json == null) {
+                if (getJson() == null) {
                     MultipartEntityBuilder data = MultipartEntityBuilder.create()
                             .setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
-                    params.entrySet().forEach((e) -> {
+                    getParams().entrySet().forEach((e) -> {
                         data.addTextBody(e.getKey(), e.getValue());
                     });
-                    files.entrySet().forEach((e) -> {
+                    getFiles().entrySet().forEach((e) -> {
                         RestFile file = e.getValue();
                         data.addBinaryBody(e.getKey(), file.getData(), file.getContentType(), file.getName());
                     });
                     entity = data.build();
                 } else {
                     entity = new StringEntity(
-                            json,
+                            getJson(),
                             ContentType.APPLICATION_JSON);
                 }
 
@@ -158,10 +83,10 @@ public class LoadBalancedRestClient {
 
             }
 
-            if (method.equals(REST_METHOD.GET)) {
+            if (getMethod().equals(REST_METHOD.GET)) {
 
                 StringBuilder out = new StringBuilder();
-                params.entrySet().forEach((e) -> {
+                getParams().entrySet().forEach((e) -> {
                     if (out.length() == 0) {
                         out.append("?");
                     } else {
@@ -175,10 +100,10 @@ public class LoadBalancedRestClient {
 
             }
 
-            if (method.equals(REST_METHOD.DELETE)) {
+            if (getMethod().equals(REST_METHOD.DELETE)) {
 
                 StringBuilder out = new StringBuilder();
-                params.entrySet().forEach((e) -> {
+                getParams().entrySet().forEach((e) -> {
                     if (out.length() == 0) {
                         out.append("?");
                     } else {
@@ -217,9 +142,9 @@ public class LoadBalancedRestClient {
     public RestResponse toSingleService(String servicetype, boolean retryonfail) {
         while (true) {
             Service service = serviceSelect(servicetype);
-            if (url != null) {
+            if (getUrl() != null) {
                 try {
-                    return work(service, url);
+                    return work(service, getUrl());
                 } catch (Exception ex) {
                     Logger.getLogger(LoadBalancedRestClient.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -232,14 +157,14 @@ public class LoadBalancedRestClient {
     }
 
     public void toSingleServiceFireAndForget(String servicetype, boolean retryonfail) {
-        new Thread("SSFF:" + url) {
+        new Thread("SSFF:" + getUrl()) {
             @Override
             public void run() {
                 while (true) {
                     Service service = serviceSelect(servicetype);
-                    if (url != null) {
+                    if (getUrl() != null) {
                         try {
-                            work(service, url);
+                            work(service, getUrl());
                         } catch (Exception ex) {
                             Logger.getLogger(LoadBalancedRestClient.class.getName()).log(Level.SEVERE, null, ex);
                         }
@@ -255,9 +180,9 @@ public class LoadBalancedRestClient {
     public RestResponse toDistinctService(String serviceid, boolean retryonfail) {
         while (true) {
             Service service = serviceid2Service(serviceid);
-            if (url != null) {
+            if (getUrl() != null) {
                 try {
-                    return work(service, url);
+                    return work(service, getUrl());
                 } catch (Exception ex) {
                     Logger.getLogger(LoadBalancedRestClient.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -270,14 +195,14 @@ public class LoadBalancedRestClient {
     }
 
     public void toDistinctServiceFireAndForget(String serviceid, boolean retryonfail) {
-        new Thread("DSFF:" + url) {
+        new Thread("DSFF:" + getUrl()) {
             @Override
             public void run() {
                 while (true) {
                     Service service = serviceid2Service(serviceid);
-                    if (url != null) {
+                    if (getUrl() != null) {
                         try {
-                            work(service, url);
+                            work(service, getUrl());
                         } catch (Exception ex) {
                             Logger.getLogger(LoadBalancedRestClient.class.getName()).log(Level.SEVERE, null, ex);
                         }
@@ -291,7 +216,7 @@ public class LoadBalancedRestClient {
     }
 
     public void toAllServicesFireAndForget(String servicetype, boolean retryonfail) {
-        new Thread("SSFF:" + url) {
+        new Thread("SSFF:" + getUrl()) {
             @Override
             public void run() {
                 for (Service service : restHttpServer.getLoadBalancer().getServices().getAllActiveServices()) {
@@ -300,10 +225,10 @@ public class LoadBalancedRestClient {
                     }
                     while (true) {
 
-                        if (url != null) {
+                        if (getUrl() != null) {
                             try {
 
-                                work(service, url);
+                                work(service, getUrl());
                                 break;
                             } catch (Exception ex) {
                                 Logger.getLogger(LoadBalancedRestClient.class.getName()).log(Level.SEVERE, null, ex);
@@ -319,16 +244,16 @@ public class LoadBalancedRestClient {
     }
 
     public void toAllServicesFireAndForget(boolean retryonfail) {
-        new Thread("SSFF:" + url) {
+        new Thread("SSFF:" + getUrl()) {
             @Override
             public void run() {
                 for (Service service : restHttpServer.getLoadBalancer().getServices().getAllActiveServices()) {
                     while (true) {
 
-                        if (url != null) {
+                        if (getUrl() != null) {
                             try {
 
-                                work(service, url);
+                                work(service, getUrl());
                                 break;
                             } catch (Exception ex) {
                                 Logger.getLogger(LoadBalancedRestClient.class.getName()).log(Level.SEVERE, null, ex);

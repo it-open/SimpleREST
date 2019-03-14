@@ -7,6 +7,7 @@ package at.itopen.simplerest;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -43,6 +44,15 @@ public class Json {
     }
 
     public static <T> T fromString(String data, Class<T> type) {
+        try {
+            return getJSON_CONVERTER().readValue(data, type);
+        } catch (IOException ex) {
+            Logger.getLogger(Json.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
+    }
+
+    public static <T> T fromString(String data, TypeReference type) {
         try {
             return getJSON_CONVERTER().readValue(data, type);
         } catch (IOException ex) {
