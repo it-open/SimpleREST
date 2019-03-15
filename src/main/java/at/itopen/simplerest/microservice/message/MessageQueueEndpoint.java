@@ -60,7 +60,7 @@ public abstract class MessageQueueEndpoint<T> extends RestEndpoint {
     }
 
     private void signal(MessageRequest<T> message, boolean processing, boolean finished) {
-        LoadBalancedRestClient lbrc = loadBalancer.RestClient("/loadbalancer/guarantor/status", RestClient.REST_METHOD.POST);
+        LoadBalancedRestClient lbrc = loadBalancer.RestClient("/loadbalancer/guarantor/state", RestClient.REST_METHOD.POST);
         lbrc.setJson(new MessageStatus(finished, processing, message.getMessageid()));
         for (String guarantorid : message.getGuarantorServiceIds()) {
             lbrc.toDistinctServiceFireAndForget(guarantorid, false);
