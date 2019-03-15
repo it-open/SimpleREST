@@ -8,10 +8,16 @@ package at.itopen.simplerest.microservice.loadbalancer;
 import at.itopen.simplerest.Json;
 import at.itopen.simplerest.client.RestClient;
 import at.itopen.simplerest.client.RestResponse;
+import at.itopen.simplerest.conversion.Conversion;
+import at.itopen.simplerest.endpoints.JsonPostEndpoint;
+import at.itopen.simplerest.endpoints.PostEndpoint;
 import at.itopen.simplerest.microservice.client.LoadBalancedRestClient;
 import at.itopen.simplerest.microservice.message.Guarantor;
+import at.itopen.simplerest.microservice.message.MessageStatus;
+import at.itopen.simplerest.microservice.message.ServiceIpPath;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -72,8 +78,20 @@ public final class LoadBalancer {
             }
 
         }.start();
-        config.getRestHttpServer().getRootEndpoint().addSubPath("loadbalancer").addSubPath(":security").addRestEndpoint(new RestDiscover("remote"));
+        config.getRestHttpServer().getRootEndpoint().addSubPath("loadbalancer").addSubPath(new ServiceIpPath(":security")).addRestEndpoint(new RestDiscover("remote"));
         config.getRestHttpServer().getRootEndpoint().addSubPath("loadbalancer").addRestEndpoint(new RestStatus("status"));
+        config.getRestHttpServer().getRootEndpoint().addSubPath("loadbalancer").addSubPath(new ServiceIpPath("guarantor")).addRestEndpoint(new PostEndpoint("introduce") {
+            @Override
+            public void Call(Conversion conversion, Map<String, String> UrlParameter) {
+                getGuarantor().introduced(conversion.getRequest().getContentData());
+            }
+        });
+        config.getRestHttpServer().getRootEndpoint().addSubPath("loadbalancer").addSubPath(new ServiceIpPath("guarantor")).addRestEndpoint(new JsonPostEndpoint<MessageStatus>("state") {
+            @Override
+            public void Call(Conversion conversion, Map<String, String> UrlParameter) {
+                getGuarantor().status(getData());
+            }
+        });
 
     }
 
