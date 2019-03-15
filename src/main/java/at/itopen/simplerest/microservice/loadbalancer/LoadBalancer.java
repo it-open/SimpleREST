@@ -9,6 +9,7 @@ import at.itopen.simplerest.Json;
 import at.itopen.simplerest.client.RestClient;
 import at.itopen.simplerest.client.RestResponse;
 import at.itopen.simplerest.microservice.client.LoadBalancedRestClient;
+import at.itopen.simplerest.microservice.message.Guarantor;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -24,6 +25,7 @@ public final class LoadBalancer {
     private List<String> undiscovered = new ArrayList<>();
     private boolean available = true;
     private final Services services;
+    private final Guarantor guarantor;
 
     /**
      *
@@ -32,6 +34,8 @@ public final class LoadBalancer {
     public LoadBalancer(LoadBalancerConfig config) {
         this.config = config;
         services = new Services(this);
+        guarantor = new Guarantor(this);
+
         getServices().setRating(config.getServiceRating());
         new Thread("1s Service Checker") {
             @Override
@@ -75,6 +79,10 @@ public final class LoadBalancer {
 
     public LoadBalancedRestClient RestClient(String url, RestClient.REST_METHOD method) {
         return new LoadBalancedRestClient(config.getRestHttpServer(), url, method);
+    }
+
+    public Guarantor getGuarantor() {
+        return guarantor;
     }
 
     /**

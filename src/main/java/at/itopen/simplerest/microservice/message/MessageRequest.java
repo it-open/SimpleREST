@@ -29,11 +29,9 @@ public class MessageRequest<T> {
     public MessageRequest() {
     }
 
-    public MessageRequest(T data, String senderId, String targetUrl) {
+    public MessageRequest(T data) {
         this.messageid = UUID.randomUUID().toString();
         this.data = data;
-        this.senderId = senderId;
-        this.targetUrl = targetUrl;
     }
 
     public Map<String, String> getHeaders() {

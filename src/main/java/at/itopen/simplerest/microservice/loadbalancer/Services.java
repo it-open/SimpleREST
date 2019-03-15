@@ -18,7 +18,7 @@ import java.util.logging.Logger;
  * @author roland
  */
 public class Services {
-    
+
     private final Map<String, List<Service>> services = new HashMap<>();
     private AbstratctServiceRating rating = null;
     private LoadBalancer loadBalancer;
@@ -31,14 +31,14 @@ public class Services {
      */
     public Services(LoadBalancer loadBalancer) {
         this.loadBalancer = loadBalancer;
-        
+
         new Thread("AccessCounter") {
             @Override
             public void run() {
                 while (!isInterrupted()) {
                     try {
                         Thread.sleep(1000);
-                        
+
                         Map<String, Long> accesscounter2 = accesscounter;
                         Map<String, Double> newRating = new HashMap<>();
                         accesscounter = new HashMap<>();
@@ -61,15 +61,15 @@ public class Services {
                             newRating.put(type, rating);
                         }
                         accessvalues = newRating;
-                        
+
                     } catch (Throwable t) {
                         Logger.getLogger(Services.class.getName()).log(Level.SEVERE, "AccessCounter", t);
                     }
                 }
             }
-            
+
         }.start();
-        
+
     }
 
     /**
@@ -82,7 +82,7 @@ public class Services {
                 services.put(service.getType(), new ArrayList<>());
             }
             services.get(service.getType()).add(service);
-            
+
         }
     }
 
@@ -92,7 +92,7 @@ public class Services {
      * @param baseurl
      */
     public void addService(String id, String baseurl) {
-        
+
     }
 
     /**
@@ -150,8 +150,9 @@ public class Services {
      */
     public void removeService(Service service) {
         services.get(service.getType()).remove(service);
+        loadBalancer.getGuarantor().serviceRemoved(service);
     }
-    
+
     public void serviceError(Service service) {
         getServiceById(service.getId()).setRating(-1000);
     }
@@ -175,7 +176,7 @@ public class Services {
         }
         return null;
     }
-    
+
     public void serviceUsed(Service service) {
         service.setRating(service.getRating() - getAccessRating(service.getType()));
     }
@@ -241,7 +242,7 @@ public class Services {
         }
         return true;
     }
-    
+
     public synchronized void logAccess(Service service) {
         String type = service.getType();
         if (!accesscounter.containsKey(type)) {
@@ -251,7 +252,7 @@ public class Services {
         }
         serviceUsed(service);
     }
-    
+
     public double getAccessRating(String serviceType) {
         if (accessvalues.containsKey(serviceType)) {
             return accessvalues.get(serviceType);
@@ -259,5 +260,5 @@ public class Services {
             return 0;
         }
     }
-    
+
 }
