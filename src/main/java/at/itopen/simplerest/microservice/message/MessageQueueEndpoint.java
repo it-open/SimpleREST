@@ -12,13 +12,13 @@ import at.itopen.simplerest.microservice.client.LoadBalancedRestClient;
 import at.itopen.simplerest.microservice.loadbalancer.LoadBalancer;
 import at.itopen.simplerest.path.RestEndpoint;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.sun.istack.internal.logging.Logger;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Queue;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -52,7 +52,7 @@ public abstract class MessageQueueEndpoint<T> extends RestEndpoint {
                             aktWorking = null;
                         }
                     } catch (Exception e) {
-                        Logger.getLogger(this.getClass()).log(Level.SEVERE, "MessageQueue", e);
+                        Logger.getLogger(MessageQueueEndpoint.class.getName()).log(Level.SEVERE, "MessageQueue", e);
                     }
                 }
             }
