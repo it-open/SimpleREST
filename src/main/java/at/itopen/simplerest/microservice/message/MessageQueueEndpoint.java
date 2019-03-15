@@ -47,7 +47,7 @@ public abstract class MessageQueueEndpoint<T> extends RestEndpoint {
                         } else {
                             aktWorking = messagequeue.poll();
                             signal(aktWorking, true, false);
-                            work(aktWorking.data);
+                            work(aktWorking.getData());
                             signal(aktWorking, true, true);
                             aktWorking = null;
                         }
@@ -60,9 +60,9 @@ public abstract class MessageQueueEndpoint<T> extends RestEndpoint {
     }
 
     private void signal(MessageRequest<T> message, boolean processing, boolean finished) {
-        LoadBalancedRestClient lbrc = loadBalancer.RestClient("/loadbalancer/guarantor", RestClient.REST_METHOD.POST);
-        lbrc.setJson(new MessageStatus(finished, processing, message.messageid));
-        for (String guarantorid : message.guarantorServiceIds) {
+        LoadBalancedRestClient lbrc = loadBalancer.RestClient("/loadbalancer/guarantor/status", RestClient.REST_METHOD.POST);
+        lbrc.setJson(new MessageStatus(finished, processing, message.getMessageid()));
+        for (String guarantorid : message.getGuarantorServiceIds()) {
             lbrc.toDistinctServiceFireAndForget(guarantorid, false);
         }
     }
@@ -76,7 +76,7 @@ public abstract class MessageQueueEndpoint<T> extends RestEndpoint {
             if (conversion.getRequest().getContentData() != null) {
                 mrequest = (MessageRequest<T>) Json.fromString(conversion.getRequest().getContentData(), new TypeReference<MessageRequest<T>>() {
                 });
-                data = mrequest.data;
+                data = mrequest.getData();
             }
             if (mrequest != null) {
                 messagequeue.add(mrequest);
@@ -88,7 +88,7 @@ public abstract class MessageQueueEndpoint<T> extends RestEndpoint {
             MessageRequest<T> search = null;
             int pos = 0;
             for (MessageRequest<T> item : (MessageRequest<T>[]) messagequeue.toArray()) {
-                if (item.messageid.equals(id)) {
+                if (item.getMessageid().equals(id)) {
                     if (search == null) {
                         pos++;
                         search = item;
@@ -107,7 +107,7 @@ public abstract class MessageQueueEndpoint<T> extends RestEndpoint {
         if (aktWorking == null) {
             return false;
         }
-        return (aktWorking.messageid.equals(id));
+        return (aktWorking.getMessageid().equals(id));
     }
 
     public abstract void work(T data);

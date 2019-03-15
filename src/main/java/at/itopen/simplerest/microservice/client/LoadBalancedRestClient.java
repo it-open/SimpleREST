@@ -11,7 +11,10 @@ import at.itopen.simplerest.client.RestClient.REST_METHOD;
 import at.itopen.simplerest.client.RestFile;
 import at.itopen.simplerest.client.RestResponse;
 import at.itopen.simplerest.microservice.loadbalancer.Service;
+import at.itopen.simplerest.microservice.message.MessageRequest;
 import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.http.HttpEntity;
@@ -266,6 +269,52 @@ public class LoadBalancedRestClient extends RestClient {
                 }
             }
         }.start();
+    }
+
+    public String sendMessagetoQueue(String servicetype, Object payload) {
+        if (getUrl() == null) {
+            return null;
+        }
+        if (getMethod().equals(REST_METHOD.POST) || getMethod().equals(REST_METHOD.PUT)) {
+
+            MessageRequest<Object> request = new MessageRequest<>(payload, restHttpServer.getLoadBalancer().getConfig().getServiceid(), getUrl());
+            request.setHeaders(getHeaders());
+
+            while (true) {
+                Service targetservice = serviceSelect(servicetype);
+                request.getGuarantorServiceIds().clear();
+                request.getGuarantorServiceIds().add(restHttpServer.getLoadBalancer().getConfig().getServiceid());
+                List<Service> services = restHttpServer.getLoadBalancer().getServices().getAllActiveServices();
+                Collections.shuffle(services);
+                for (Service service : services) {
+                    if (service.getId().equals(targetservice.getId())) {
+                        continue;
+                    }
+                    request.getGuarantorServiceIds().add(service.getId());
+                    if (request.getGuarantorServiceIds().size() == 2) {
+                        break;
+                    }
+                }
+                setJson(request);
+                try {
+                    RestResponse res = work(targetservice, getUrl());
+                    if (res.getStatusCode() == 200) {
+                        setUrl("/loadbalancer/guarator/indroduce");
+                        request.getGuarantorServiceIds().forEach((id) -> {
+                            if (!id.equals(restHttpServer.getLoadBalancer().getConfig().getServiceid())) {
+                                toDistinctServiceFireAndForget(id, false);
+                            }
+                        });
+                        return request.getMessageid();
+                    }
+                } catch (Exception ex) {
+                    Logger.getLogger(LoadBalancedRestClient.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+
+        } else {
+            throw new RuntimeException("Message must be POST or PUT");
+        }
     }
 
 }
