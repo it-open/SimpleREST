@@ -78,7 +78,7 @@ public final class LoadBalancer {
             }
 
         }.start();
-        config.getRestHttpServer().getRootEndpoint().addSubPath("loadbalancer").addSubPath(new ServiceIpPath(":security")).addRestEndpoint(new RestDiscover("remote"));
+        config.getRestHttpServer().getRootEndpoint().addSubPath("loadbalancer").addSubPath(":security").addRestEndpoint(new RestDiscover("remote"));
         config.getRestHttpServer().getRootEndpoint().addSubPath("loadbalancer").addRestEndpoint(new RestStatus("status"));
         config.getRestHttpServer().getRootEndpoint().addSubPath("loadbalancer").addSubPath(new ServiceIpPath("guarantor")).addRestEndpoint(new PostEndpoint("introduce") {
             @Override
