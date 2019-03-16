@@ -95,10 +95,20 @@ public final class LoadBalancer {
 
     }
 
+    /**
+     *
+     * @param url
+     * @param method
+     * @return
+     */
     public LoadBalancedRestClient RestClient(String url, RestClient.REST_METHOD method) {
         return new LoadBalancedRestClient(config.getRestHttpServer(), url, method);
     }
 
+    /**
+     *
+     * @return
+     */
     public Guarantor getGuarantor() {
         return guarantor;
     }
@@ -199,6 +209,11 @@ public final class LoadBalancer {
         }
     }
 
+    /**
+     *
+     * @param restDiscoverQuestion
+     * @return
+     */
     public String encryptUrl(RestDiscoverQuestion restDiscoverQuestion) {
 
         String key = getConfig().getServiceid();
@@ -211,6 +226,12 @@ public final class LoadBalancer {
         return key;
     }
 
+    /**
+     *
+     * @param restDiscoverQuestion
+     * @param key
+     * @return
+     */
     public String decryptUrl(RestDiscoverQuestion restDiscoverQuestion, String key) {
 
         String initv = Encryption.correctINITV("" + restDiscoverQuestion.getTimestamp());
@@ -274,10 +295,18 @@ public final class LoadBalancer {
         }
     }
 
+    /**
+     *
+     * @return
+     */
     public RestDiscoverQuestion buildRestDiscoverQuestion() {
         return new RestDiscoverQuestion(getConfig().getServiceid(), getConfig().getBaseurl());
     }
 
+    /**
+     *
+     * @return
+     */
     public RestDiscoverAnswer buildRestDiscoverAnswer() {
 
         Service me = new Service();

@@ -153,6 +153,10 @@ public class Services {
         loadBalancer.getGuarantor().serviceRemoved(service);
     }
 
+    /**
+     *
+     * @param service
+     */
     public void serviceError(Service service) {
         getServiceById(service.getId()).setRating(-1000);
     }
@@ -177,6 +181,10 @@ public class Services {
         return null;
     }
 
+    /**
+     *
+     * @param service
+     */
     public void serviceUsed(Service service) {
         service.setRating(service.getRating() - getAccessRating(service.getType()));
     }
@@ -243,6 +251,10 @@ public class Services {
         return true;
     }
 
+    /**
+     *
+     * @param service
+     */
     public synchronized void logAccess(Service service) {
         String type = service.getType();
         if (!accesscounter.containsKey(type)) {
@@ -253,6 +265,11 @@ public class Services {
         serviceUsed(service);
     }
 
+    /**
+     *
+     * @param serviceType
+     * @return
+     */
     public double getAccessRating(String serviceType) {
         if (accessvalues.containsKey(serviceType)) {
             return accessvalues.get(serviceType);

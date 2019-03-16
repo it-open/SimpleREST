@@ -31,8 +31,27 @@ public class RestClient {
     String url;
     Map<String, String> params = new HashMap<>();
 
+    /**
+     *
+     */
     public static enum REST_METHOD {
-        GET, PUT, POST, DELETE
+
+        /**
+         *
+         */
+        GET,
+        /**
+         *
+         */
+        PUT,
+        /**
+         *
+         */
+        POST,
+        /**
+         *
+         */
+        DELETE
     };
     REST_METHOD method;
     String json = null;
@@ -53,30 +72,58 @@ public class RestClient {
 
     private final Map<String, String> headers = new HashMap<>();
 
+    /**
+     *
+     * @return
+     */
     public Map<String, RestFile> getFiles() {
         return files;
     }
 
+    /**
+     *
+     * @return
+     */
     public Map<String, String> getHeaders() {
         return headers;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getJson() {
         return json;
     }
 
+    /**
+     *
+     * @return
+     */
     public REST_METHOD getMethod() {
         return method;
     }
 
+    /**
+     *
+     * @return
+     */
     public Map<String, String> getParams() {
         return params;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getUrl() {
         return url;
     }
 
+    /**
+     *
+     * @param url
+     */
     public void setUrl(String url) {
         this.url = url;
     }
@@ -133,6 +180,11 @@ public class RestClient {
         return this;
     }
 
+    /**
+     *
+     * @param object
+     * @return
+     */
     public RestClient setJson(Object object) {
         return setJson(Json.toString(object));
     }
@@ -224,6 +276,11 @@ public class RestClient {
         return new RestResponse(response, start);
     }
 
+    /**
+     *
+     * @param retryonfail
+     * @return
+     */
     public RestResponse toSingle(boolean retryonfail) {
         if (url != null) {
             while (true) {
@@ -240,6 +297,10 @@ public class RestClient {
         return null;
     }
 
+    /**
+     *
+     * @param retryonfail
+     */
     public void toSingleFireAndForget(boolean retryonfail) {
         new Thread("SUFF:" + url) {
             @Override

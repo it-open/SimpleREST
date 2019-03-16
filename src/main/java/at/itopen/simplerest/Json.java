@@ -44,6 +44,13 @@ public class Json {
 
     }
 
+    /**
+     *
+     * @param <T>
+     * @param data
+     * @param type
+     * @return
+     */
     public static <T> T fromString(String data, Class<T> type) {
         try {
             return getJSON_CONVERTER().readValue(data, type);
@@ -53,6 +60,13 @@ public class Json {
         }
     }
 
+    /**
+     *
+     * @param <T>
+     * @param data
+     * @param type
+     * @return
+     */
     public static <T> T fromString(String data, TypeReference type) {
         try {
             return getJSON_CONVERTER().readValue(data, type);
@@ -62,6 +76,11 @@ public class Json {
         }
     }
 
+    /**
+     *
+     * @param data
+     * @return
+     */
     public static String toString(Object data) {
         try {
             return getJSON_CONVERTER().writeValueAsString(data);
@@ -71,6 +90,11 @@ public class Json {
         }
     }
 
+    /**
+     *
+     * @param data
+     * @return
+     */
     public static JsonNode fromString(String data) {
         try {
             return getJSON_CONVERTER().readTree(data);
@@ -80,6 +104,11 @@ public class Json {
         }
     }
 
+    /**
+     *
+     * @param jsonNode
+     * @return
+     */
     public static String prettyPrintJsonString(JsonNode jsonNode) {
         try {
             ObjectMapper mapper = new ObjectMapper();

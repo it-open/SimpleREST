@@ -136,6 +136,10 @@ public class RestResponse {
         return res.getEntity().getContentLength();
     }
 
+    /**
+     *
+     * @return
+     */
     public long getRoundtripTimeNs() {
         return roundtripTime;
     }

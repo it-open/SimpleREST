@@ -15,9 +15,18 @@ public class MessageStatus {
     private boolean working;
     private String messageid;
 
+    /**
+     *
+     */
     public MessageStatus() {
     }
 
+    /**
+     *
+     * @param finished
+     * @param working
+     * @param messageid
+     */
     public MessageStatus(boolean finished, boolean working, String messageid) {
         this.finished = finished;
         this.working = working;
@@ -52,10 +61,18 @@ public class MessageStatus {
         this.working = working;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getMessageid() {
         return messageid;
     }
 
+    /**
+     *
+     * @param messageid
+     */
     public void setMessageid(String messageid) {
         this.messageid = messageid;
     }

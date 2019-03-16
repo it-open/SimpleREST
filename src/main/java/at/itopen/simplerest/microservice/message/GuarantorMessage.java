@@ -24,6 +24,10 @@ public class GuarantorMessage {
     private final long fistSeen;
     private long lastSeen;
 
+    /**
+     *
+     * @param rawJson
+     */
     public GuarantorMessage(String rawJson) {
         this.request = Json.fromString(rawJson, MessageRequest.class);
         JsonNode node = Json.fromString(rawJson);
@@ -33,45 +37,85 @@ public class GuarantorMessage {
         this.lastSeen = System.currentTimeMillis();
     }
 
+    /**
+     *
+     * @return
+     */
     public long getAge() {
         return System.currentTimeMillis() - fistSeen;
     }
 
+    /**
+     *
+     * @return
+     */
     public long getActiveAge() {
         return System.currentTimeMillis() - lastSeen;
     }
 
+    /**
+     *
+     * @param queued
+     */
     public void setQueued(boolean queued) {
         this.queued = queued;
         this.lastSeen = System.currentTimeMillis();
     }
 
+    /**
+     *
+     * @param finisehd
+     */
     public void setFinisehd(boolean finisehd) {
         this.finisehd = finisehd;
         this.lastSeen = System.currentTimeMillis();
     }
 
+    /**
+     *
+     * @param working
+     */
     public void setWorking(boolean working) {
         this.working = working;
         this.lastSeen = System.currentTimeMillis();
     }
 
+    /**
+     *
+     * @return
+     */
     public boolean isFinisehd() {
         return finisehd;
     }
 
+    /**
+     *
+     * @return
+     */
     public boolean isQueued() {
         return queued;
     }
 
+    /**
+     *
+     * @return
+     */
     public boolean isWorking() {
         return working;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getRawJson() {
         return rawJson;
     }
 
+    /**
+     *
+     * @return
+     */
     public MessageRequest<Object> getRequest() {
         return request;
     }

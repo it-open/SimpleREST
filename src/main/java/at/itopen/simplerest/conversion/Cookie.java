@@ -26,6 +26,12 @@ public class Cookie {
         this.maxseconds = 5 * 60;
     }
 
+    /**
+     *
+     * @param name
+     * @param value
+     * @param maxseconds
+     */
     public Cookie(String name, String value, int maxseconds) {
         this.name = name;
         this.value = value;
@@ -48,6 +54,10 @@ public class Cookie {
         return value;
     }
 
+    /**
+     *
+     * @return
+     */
     public int getMaxseconds() {
         return maxseconds;
     }

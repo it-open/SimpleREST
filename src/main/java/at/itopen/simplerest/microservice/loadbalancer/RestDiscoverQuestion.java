@@ -19,7 +19,6 @@ public class RestDiscoverQuestion {
      *
      * @param senderid
      * @param senderbaseurl
-     * @param lb
      */
     public RestDiscoverQuestion(String senderid, String senderbaseurl) {
         this.senderid = senderid;
@@ -27,6 +26,9 @@ public class RestDiscoverQuestion {
         this.timestamp = System.currentTimeMillis();
     }
 
+    /**
+     *
+     */
     public RestDiscoverQuestion() {
     }
 
@@ -58,10 +60,18 @@ public class RestDiscoverQuestion {
         this.senderbaseurl = senderbaseurl;
     }
 
+    /**
+     *
+     * @return
+     */
     public long getTimestamp() {
         return timestamp;
     }
 
+    /**
+     *
+     * @param timestamp
+     */
     public void setTimestamp(long timestamp) {
         this.timestamp = timestamp;
     }

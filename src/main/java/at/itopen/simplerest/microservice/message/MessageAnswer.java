@@ -16,9 +16,19 @@ public class MessageAnswer {
     private boolean working;
     private boolean queued;
 
+    /**
+     *
+     */
     public MessageAnswer() {
     }
 
+    /**
+     *
+     * @param position
+     * @param finished
+     * @param working
+     * @param queued
+     */
     public MessageAnswer(int position, boolean finished, boolean working, boolean queued) {
         this.position = position;
         this.finished = finished;

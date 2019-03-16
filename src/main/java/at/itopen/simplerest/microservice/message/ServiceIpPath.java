@@ -15,6 +15,10 @@ import at.itopen.simplerest.path.RestPath;
  */
 public class ServiceIpPath extends RestPath {
 
+    /**
+     *
+     * @param pathName
+     */
     public ServiceIpPath(String pathName) {
         super(pathName);
     }

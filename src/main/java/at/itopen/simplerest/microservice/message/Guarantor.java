@@ -24,10 +24,18 @@ public class Guarantor {
     private final LoadBalancer loadBalancer;
     private final Map<String, GuarantorMessage> messages = new HashMap<>();
 
+    /**
+     *
+     * @param loadBalancer
+     */
     public Guarantor(LoadBalancer loadBalancer) {
         this.loadBalancer = loadBalancer;
     }
 
+    /**
+     *
+     * @param service
+     */
     public void serviceRemoved(Service service) {
         List<GuarantorMessage> gms;
         synchronized (messages) {
@@ -59,6 +67,10 @@ public class Guarantor {
         }
     }
 
+    /**
+     *
+     * @param rawJson
+     */
     public void introduced(String rawJson) {
         GuarantorMessage gm = new GuarantorMessage(rawJson);
         String messageId = gm.getRequest().getMessageid();
@@ -73,6 +85,10 @@ public class Guarantor {
         }
     }
 
+    /**
+     *
+     * @param status
+     */
     public void status(MessageStatus status) {
         GuarantorMessage gm = messages.get(status.getMessageid());
         gm.setWorking(status.isWorking());

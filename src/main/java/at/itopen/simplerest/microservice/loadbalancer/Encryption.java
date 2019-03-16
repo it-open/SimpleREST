@@ -107,14 +107,29 @@ public class Encryption {
         return source;
     }
 
+    /**
+     *
+     * @param key
+     * @return
+     */
     public static String correctKEY(String key) {
         return pad(key, 128 / 8, "-");
     }
 
+    /**
+     *
+     * @param key
+     * @return
+     */
     public static String correctINITV(String key) {
         return pad(key, 16, "-");
     }
 
+    /**
+     *
+     * @param input
+     * @return
+     */
     public static String SHA512(String input) {
         try {
             // getInstance() method is called with algorithm SHA-512 

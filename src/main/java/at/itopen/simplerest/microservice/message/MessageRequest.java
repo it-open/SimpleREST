@@ -14,6 +14,7 @@ import java.util.UUID;
 /**
  *
  * @author roland
+ * @param <T>
  */
 public class MessageRequest<T> {
 
@@ -26,26 +27,49 @@ public class MessageRequest<T> {
 
     private T data;
 
+    /**
+     *
+     */
     public MessageRequest() {
     }
 
+    /**
+     *
+     * @param data
+     */
     public MessageRequest(T data) {
         this.messageid = UUID.randomUUID().toString();
         this.data = data;
     }
 
+    /**
+     *
+     * @return
+     */
     public Map<String, String> getHeaders() {
         return headers;
     }
 
+    /**
+     *
+     * @param headers
+     */
     public void setHeaders(Map<String, String> headers) {
         this.headers = headers;
     }
 
+    /**
+     *
+     * @param targetUrl
+     */
     public void setTargetUrl(String targetUrl) {
         this.targetUrl = targetUrl;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getTargetUrl() {
         return targetUrl;
     }
@@ -106,10 +130,18 @@ public class MessageRequest<T> {
         this.data = data;
     }
 
+    /**
+     *
+     * @param receiverId
+     */
     public void setReceiverId(String receiverId) {
         this.receiverId = receiverId;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getReceiverId() {
         return receiverId;
     }

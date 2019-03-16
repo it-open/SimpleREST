@@ -36,6 +36,7 @@ public class Response {
     /**
      *
      * @param status
+     * @param message
      */
     public void setStatus(HttpStatus status, String message) {
         this.status = status;
@@ -50,6 +51,10 @@ public class Response {
         return status;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getStatusMessage() {
         return statusMessage;
     }

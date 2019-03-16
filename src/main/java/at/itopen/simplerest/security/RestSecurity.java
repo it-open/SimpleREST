@@ -42,7 +42,7 @@ public class RestSecurity {
 
     /**
      *
-     * @param userClass
+     * @param newUserClass
      */
     public static void setUserClass(Class newUserClass) {
         userClass = newUserClass;

@@ -32,6 +32,11 @@ public abstract class MessageQueueEndpoint<T> extends RestEndpoint {
     private final LoadBalancer loadBalancer;
     private final Queue<MessageRequest<T>> messagequeue = new LinkedList<>();
 
+    /**
+     *
+     * @param endpointName
+     * @param loadBalancer
+     */
     public MessageQueueEndpoint(String endpointName, LoadBalancer loadBalancer) {
         super(endpointName);
         this.loadBalancer = loadBalancer;
@@ -110,6 +115,10 @@ public abstract class MessageQueueEndpoint<T> extends RestEndpoint {
         return (aktWorking.getMessageid().equals(id));
     }
 
+    /**
+     *
+     * @param data
+     */
     public abstract void work(T data);
 
     @Override

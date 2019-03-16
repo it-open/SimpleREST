@@ -142,6 +142,12 @@ public class LoadBalancedRestClient extends RestClient {
         return service;
     }
 
+    /**
+     *
+     * @param servicetype
+     * @param retryonfail
+     * @return
+     */
     public RestResponse toSingleService(String servicetype, boolean retryonfail) {
         while (true) {
             Service service = serviceSelect(servicetype);
@@ -159,6 +165,11 @@ public class LoadBalancedRestClient extends RestClient {
         return null;
     }
 
+    /**
+     *
+     * @param servicetype
+     * @param retryonfail
+     */
     public void toSingleServiceFireAndForget(String servicetype, boolean retryonfail) {
         new Thread("SSFF:" + getUrl()) {
             @Override
@@ -180,6 +191,12 @@ public class LoadBalancedRestClient extends RestClient {
         }.start();
     }
 
+    /**
+     *
+     * @param serviceid
+     * @param retryonfail
+     * @return
+     */
     public RestResponse toDistinctService(String serviceid, boolean retryonfail) {
         while (true) {
             Service service = serviceid2Service(serviceid);
@@ -197,6 +214,11 @@ public class LoadBalancedRestClient extends RestClient {
         return null;
     }
 
+    /**
+     *
+     * @param serviceid
+     * @param retryonfail
+     */
     public void toDistinctServiceFireAndForget(String serviceid, boolean retryonfail) {
         new Thread("DSFF:" + getUrl()) {
             @Override
@@ -218,6 +240,11 @@ public class LoadBalancedRestClient extends RestClient {
         }.start();
     }
 
+    /**
+     *
+     * @param servicetype
+     * @param retryonfail
+     */
     public void toAllServicesFireAndForget(String servicetype, boolean retryonfail) {
         new Thread("SSFF:" + getUrl()) {
             @Override
@@ -246,6 +273,10 @@ public class LoadBalancedRestClient extends RestClient {
         }.start();
     }
 
+    /**
+     *
+     * @param retryonfail
+     */
     public void toAllServicesFireAndForget(boolean retryonfail) {
         new Thread("SSFF:" + getUrl()) {
             @Override
@@ -271,6 +302,12 @@ public class LoadBalancedRestClient extends RestClient {
         }.start();
     }
 
+    /**
+     *
+     * @param servicetype
+     * @param message
+     * @return
+     */
     public String sendMessagetoQueue(String servicetype, MessageRequest<? extends Object> message) {
         if (getUrl() == null) {
             return null;

@@ -25,7 +25,6 @@ public class AuthorizationBasicDataHeaderWorker extends AbstractHeaderWorker {
 
     /**
      *
-     * @param request
      */
     @Override
     public void work(Conversion conversion) {
