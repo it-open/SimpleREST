@@ -7,12 +7,8 @@ package at.itopen.simplerest;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
+import static junit.framework.Assert.assertEquals;
+import org.junit.Test;
 
 /**
  *
@@ -24,34 +20,6 @@ public class JsonIT {
      *
      */
     public JsonIT() {
-    }
-
-    /**
-     *
-     */
-    @BeforeAll
-    public static void setUpClass() {
-    }
-
-    /**
-     *
-     */
-    @AfterAll
-    public static void tearDownClass() {
-    }
-
-    /**
-     *
-     */
-    @BeforeEach
-    public void setUp() {
-    }
-
-    /**
-     *
-     */
-    @AfterEach
-    public void tearDown() {
     }
 
     /**

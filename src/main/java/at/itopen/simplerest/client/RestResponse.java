@@ -69,6 +69,23 @@ public class RestResponse {
         return null;
     }
 
+    public <T> WrappedResponse<T> getWrappedResponse(Class<T> type) {
+        WrappedResponse wr = Json.fromString(getDataAsString(), WrappedResponse.class);
+        WrappedResponse<T> erg = new WrappedResponse<>();
+        erg.setCode(wr.getCode());
+        erg.setGenerationMsSeconds(wr.getGenerationMsSeconds());
+        erg.setInfo(wr.getInfo());
+        erg.setMessage(wr.getMessage());
+        erg.setData((T) Json.fromString(Json.prettyPrintJsonString(getJSON().get("data")), type));
+        return erg;
+    }
+
+    public <T> T getResponse(Class<T> type) {
+
+        return Json.fromString(getDataAsString(), type);
+
+    }
+
     /**
      *
      * @return
