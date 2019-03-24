@@ -130,8 +130,21 @@ public class LoadBalancedRestClient extends RestClient {
     }
 
     private Service serviceSelect(String servicetype) {
-        Service service = restHttpServer.getLoadBalancer().getServices().getRandomForServiceType(servicetype);
-        return service;
+        List<Service> all = restHttpServer.getLoadBalancer().getServices().getServiceType(servicetype);
+        if (all.isEmpty()) {
+            return null;
+        }
+        double rmax = 0;
+        rmax = all.stream().map((service) -> service.getRating()).reduce(rmax, (accumulator, _item) -> accumulator + _item);
+        double rseek = Math.random() * rmax;
+        for (Service service : all) {
+            rseek -= service.getRating();
+            if (rseek <= 0) {
+                return service;
+            }
+        }
+        Collections.shuffle(all);
+        return all.get(0);
     }
 
     private Service serviceid2Service(String serviceid) {
