@@ -15,3 +15,25 @@ Features:
 - Access control for paths and endpoits
 - HTML Endpoints (from Ressource or FileStructure)
 - CRUD Helper for easy to use Create, Read, Update, Delete Operations on entities
+
+## Simple REST Client
+This system also needed a simple to use RESTClient. 
+
+Features:
+- GET, PUT, POST, DELETE
+- Easy to use Paramaters
+- File Uploads (Multiple)
+- JSON Upload
+- JSON Answer
+- Object to JSON and JSON to Object
+
+## Load Balancder
+A fast Rest Server can also be used to make a Loadbalanced Microservice. Thats why i tried this. But it has to be easy to use.
+
+Features:
+- Service Discovery through the Network
+- Multiple same Services on multiple Computers (loadbalanced and failover)
+- Multiple different Services on the same Computer (sharing of resources)
+- Work load according to system ressources (Client side Loadbalancer knows how much ressources each individual System has)
+- Long lasting Messages whith automatic Fail detection and retry. Even if Target or Source Service dies.
+- Easy and Simple to use.
