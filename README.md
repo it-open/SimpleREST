@@ -15,3 +15,11 @@ Features:
 - Access control for paths and endpoits
 - HTML Endpoints (from Ressource or FileStructure)
 - CRUD Helper for easy to use Create, Read, Update, Delete Operations on entities
+## Added Microservice Avaibility
+Loadbalancing was never so easy
+- Discovery Service
+- Health Checks
+- Client Side Loadbalancer
+- Long Lasting Messages
+- REST Client + REST Client with Loadbalancing.
+
