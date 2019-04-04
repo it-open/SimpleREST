@@ -1,0 +1,7 @@
+V 0.4
+Rest Server
+Rest Client
+Auto Discovery
+LoadBalancing
+LoadBalanced REST Client for multiple services across multiple servers
+Long lasting Messages
