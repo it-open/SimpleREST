@@ -18,9 +18,9 @@ Features:
 - CRUD Helper for easy to use Create, Read, Update, Delete Operations on entities
 ## Added Microservice Avaibility
 Loadbalancing was never so easy
-- Discovery Service
-- Health Checks
-- Client Side Loadbalancer
-- Long Lasting Messages
-- REST Client + REST Client with Loadbalancing.
+- Discovery Service (Automatically Check and discover other Services od other or same Computer)
+- Health Checks (Every System is checked)
+- Client Side Loadbalancer 
+- Long Lasting Messages (Messages will work even if initiater service oder initial target services dies)
+- REST Client + REST Client with Loadbalancing. (Make loadbalaned rest calls in just one Line of Code, GET, PUT, POST, DELETE)
 
