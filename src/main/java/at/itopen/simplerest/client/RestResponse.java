@@ -11,9 +11,8 @@ import java.io.IOException;
 import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.apache.http.HttpResponse;
 import org.apache.http.ProtocolVersion;
-import org.apache.http.util.EntityUtils;
+import org.apache.http.client.methods.CloseableHttpResponse;
 
 /**
  *
@@ -22,7 +21,7 @@ import org.apache.http.util.EntityUtils;
 public class RestResponse {
 
     private byte[] data = null;
-    private final HttpResponse res;
+    private final CloseableHttpResponse res;
     private long roundtripTime;
 
     /**
@@ -30,11 +29,12 @@ public class RestResponse {
      * @param res
      * @param startnano
      */
-    public RestResponse(HttpResponse res, long startnano) {
+    public RestResponse(CloseableHttpResponse res, long startnano) {
         this.roundtripTime = System.nanoTime() - startnano;
         this.res = res;
         try {
-            data = EntityUtils.toByteArray(res.getEntity());
+
+            data = res.getEntity().getContent().readAllBytes();
         } catch (IOException ex) {
             Logger.getLogger(RestResponse.class.getName()).log(Level.SEVERE, null, ex);
         }
