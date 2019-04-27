@@ -249,10 +249,12 @@ public class RestClient {
             context.init(null, trustAllCerts, null);
             SSLConnectionSocketFactory sslConnectionFactory = new SSLConnectionSocketFactory(context, SSLConnectionSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
             builder.setSSLSocketFactory(sslConnectionFactory);
-            PlainConnectionSocketFactory plainConnectionSocketFactory = new PlainConnectionSocketFactory();
+
             registryBuilder.register("https", sslConnectionFactory);
-            registryBuilder.register("http", plainConnectionSocketFactory);
+
         }
+        PlainConnectionSocketFactory plainConnectionSocketFactory = new PlainConnectionSocketFactory();
+        registryBuilder.register("http", plainConnectionSocketFactory);
 
         Registry<ConnectionSocketFactory> registry = registryBuilder.build();
 
