@@ -12,22 +12,21 @@ import java.util.TreeMap;
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 /**
  *
  * @author roland
  */
 public class EndpointDocumentation {
-    
-    Map<String,String> parameter=new TreeMap<>();
-    Map<String,String> pathParameter=new TreeMap<>();
-    List<HttpStatus> returns=new ArrayList<>();
+
+    Map<String, String> parameter = new TreeMap<>();
+    Map<String, String> pathParameter = new TreeMap<>();
+    List<HttpStatus> returns = new ArrayList<>();
     private final String shortInfo;
     private String longInfo;
     private final ContentType answerContentType;
-    private final Class in;
-    private final Class out;
-    
+    private Class in;
+    private Class out;
+
     /**
      *
      * @param shortInfo
@@ -53,14 +52,13 @@ public class EndpointDocumentation {
         this.in = in;
         this.out = out;
     }
-    
+
     /**
      *
      * @param httpStatus
      * @return
      */
-    public EndpointDocumentation addReturns(HttpStatus httpStatus)
-    {
+    public EndpointDocumentation addReturns(HttpStatus httpStatus) {
         returns.add(httpStatus);
         return this;
     }
@@ -74,27 +72,45 @@ public class EndpointDocumentation {
         this.longInfo = longInfo;
         return this;
     }
-    
+
+    /**
+     *
+     * @param out
+     * @return
+     */
+    public EndpointDocumentation setOut(Class out) {
+        this.out = out;
+        return this;
+    }
+
+    /**
+     *
+     * @param in
+     * @return
+     */
+    public EndpointDocumentation setIn(Class in) {
+        this.in = in;
+        return this;
+    }
+
     /**
      *
      * @param name
      * @param doc
      * @return
      */
-    public EndpointDocumentation addParameter(String name,String doc)
-    {
+    public EndpointDocumentation addParameter(String name, String doc) {
         parameter.put(name, doc);
         return this;
     }
-    
+
     /**
      *
      * @param name
      * @param doc
      * @return
      */
-    public EndpointDocumentation addPathParameter(String name,String doc)
-    {
+    public EndpointDocumentation addPathParameter(String name, String doc) {
         pathParameter.put(name, doc);
         return this;
     }
@@ -124,7 +140,7 @@ public class EndpointDocumentation {
     public Map<String, String> getPathParameter() {
         return pathParameter;
     }
-    
+
     /**
      *
      * @return
@@ -172,9 +188,5 @@ public class EndpointDocumentation {
     public String getShortInfo() {
         return shortInfo;
     }
-    
-    
-    
-    
-    
+
 }
