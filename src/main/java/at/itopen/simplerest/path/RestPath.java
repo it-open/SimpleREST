@@ -67,6 +67,21 @@ public class RestPath {
 
     /**
      *
+     * @param restPathName
+     * @return
+     */
+    public RestPath getSubPath(String restPathName) {
+        for (RestPath rp : subPaths) {
+            if (rp.getPathName().equals(restPathName)) {
+                return rp;
+            }
+        }
+        return addSubPath(restPathName);
+
+    }
+
+    /**
+     *
      * @return
      */
     public String getPathName() {
