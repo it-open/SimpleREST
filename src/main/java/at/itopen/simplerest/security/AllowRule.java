@@ -16,7 +16,7 @@ import java.util.Map;
 public abstract class AllowRule<T> {
 
     static {
-        addLEVEL("none", new AllowLevel(0));
+        addAllowLevel("none", new AllowLevel(0));
     }
 
     public static class AllowLevel {
@@ -35,17 +35,17 @@ public abstract class AllowRule<T> {
 
     private final static Map<String, AllowLevel> levels = new HashMap<>();
 
-    public static void addLEVEL(String name, AllowLevel level) {
+    public static void addAllowLevel(String name, AllowLevel level) {
         levels.put(name.toUpperCase(), level);
     }
 
-    public AllowLevel getLevel(String name) {
+    public static AllowLevel getAllowLevel(String name) {
         return levels.get(name.toUpperCase());
     }
 
     public AllowRule() {
     }
 
-    public abstract AllowLevel check(Conversion conversion, T data);
+    public abstract boolean check(Conversion conversion, T data, RestUser user);
 
 }

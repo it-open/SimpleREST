@@ -7,9 +7,6 @@ package at.itopen.simplerest.security;
 
 import at.itopen.simplerest.conversion.Conversion;
 import at.itopen.simplerest.conversion.HttpStatus;
-import at.itopen.simplerest.security.BasicAuthUser;
-import at.itopen.simplerest.security.BasicUser;
-import at.itopen.simplerest.security.JwtAuthUser;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -101,22 +98,24 @@ public abstract class RestUser<T> extends BasicUser implements BasicAuthUser, Jw
         allowRules.get(forClass).add(rule);
     }
 
-    public boolean may(Conversion conversion, Object object, AllowRule.AllowLevel minLevel) {
+    public boolean may(Conversion conversion, Object object) {
         if (object == null) {
             return false;
         }
         if (!allowRules.containsKey(object.getClass())) {
-            return false;
+            return true;
         }
         for (AllowRule rule : allowRules.get(object.getClass())) {
-            AllowRule.AllowLevel level = (rule.check(conversion, object));
-            return (level.can(minLevel));
+            boolean test = (rule.check(conversion, object, this));
+            if (test == false) {
+                return false;
+            }
         }
-        return false;
+        return true;
     }
 
-    public boolean mayWithFail(Conversion conversion, Object object, AllowRule.AllowLevel minLevel) {
-        if (may(conversion, object, minLevel)) {
+    public boolean mayWithFail(Conversion conversion, Object object) {
+        if (may(conversion, object)) {
             return true;
         }
         conversion.getResponse().setStatus(HttpStatus.Forbidden);
