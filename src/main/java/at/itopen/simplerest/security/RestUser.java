@@ -36,6 +36,10 @@ public abstract class RestUser<T> extends BasicUser implements BasicAuthUser, Jw
         return user;
     }
 
+    public enum AccessType {
+        READ, WRITE, DELETE
+    };
+
     @Override
     public void setJwtAuth(Conversion conversion, String Id, String issuer, String Subject) {
         if (conversion.getRequest().getUri().getPath().get(0).equals(Subject)) {
@@ -98,15 +102,15 @@ public abstract class RestUser<T> extends BasicUser implements BasicAuthUser, Jw
         allowRules.get(forClass).add(rule);
     }
 
-    public boolean may(Conversion conversion, Object object) {
+    public boolean may(Conversion conversion, Object object, AccessType accessType) {
         if (object == null) {
             return false;
         }
         if (!allowRules.containsKey(object.getClass())) {
-            return true;
+            return false;
         }
         for (AllowRule rule : allowRules.get(object.getClass())) {
-            boolean test = (rule.check(conversion, object, this));
+            boolean test = (rule.check(conversion, object, this, accessType));
             if (test == false) {
                 return false;
             }
@@ -114,8 +118,8 @@ public abstract class RestUser<T> extends BasicUser implements BasicAuthUser, Jw
         return true;
     }
 
-    public boolean mayWithFail(Conversion conversion, Object object) {
-        if (may(conversion, object)) {
+    public boolean mayWithFail(Conversion conversion, Object object, AccessType accessType) {
+        if (may(conversion, object, accessType)) {
             return true;
         }
         conversion.getResponse().setStatus(HttpStatus.Forbidden);
