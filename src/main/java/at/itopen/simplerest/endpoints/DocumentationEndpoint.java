@@ -187,25 +187,51 @@ public class DocumentationEndpoint extends GetEndpoint {
                 + "  </div>");
     }
 
-    private String ClassGetToString(Class classe) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("{\n");
-        for (Method method : classe.getDeclaredMethods()) {
-            if (method.getName().toLowerCase().startsWith("get")) {
-                sb.append(method.getName().substring(3).toLowerCase()).append(": ").append(returnTypetoStringGet(method)).append(",\n");
-
-            }
-            if (method.getName().toLowerCase().startsWith("is")) {
-                sb.append(method.getName().substring(2).toLowerCase()).append(": ").append(returnTypetoStringGet(method)).append(",\n");
+    private boolean check(Class test, Class testto) {
+        if (test == null) {
+            return false;
+        }
+        for (Class interf : test.getInterfaces()) {
+            if (interf.equals(testto)) {
+                return true;
             }
         }
-        sb.append("}");
+        if (test.equals(testto)) {
+            return true;
+        }
+        return check(test.getSuperclass(), testto);
+    }
+
+    private String ClassGetToString(Class classe) {
+        StringBuilder sb = new StringBuilder();
+
+        if (check(classe, List.class)) {
+            Type t = classe.getAnnotatedSuperclass().getType();
+            ParameterizedType ptype = (ParameterizedType) t;
+            sb.append("[\n");
+            sb.append(ClassGetToString((Class) (ptype.getActualTypeArguments()[0])));
+            sb.append(",... ]\n");
+            return sb.toString();
+        } else {
+
+            sb.append("{\n");
+            for (Method method : classe.getDeclaredMethods()) {
+                if (method.getName().toLowerCase().startsWith("get")) {
+                    sb.append(method.getName().substring(3).toLowerCase()).append(": ").append(returnTypetoStringGet(method)).append(",\n");
+
+                }
+                if (method.getName().toLowerCase().startsWith("is")) {
+                    sb.append(method.getName().substring(2).toLowerCase()).append(": ").append(returnTypetoStringGet(method)).append(",\n");
+                }
+            }
+            sb.append("}");
+        }
         return sb.toString();
     }
 
     private String returnTypetoStringGet(Method method) {
 
-        if (method.getReturnType().equals(List.class)) {
+        if (check(method.getReturnType(), List.class)) {
             Type t = method.getAnnotatedReturnType().getType();
             ParameterizedType ptype = (ParameterizedType) t;
             StringBuilder sb = new StringBuilder("[\n");
@@ -218,7 +244,7 @@ public class DocumentationEndpoint extends GetEndpoint {
     }
 
     private String returnTypetoStringSet(Parameter parameter) {
-        if (parameter.getType().equals(List.class)) {
+        if (check(parameter.getType(), List.class)) {
             Type t = parameter.getAnnotatedType().getType();
             ParameterizedType ptype = (ParameterizedType) t;
             StringBuilder sb = new StringBuilder("[\n");

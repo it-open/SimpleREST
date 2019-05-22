@@ -37,7 +37,7 @@ public abstract class RestUser<T> extends BasicUser implements BasicAuthUser, Jw
     }
 
     public enum AccessType {
-        READ, WRITE, DELETE
+        READ, WRITE, DELETE, CREATE
     };
 
     @Override

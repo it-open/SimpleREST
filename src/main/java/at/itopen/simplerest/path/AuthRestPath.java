@@ -11,8 +11,8 @@ import at.itopen.simplerest.conversion.Conversion;
  *
  * @author roland
  */
-public class AuthRestPath extends RestPath implements AuthenticatedRestPath{
-    
+public class AuthRestPath extends RestPath implements AuthenticatedRestPath {
+
     /**
      *
      * @param pathName
@@ -22,11 +22,9 @@ public class AuthRestPath extends RestPath implements AuthenticatedRestPath{
     }
 
     @Override
-    protected boolean checkPath(Conversion conversion) {
+    protected boolean checkPath(Conversion conversion, String pathData) {
         conversion.getRequest().getUser().setAuthenticated(true);
-        return super.checkPath(conversion); //To change body of generated methods, choose Tools | Templates.
+        return super.checkPath(conversion, pathData); //To change body of generated methods, choose Tools | Templates.
     }
-    
-    
-    
+
 }

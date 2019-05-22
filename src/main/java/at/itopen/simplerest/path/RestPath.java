@@ -141,7 +141,7 @@ public class RestPath {
         } else {
             for (RestPath restPath : subPaths) {
                 if (restPath.getPathName().equalsIgnoreCase(uriPath.get(depth))) {
-                    if (!restPath.checkPath(conversion)) {
+                    if (!restPath.checkPath(conversion, uriPath.get(depth))) {
                         continue;
                     }
                     EndpointWorker endpointWorker = restPath.findEndpoint(conversion, depth + 1, pathParameter);
@@ -152,7 +152,7 @@ public class RestPath {
             }
             for (RestPath restPath : subPaths) {
                 if (restPath.getPathName().startsWith(":")) {
-                    if (!restPath.checkPath(conversion)) {
+                    if (!restPath.checkPath(conversion, uriPath.get(depth))) {
                         continue;
                     }
                     Map<String, String> clonePathParameter = new HashMap<>(pathParameter);
@@ -230,7 +230,7 @@ public class RestPath {
      * @param conversion
      * @return
      */
-    protected boolean checkPath(Conversion conversion) {
+    protected boolean checkPath(Conversion conversion, String pathData) {
         if (this instanceof AuthenticatedRestPath) {
             if (!conversion.getRequest().getUser().isAuthenticated()) {
                 return false;

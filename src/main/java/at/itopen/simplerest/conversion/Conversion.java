@@ -8,6 +8,7 @@ package at.itopen.simplerest.conversion;
 import at.itopen.simplerest.RestHttpServer;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.util.ReferenceCountUtil;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -16,50 +17,46 @@ import java.util.logging.Logger;
  * @author roland
  */
 public class Conversion {
-    
+
     private Request request;
     private final Response response;
     private final ChannelHandlerContext ctx;
     private Exception exception;
-    private long startTime=System.currentTimeMillis();
+    private long startTime = System.currentTimeMillis();
     private RestHttpServer server;
-    
-    
+    private Map<String, Object> data;
+
     /**
      *
      * @param ctx
      * @param server
      */
-    public Conversion(ChannelHandlerContext ctx,RestHttpServer server) {
-        startTime=System.nanoTime();
-        this.ctx=ctx;
-        response=new Response();
-        request=new Request(ctx);
-        this.server=server;
+    public Conversion(ChannelHandlerContext ctx, RestHttpServer server) {
+        startTime = System.nanoTime();
+        this.ctx = ctx;
+        response = new Response();
+        request = new Request(ctx);
+        this.server = server;
     }
 
     /**
      *
      * @param msg
      */
-    public void parse(Object msg)
-    {
-        try{
+    public void parse(Object msg) {
+        try {
             request.parse(msg);
-        } catch (Exception ex)
-        {
-            Logger.getLogger(Conversion.class.getName()).log(Level.SEVERE, ex.getMessage(),ex);
-        }
-        finally{
+        } catch (Exception ex) {
+            Logger.getLogger(Conversion.class.getName()).log(Level.SEVERE, ex.getMessage(), ex);
+        } finally {
             ReferenceCountUtil.release(msg);
         }
     }
-    
+
     /**
      *
      */
-    public void destroy()
-    {
+    public void destroy() {
         ctx.flush();
     }
 
@@ -94,14 +91,13 @@ public class Conversion {
     public Exception getException() {
         return exception;
     }
-    
+
     /**
      *
      * @return
      */
-    public long getNanoDuration()
-    {
-     return System.nanoTime()-startTime;
+    public long getNanoDuration() {
+        return System.nanoTime() - startTime;
     }
 
     /**
@@ -111,13 +107,23 @@ public class Conversion {
     public RestHttpServer getServer() {
         return server;
     }
-    
-    
-    
-    
-    
-    
-    
-    
-    
+
+    public void setData(String name, Object dataIn) {
+        if (dataIn == null) {
+            return;
+        }
+        data.put(name, dataIn);
+    }
+
+    public <T> T getData(String name, Class<T> classtype) {
+        Object out = data.get(name);
+        if (out == null) {
+            return null;
+        }
+        if (out.getClass().equals(classtype)) {
+            return (T) out;
+        }
+        return null;
+    }
+
 }
