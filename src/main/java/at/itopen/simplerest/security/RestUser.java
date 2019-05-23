@@ -20,20 +20,31 @@ public abstract class RestUser<T> extends BasicUser implements BasicAuthUser, Jw
 
     T user = null;
 
+    public static enum AUTH_TYPE {
+        BASIC, JWT
+    }
+
+    private AUTH_TYPE auth_type = null;
+
     @Override
     public void setAuth(Conversion conversion, String name, String password) {
         user = login(name, password);
-        setAuthenticated(user != null);
+        if (user != null) {
+            setAuthenticated(true);
+            auth_type = AUTH_TYPE.BASIC;
+        }
     }
 
     abstract protected T login(String name, String password);
-
-    abstract protected T get(String id);
 
     abstract protected long getLevel(T user);
 
     public T getUser() {
         return user;
+    }
+
+    public AUTH_TYPE getAuth_type() {
+        return auth_type;
     }
 
     public enum AccessType {
@@ -42,17 +53,16 @@ public abstract class RestUser<T> extends BasicUser implements BasicAuthUser, Jw
 
     @Override
     public void setJwtAuth(Conversion conversion, String Id, String issuer, String Subject) {
-        if (conversion.getRequest().getUri().getPath().get(0).equals(Subject)) {
-            if (Subject.equals("user")) {
-                user = get(Id);
-                setAuthenticated(user != null);
-            }
-
+        user = jwt_check(conversion, Id, issuer, Subject);
+        if (user != null) {
+            setAuthenticated(true);
+            auth_type = AUTH_TYPE.JWT;
         } else {
             setAuthenticated(false);
         }
-
     }
+
+    abstract protected T jwt_check(Conversion conversion, String Id, String issuer, String Subject);
 
     public static boolean DEBUG_AUTH = false;
 

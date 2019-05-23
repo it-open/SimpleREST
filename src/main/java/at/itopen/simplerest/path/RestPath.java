@@ -231,11 +231,6 @@ public class RestPath {
      * @return
      */
     protected boolean checkPath(Conversion conversion, String pathData) {
-        if (this instanceof AuthenticatedRestPath) {
-            if (!conversion.getRequest().getUser().isAuthenticated()) {
-                return false;
-            }
-        }
         return true;
     }
 

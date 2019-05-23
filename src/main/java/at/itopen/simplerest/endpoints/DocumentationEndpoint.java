@@ -17,6 +17,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
 import java.util.List;
 import java.util.Map;
 
@@ -202,14 +203,16 @@ public class DocumentationEndpoint extends GetEndpoint {
         return check(test.getSuperclass(), testto);
     }
 
-    private String ClassGetToString(Class classe) {
+    private String ClassGetToString(Class<?> classe) {
         StringBuilder sb = new StringBuilder();
 
         if (check(classe, List.class)) {
-            Type t = classe.getAnnotatedSuperclass().getType();
+            Type t = classe.getGenericSuperclass();
             ParameterizedType ptype = (ParameterizedType) t;
+            TypeVariable typeVariable = ((TypeVariable) ptype.getActualTypeArguments()[0]);
+
             sb.append("[\n");
-            sb.append(ClassGetToString((Class) (ptype.getActualTypeArguments()[0])));
+            sb.append(ClassGetToString((Class) (((ParameterizedType) (typeVariable.getAnnotatedBounds()[0].getType())).getRawType())));
             sb.append(",... ]\n");
             return sb.toString();
         } else {

@@ -6,6 +6,7 @@
 package at.itopen.simplerest.path;
 
 import at.itopen.simplerest.conversion.Conversion;
+import at.itopen.simplerest.security.RestUser;
 
 /**
  *
@@ -13,18 +14,33 @@ import at.itopen.simplerest.conversion.Conversion;
  */
 public class AuthRestPath extends RestPath implements AuthenticatedRestPath {
 
+    RestUser.AUTH_TYPE[] types;
+
     /**
      *
      * @param pathName
      */
-    public AuthRestPath(String pathName) {
+    public AuthRestPath(String pathName, RestUser.AUTH_TYPE... types) {
         super(pathName);
+        this.types = types;
     }
 
     @Override
     protected boolean checkPath(Conversion conversion, String pathData) {
-        conversion.getRequest().getUser().setAuthenticated(true);
-        return super.checkPath(conversion, pathData); //To change body of generated methods, choose Tools | Templates.
+        if (conversion.getRequest().getUser() == null) {
+            return false;
+        }
+        if (conversion.getRequest().getUser().isAuthenticated() == false) {
+            return false;
+        }
+        if (conversion.getRequest().getUser() instanceof RestUser) {
+            for (RestUser.AUTH_TYPE type : types) {
+                if (type.equals(((RestUser) conversion.getRequest().getUser()).getAuth_type())) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
 }
