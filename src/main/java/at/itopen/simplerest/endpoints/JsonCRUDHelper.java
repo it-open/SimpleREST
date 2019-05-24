@@ -75,6 +75,7 @@ public abstract class JsonCRUDHelper<GETTER extends AbstractGetter<OBJECT>, SETT
     }
 
     final Class<GETTER> getterType;
+    final Class<SETTER> setterType;
     final Class<OBJECT> objectType;
 
     /**
@@ -83,13 +84,19 @@ public abstract class JsonCRUDHelper<GETTER extends AbstractGetter<OBJECT>, SETT
      * @param parentPath
      * @param dataClass
      */
-    public JsonCRUDHelper(String entry, RestPath parentPath, Class setterclass) {
+    public JsonCRUDHelper(String entry, RestPath parentPath, String doku) {
 
         Type tgetter = getClass().getGenericSuperclass();
         getterType = (Class) ((ParameterizedType) tgetter).getActualTypeArguments()[0];
 
+        Type tsetter = getClass().getGenericSuperclass();
+        setterType = (Class) ((ParameterizedType) tsetter).getActualTypeArguments()[1];
+        Class setterclass = setterType;
+
         Type tobject = getClass().getGenericSuperclass();
         objectType = (Class) ((ParameterizedType) tobject).getActualTypeArguments()[2];
+
+        Documentation(getterType, setterclass, setterclass, doku);
 
         RestPath sub = new RestPath(entry);
         parentPath.addSubPath(sub);
