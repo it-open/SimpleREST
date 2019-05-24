@@ -126,4 +126,16 @@ public class Conversion {
         return null;
     }
 
+    public <T> T getData(Class<T> classtype) {
+        for (Object out : data.values()) {
+            if (out == null) {
+                return null;
+            }
+            if (out.getClass().equals(classtype)) {
+                return (T) out;
+            }
+        }
+        return null;
+    }
+
 }
