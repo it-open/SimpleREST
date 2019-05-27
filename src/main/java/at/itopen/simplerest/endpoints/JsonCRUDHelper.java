@@ -96,8 +96,6 @@ public abstract class JsonCRUDHelper<GETTER extends AbstractGetter<OBJECT>, SETT
         Type tobject = getClass().getGenericSuperclass();
         objectType = (Class) ((ParameterizedType) tobject).getActualTypeArguments()[2];
 
-        Documentation(getterType, setterclass, setterclass, doku);
-
         RestPath sub = new RestPath(entry);
         parentPath.addSubPath(sub);
 
@@ -135,6 +133,8 @@ public abstract class JsonCRUDHelper<GETTER extends AbstractGetter<OBJECT>, SETT
                 JsonCRUDHelper.this.deleteItem(conversion, UrlParameter, UrlParameter.get("id"), getUser(conversion));
             }
         });
+
+        Documentation(getterType, setterclass, setterclass, doku);
 
     }
 
