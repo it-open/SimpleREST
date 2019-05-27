@@ -8,6 +8,7 @@ package at.itopen.simplerest.conversion;
 import at.itopen.simplerest.RestHttpServer;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.util.ReferenceCountUtil;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -24,7 +25,7 @@ public class Conversion {
     private Exception exception;
     private long startTime = System.currentTimeMillis();
     private RestHttpServer server;
-    private Map<String, Object> data;
+    private Map<String, Object> data = new HashMap<>();
 
     /**
      *
