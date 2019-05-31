@@ -67,9 +67,7 @@ public abstract class JsonCRUDHelper<GETTER extends AbstractGetter<OBJECT>, SETT
 
         @Override
         public void Call(Conversion conversion, Map<String, String> UrlParameter) {
-            OBJECT data = newObject();
-            getData().internalSetData(data);
-            JsonCRUDHelper.this.updateItem(conversion, UrlParameter, data, UrlParameter.get("id"), getUser(conversion));
+            JsonCRUDHelper.this.updateItem(conversion, UrlParameter, getData(), UrlParameter.get("id"), getUser(conversion));
         }
 
     }
@@ -77,6 +75,18 @@ public abstract class JsonCRUDHelper<GETTER extends AbstractGetter<OBJECT>, SETT
     final Class<GETTER> getterType;
     final Class<SETTER> setterType;
     final Class<OBJECT> objectType;
+
+    public Class<GETTER> getGetterType() {
+        return getterType;
+    }
+
+    public Class<OBJECT> getObjectType() {
+        return objectType;
+    }
+
+    public Class<SETTER> getSetterType() {
+        return setterType;
+    }
 
     /**
      *
@@ -239,7 +249,7 @@ public abstract class JsonCRUDHelper<GETTER extends AbstractGetter<OBJECT>, SETT
      * @param data
      * @param id
      */
-    public abstract void updateItem(Conversion conversion, Map<String, String> UrlParameter, OBJECT data, String id, RestUser<USER> user);
+    public abstract void updateItem(Conversion conversion, Map<String, String> UrlParameter, SETTER data, String id, RestUser<USER> user);
 
     /**
      *
