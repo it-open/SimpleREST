@@ -54,7 +54,10 @@ public abstract class JsonCRUDHelper<GETTER extends AbstractGetter<OBJECT>, SETT
         public void Call(Conversion conversion, Map<String, String> UrlParameter) {
             OBJECT data = newObject();
             getData().internalSetData(data);
-            JsonCRUDHelper.this.addNewItem(conversion, UrlParameter, data, getUser(conversion));
+            data = JsonCRUDHelper.this.addNewItem(conversion, UrlParameter, data, getUser(conversion));
+            if (data != null) {
+                conversion.getResponse().setData(newGetter(data));
+            }
         }
 
     }
@@ -106,8 +109,7 @@ public abstract class JsonCRUDHelper<GETTER extends AbstractGetter<OBJECT>, SETT
         Type tobject = getClass().getGenericSuperclass();
         objectType = (Class) ((ParameterizedType) tobject).getActualTypeArguments()[2];
 
-        RestPath sub = new RestPath(entry);
-        parentPath.addSubPath(sub);
+        RestPath sub = parentPath.getSubPath(entry);
 
         newp = parentPath.addRestEndpoint(new PostNew(entry, setterclass));
 
@@ -225,7 +227,7 @@ public abstract class JsonCRUDHelper<GETTER extends AbstractGetter<OBJECT>, SETT
      * @param UrlParameter
      * @param data
      */
-    public abstract void addNewItem(Conversion conversion, Map<String, String> UrlParameter, OBJECT data, RestUser<USER> user);
+    public abstract OBJECT addNewItem(Conversion conversion, Map<String, String> UrlParameter, OBJECT data, RestUser<USER> user);
 
     /**
      *
