@@ -20,6 +20,7 @@ import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 /**
  *
@@ -36,6 +37,8 @@ public class DocumentationEndpoint extends GetEndpoint {
         setDocumentation(new EndpointDocumentation("Rest Documentation", ContentType.HTML, null, null).addReturns(HttpStatus.OK).setLongInfo("Documentation of the Rest API using Bootstrap"));
     }
 
+    TreeMap<String, String> endpoints = new TreeMap<>();
+
     /**
      *
      * @param conversion
@@ -43,6 +46,7 @@ public class DocumentationEndpoint extends GetEndpoint {
      */
     @Override
     public void Call(Conversion conversion, Map<String, String> UrlParameter) {
+        endpoints.clear();
         StringBuilder out = new StringBuilder();
         if (conversion.getServer().getRootEndpoint().getINDEX() instanceof IndexEndpoint) {
             HTMLstart(out, (IndexEndpoint) conversion.getServer().getRootEndpoint().getINDEX());
@@ -50,19 +54,22 @@ public class DocumentationEndpoint extends GetEndpoint {
             HTMLstart(out, null);
         }
         String path = "/";
-        subPath(conversion.getServer().getRootEndpoint(), out, path, false);
+        subPath(conversion.getServer().getRootEndpoint(), path, false);
+        for (String erg : endpoints.values()) {
+            out.append(erg);
+        }
         HTMLEnd(out);
         conversion.getResponse().setContentType(ContentType.HTML);
         conversion.getResponse().setData(out.toString());
 
     }
 
-    private void subPath(RestPath path, StringBuilder out, String pathname, boolean isauth) {
+    private void subPath(RestPath path, String pathname, boolean isauth) {
         for (RestPath sub : path.getSubPaths()) {
             boolean auth = isauth || (sub instanceof AuthenticatedRestPath);
             String newPathName = pathname + sub.getPathName() + "/";
-            DocPath(path, out, pathname);
-            subPath(sub, out, newPathName, auth);
+            DocPath(path, pathname);
+            subPath(sub, newPathName, auth);
         }
 
         for (RestEndpoint sub : path.getEndpoints()) {
@@ -89,12 +96,13 @@ public class DocumentationEndpoint extends GetEndpoint {
                 line += "!";
             }
             line += pathname + sub.getEndpointName();
-            DocEndpoint(sub, out, line, method);
+            DocEndpoint(sub, line, method);
 
         }
     }
 
-    private void DocEndpoint(RestEndpoint endpoint, StringBuilder out, String path, String method) {
+    private void DocEndpoint(RestEndpoint endpoint, String path, String method) {
+        StringBuilder out = new StringBuilder();
         String color = "success";
         if (method.contains("DELETE")) {
             color = "danger";
@@ -114,7 +122,7 @@ public class DocumentationEndpoint extends GetEndpoint {
                 + "    <div class=\"card-header\" id=\"h" + id + "\">\n"
                 + "   <div class=\"float-right\">" + info + "</div> "
                 + "        <button class=\"btn btn-link\" data-toggle=\"collapse\" data-target=\"#" + id + "\" aria-expanded=\"true\" aria-controls=\"" + id + "\">\n"
-                + "          <span class=\"badge badge-" + color + "\">" + method + "</span> " + path + "\n"
+                + "          " + path + "&nbsp;&nbsp;<span class=\"badge badge-" + color + "\">" + method + "</span> \n"
                 + "        </button>\n"
                 + "    </div>");
         out.append("<div id=\"" + id + "\" class=\"collapse\" aria-labelledby=\"h" + id + "\" data-parent=\"#accordion\">\n"
@@ -186,6 +194,7 @@ public class DocumentationEndpoint extends GetEndpoint {
         out.append("</div>\n"
                 + "    </div>\n"
                 + "  </div>");
+        endpoints.put(path + " " + method, out.toString());
     }
 
     private boolean check(Class test, Class testto) {
@@ -272,7 +281,7 @@ public class DocumentationEndpoint extends GetEndpoint {
         return sb.toString();
     }
 
-    private void DocPath(RestPath restPath, StringBuilder out, String path) {
+    private void DocPath(RestPath restPath, String path) {
 
     }
 
