@@ -62,8 +62,7 @@ public class RestHttpRequestDispatchHandler extends ChannelInboundHandlerAdapter
                 ctx.write(new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.CONTINUE));
             }
 
-            Conversion conversion = connections.get(ctx.channel().id().asLongText());
-            conversion.parse(msg);
+            getConn(ctx).parse(msg);
 
         } catch (Exception ex) {
             ReferenceCountUtil.release(msg);
@@ -96,13 +95,14 @@ public class RestHttpRequestDispatchHandler extends ChannelInboundHandlerAdapter
     @Override
     public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
 
-        Conversion conversion = connections.get(ctx.channel().id().asLongText());
+        Conversion conversion = getConn(ctx);
         if (conversion.getRequest().getHttpDecoder() != null) {
             if ((conversion.getRequest().getHttpDecoder().isMultipart()) && (!conversion.getRequest().getHttpDecoder().hasNext())) {
                 return;
             }
         }
         process(conversion, ctx);
+        connections.remove(ctx.channel().id().asLongText());
 
         ctx.flush();
     }
@@ -193,6 +193,18 @@ public class RestHttpRequestDispatchHandler extends ChannelInboundHandlerAdapter
             writeJSON(ctx, HttpResponseStatus.valueOf(conversion.getResponse().getStatus().getCode()), bb, conversion.getResponse());
 
         }
+
+    }
+
+    public Conversion getConn(ChannelHandlerContext ctx) {
+        String key = ctx.channel().id().asLongText();
+        if (connections.containsKey(key)) {
+            return connections.get(key);
+        } else {
+            Conversion c = new Conversion(ctx, server);
+            connections.put(key, c);
+            return c;
+        }
     }
 
     /**
@@ -204,7 +216,7 @@ public class RestHttpRequestDispatchHandler extends ChannelInboundHandlerAdapter
     public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
         super.channelRegistered(ctx); //To change body of generated methods, choose Tools | Templates.
 
-        connections.put(ctx.channel().id().asLongText(), new Conversion(ctx, server));
+        getConn(ctx);
     }
 
     /**

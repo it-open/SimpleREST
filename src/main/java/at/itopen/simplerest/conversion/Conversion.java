@@ -23,7 +23,7 @@ public class Conversion {
     private final Response response;
     private final ChannelHandlerContext ctx;
     private Exception exception;
-    private long startTime = System.currentTimeMillis();
+    private long startTime;
     private RestHttpServer server;
     private Map<String, Object> data = new HashMap<>();
 
