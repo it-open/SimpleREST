@@ -1,7 +1,5 @@
 language: java
 jdk: oraclejdk11
-script:
-  - jdk_switcher use oraclejdk11
 deploy:
   provider: releases
   api_key:
