@@ -17,6 +17,7 @@ import java.util.logging.Logger;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
+import org.apache.commons.codec.binary.Base64;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpDelete;
@@ -220,6 +221,18 @@ public class RestClient {
         return this;
     }
 
+    public RestClient authBasic(String user, String pass) {
+
+        headers.put("Authorization", "Basic " + Base64.encodeBase64String((user + ":" + pass).getBytes()));
+        return this;
+    }
+
+    public RestClient authKey(String key) {
+
+        headers.put("Authorization", "Bearer " + key);
+        return this;
+    }
+
     public CloseableHttpClient getAllSSLClient() throws KeyStoreException, NoSuchAlgorithmException, KeyManagementException {
 
         TrustManager[] trustAllCerts = new TrustManager[]{new X509TrustManager() {
@@ -237,22 +250,21 @@ public class RestClient {
             public void checkServerTrusted(java.security.cert.X509Certificate[] certs, String authType) {
             }
         }};
-        if (ignoreSSLErrors) {
-            SSLContext context = SSLContext.getInstance("SSL");
-            context.init(null, trustAllCerts, null);
-        }
 
         HttpClientBuilder builder = HttpClientBuilder.create();
         RegistryBuilder registryBuilder = RegistryBuilder.<ConnectionSocketFactory>create();
+
+        SSLContext context = SSLContext.getInstance("SSL");
         if (ignoreSSLErrors) {
-            SSLContext context = SSLContext.getInstance("SSL");
             context.init(null, trustAllCerts, null);
-            SSLConnectionSocketFactory sslConnectionFactory = new SSLConnectionSocketFactory(context, SSLConnectionSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
-            builder.setSSLSocketFactory(sslConnectionFactory);
-
-            registryBuilder.register("https", sslConnectionFactory);
-
+        } else {
+            context.init(null, null, null);
         }
+        SSLConnectionSocketFactory sslConnectionFactory = new SSLConnectionSocketFactory(context, SSLConnectionSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
+        builder.setSSLSocketFactory(sslConnectionFactory);
+
+        registryBuilder.register("https", sslConnectionFactory);
+
         PlainConnectionSocketFactory plainConnectionSocketFactory = new PlainConnectionSocketFactory();
         registryBuilder.register("http", plainConnectionSocketFactory);
 
