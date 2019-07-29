@@ -22,7 +22,7 @@ public class Conversion {
     private Request request;
     private final Response response;
     private final ChannelHandlerContext ctx;
-    private Exception exception;
+    private Throwable exception;
     private long startTime;
     private RestHttpServer server;
     private Map<String, Object> data = new HashMap<>();
@@ -81,7 +81,7 @@ public class Conversion {
      *
      * @param exception
      */
-    public void setException(Exception exception) {
+    public void setException(Throwable exception) {
         this.exception = exception;
     }
 
@@ -89,7 +89,7 @@ public class Conversion {
      *
      * @return
      */
-    public Exception getException() {
+    public Throwable getException() {
         return exception;
     }
 

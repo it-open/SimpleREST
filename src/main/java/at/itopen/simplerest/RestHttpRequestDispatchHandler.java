@@ -137,7 +137,7 @@ public class RestHttpRequestDispatchHandler extends ChannelInboundHandlerAdapter
                     conversion.getServer().getRootEndpoint().getNOT_FOUND().CallEndpoint(conversion, null);
                 }
             }
-        } catch (Exception e) {
+        } catch (Throwable e) {
             conversion.setException(e);
         }
 

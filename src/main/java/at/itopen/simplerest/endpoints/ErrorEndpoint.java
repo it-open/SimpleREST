@@ -11,26 +11,25 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-
 /**
  *
  * @author roland
  */
 public class ErrorEndpoint extends RestEndpoint {
 
-    
     private class ErrorData {
+
         String message;
-        List<String> lines=new ArrayList<>();
+        List<String> lines = new ArrayList<>();
 
         public ErrorData(String message) {
-            if (message==null)
-                message="Null Pointer!";
+            if (message == null) {
+                message = "Null Pointer!";
+            }
             this.message = message;
         }
-        
-        public void addLine(String line)
-        {
+
+        public void addLine(String line) {
             lines.add(line);
         }
 
@@ -41,38 +40,33 @@ public class ErrorEndpoint extends RestEndpoint {
         public List<String> getLines() {
             return lines;
         }
-        
-        
-        
-        
-        
+
     }
-        
+
     private ErrorData data;
-    
+
     /**
      *
      */
     public ErrorEndpoint() {
         super("ERROR");
-        
+
     }
-    
+
     /**
      *
      * @param conversion
      * @param UrlParameter
      */
     @Override
-    public void Call(Conversion conversion, Map<String,String> UrlParameter) {
-        Exception exception=conversion.getException();
-        data=new ErrorData(exception.getMessage());
-        for (StackTraceElement stackTraceElement:exception.getStackTrace())
-        {
+    public void Call(Conversion conversion, Map<String, String> UrlParameter) {
+        Throwable exception = conversion.getException();
+        data = new ErrorData(exception.getMessage());
+        for (StackTraceElement stackTraceElement : exception.getStackTrace()) {
             data.addLine(stackTraceElement.toString());
         }
         conversion.getResponse().setData(data);
-        
+
     }
-    
+
 }
