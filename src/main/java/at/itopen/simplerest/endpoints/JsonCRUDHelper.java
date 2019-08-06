@@ -91,6 +91,16 @@ public abstract class JsonCRUDHelper<GETTER extends AbstractGetter<OBJECT>, SETT
         return setterType;
     }
 
+    public void addGlobalEntry(RestEndpoint ep) {
+        sub.addRestEndpoint(ep);
+    }
+
+    public void addIDEntry(RestEndpoint ep) {
+        sub.getSubPath(":id").addRestEndpoint(ep);
+    }
+
+    private RestPath sub;
+
     /**
      *
      * @param entry
@@ -109,7 +119,7 @@ public abstract class JsonCRUDHelper<GETTER extends AbstractGetter<OBJECT>, SETT
         Type tobject = getClass().getGenericSuperclass();
         objectType = (Class) ((ParameterizedType) tobject).getActualTypeArguments()[2];
 
-        RestPath sub = parentPath.getSubPath(entry);
+        sub = parentPath.getSubPath(entry);
 
         newp = parentPath.addRestEndpoint(new PostNew(entry, setterclass));
 
