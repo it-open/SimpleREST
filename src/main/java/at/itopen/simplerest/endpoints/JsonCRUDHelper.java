@@ -7,90 +7,213 @@ package at.itopen.simplerest.endpoints;
 
 import at.itopen.simplerest.conversion.ContentType;
 import at.itopen.simplerest.conversion.Conversion;
+import at.itopen.simplerest.conversion.HttpStatus;
 import at.itopen.simplerest.path.EndpointDocumentation;
 import at.itopen.simplerest.path.RestEndpoint;
 import at.itopen.simplerest.path.RestPath;
+import at.itopen.simplerest.security.BasicUser;
+import at.itopen.simplerest.security.RestUser;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
  * @author roland
  * @param <T>
  */
-public abstract class JsonCRUDHelper<T> {
-    
-    RestEndpoint get,put,del,getall,newp;
-    
-    
-    private class PostNew extends JsonPutOrPostEndpoint<T>{
+public abstract class JsonCRUDHelper<GETTER extends AbstractGetter<OBJECT>, SETTER extends AbstractSetter<OBJECT>, OBJECT, USER> {
 
-            public PostNew(String endpointName,Class dataClass) {
-                super(endpointName,dataClass);
-            }
+    RestEndpoint get, put, del, getall, newp;
 
-            @Override
-            public void Call(Conversion conversion, Map<String,String> UrlParameter) {
-                JsonCRUDHelper.this.addNewItem(conversion, UrlParameter,getData());
-            }
-            
+    private RestUser<USER> getUser(Conversion conversion) {
+        BasicUser bu = conversion.getRequest().getUser();
+        if (bu == null) {
+            return null;
         }
-    
-    private class PostUpdate extends JsonPutOrPostEndpoint<T>{
-
-            public PostUpdate(String endpointName,Class dataClass) {
-                super(endpointName,dataClass);
-            }
-
-            @Override
-            public void Call(Conversion conversion, Map<String,String> UrlParameter) {
-                JsonCRUDHelper.this.updateItem(conversion, UrlParameter,getData(),UrlParameter.get("id"));
-            }
-            
+        if (bu instanceof RestUser) {
+            return ((RestUser<USER>) bu);
+        } else {
+            return null;
         }
-    
+    }
+
+    private class PostNew extends JsonPutOrPostEndpoint<SETTER> {
+
+        public PostNew(String endpointName, Class dataClass) {
+            super(endpointName, dataClass);
+        }
+
+        @Override
+        public void Call(Conversion conversion, Map<String, String> UrlParameter) {
+            OBJECT data = newObject();
+            getData().internalSetData(data);
+            data = JsonCRUDHelper.this.addNewItem(conversion, UrlParameter, data, getUser(conversion));
+            if (data != null) {
+                conversion.getResponse().setData(newGetter(data));
+            }
+        }
+
+    }
+
+    private class PostUpdate extends JsonPutOrPostEndpoint<SETTER> {
+
+        public PostUpdate(String endpointName, Class dataClass) {
+            super(endpointName, dataClass);
+        }
+
+        @Override
+        public void Call(Conversion conversion, Map<String, String> UrlParameter) {
+            JsonCRUDHelper.this.updateItem(conversion, UrlParameter, getData(), UrlParameter.get("id"), getUser(conversion));
+        }
+
+    }
+
+    final Class<GETTER> getterType;
+    final Class<SETTER> setterType;
+    final Class<OBJECT> objectType;
+
+    public Class<GETTER> getGetterType() {
+        return getterType;
+    }
+
+    public Class<OBJECT> getObjectType() {
+        return objectType;
+    }
+
+    public Class<SETTER> getSetterType() {
+        return setterType;
+    }
+
+    public void addGlobalEntry(RestEndpoint ep) {
+        sub.addRestEndpoint(ep);
+    }
+
+    public void addIDEntry(RestEndpoint ep) {
+        sub.getSubPath(":id").addRestEndpoint(ep);
+    }
+
+    private RestPath sub;
+
     /**
      *
      * @param entry
      * @param parentPath
      * @param dataClass
      */
-    public JsonCRUDHelper(String entry, RestPath parentPath,Class dataClass) {
+    public JsonCRUDHelper(String entry, RestPath parentPath, String doku) {
 
-        RestPath sub = new RestPath(entry);
-        parentPath.addSubPath(sub);
-        
-        
-        newp=parentPath.addRestEndpoint(new PostNew(entry,dataClass));
-        
-      
+        Type tgetter = getClass().getGenericSuperclass();
+        getterType = (Class) ((ParameterizedType) tgetter).getActualTypeArguments()[0];
 
-        getall=parentPath.addRestEndpoint(new GetEndpoint(entry) {
+        Type tsetter = getClass().getGenericSuperclass();
+        setterType = (Class) ((ParameterizedType) tsetter).getActualTypeArguments()[1];
+        Class setterclass = setterType;
+
+        Type tobject = getClass().getGenericSuperclass();
+        objectType = (Class) ((ParameterizedType) tobject).getActualTypeArguments()[2];
+
+        sub = parentPath.getSubPath(entry);
+
+        newp = parentPath.addRestEndpoint(new PostNew(entry, setterclass));
+
+        getall = parentPath.addRestEndpoint(new GetEndpoint(entry) {
             @Override
-            public void Call(Conversion conversion, Map<String,String> UrlParameter) {
-                JsonCRUDHelper.this.getAllItem(conversion, UrlParameter);
+            public void Call(Conversion conversion, Map<String, String> UrlParameter) {
+                List<OBJECT> erg = JsonCRUDHelper.this.getAllItem(conversion, UrlParameter, getUser(conversion));
+                List<GETTER> send = new ArrayList<>();
+                for (OBJECT o : erg) {
+                    send.add(newGetter(o));
+                }
+                conversion.getResponse().setData(send);
             }
         });
 
-        get=sub.addRestEndpoint(new GetEndpoint(":id") {
+        get = sub.addRestEndpoint(new GetEndpoint(":id") {
             @Override
-            public void Call(Conversion conversion, Map<String,String> UrlParameter) {
-                JsonCRUDHelper.this.getSingeItem(conversion, UrlParameter,UrlParameter.get("id"));
+            public void Call(Conversion conversion, Map<String, String> UrlParameter) {
+                OBJECT o = JsonCRUDHelper.this.getSingeItem(conversion, UrlParameter, UrlParameter.get("id"), getUser(conversion));
+                if (o != null) {
+                    conversion.getResponse().setData(newGetter(o));
+                } else {
+                    conversion.getResponse().setStatus(HttpStatus.NotFound);
+                }
             }
         });
 
-        put=sub.addRestEndpoint(new PostUpdate(":id",dataClass));
+        put = sub.addRestEndpoint(new PostUpdate(":id", setterclass));
 
-       
-
-        del=sub.addRestEndpoint(new DeleteEndpoint(":id") {
+        del = sub.addRestEndpoint(new DeleteEndpoint(":id") {
             @Override
-            public void Call(Conversion conversion, Map<String,String> UrlParameter) {
-                JsonCRUDHelper.this.deleteItem(conversion, UrlParameter,UrlParameter.get("id"));
+            public void Call(Conversion conversion, Map<String, String> UrlParameter) {
+                JsonCRUDHelper.this.deleteItem(conversion, UrlParameter, UrlParameter.get("id"), getUser(conversion));
             }
         });
+
+        Documentation(getterType, setterclass, setterclass, doku);
 
     }
-    
+
+    private GETTER newGetter(OBJECT data) {
+        try {
+            for (Constructor c : getterType.getClass().getConstructors()) {
+                if (c.getParameterCount() == 0) {
+                    GETTER getter = (GETTER) c.newInstance();
+                    getter.internalGetData(data);
+                    return getter;
+                }
+            }
+            GETTER getter = (GETTER) getterType.newInstance();
+            getter.internalGetData(data);
+            return getter;
+        } catch (InstantiationException ex) {
+            Logger.getLogger(JsonCRUDHelper.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            Logger.getLogger(JsonCRUDHelper.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IllegalArgumentException ex) {
+            Logger.getLogger(JsonCRUDHelper.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (InvocationTargetException ex) {
+            Logger.getLogger(JsonCRUDHelper.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
+
+    private OBJECT newObject() {
+        try {
+            for (Constructor c : objectType.getClass().getConstructors()) {
+                if (c.getParameterCount() == 0) {
+                    return (OBJECT) c.newInstance();
+                }
+            }
+            return (OBJECT) objectType.newInstance();
+        } catch (InstantiationException ex) {
+            Logger.getLogger(JsonCRUDHelper.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            Logger.getLogger(JsonCRUDHelper.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IllegalArgumentException ex) {
+            Logger.getLogger(JsonCRUDHelper.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (InvocationTargetException ex) {
+            Logger.getLogger(JsonCRUDHelper.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
+
+    public List<OBJECT> filterRead(List<OBJECT> items, RestUser<USER> user, Conversion conversion) {
+        List<OBJECT> erg = new ArrayList<>();
+        for (OBJECT item : items) {
+            if (user.may(conversion, item, RestUser.AccessType.READ)) {
+                erg.add(item);
+            }
+        }
+        return erg;
+    }
+
     /**
      *
      * @param getClass
@@ -98,47 +221,23 @@ public abstract class JsonCRUDHelper<T> {
      * @param newClass
      * @param objectname
      */
-    public void Documentation(Class getClass,Class putClass,Class newClass,String objectname)
-    {
-        get.setDocumentation(new EndpointDocumentation("Get a single "+objectname, ContentType.JSON, null, getClass).addPathParameter("id", "ID Number of Object"));
-        getall.setDocumentation(new EndpointDocumentation("Get all "+objectname, ContentType.JSON, null, getClass));
-        newp.setDocumentation(new EndpointDocumentation("Add a new "+objectname, ContentType.JSON, newClass, getClass));
-        put.setDocumentation(new EndpointDocumentation("Update "+objectname, ContentType.JSON, putClass, getClass).addPathParameter("id", "ID Number of Object"));
-        del.setDocumentation(new EndpointDocumentation("Remove a "+objectname, ContentType.JSON, null, getClass).addPathParameter("id", "ID Number of Object"));
-        
+    public void Documentation(Class getClass, Class putClass, Class newClass, String objectname) {
+
+        get.setDocumentation(new EndpointDocumentation("Get a single " + objectname, ContentType.JSON, null, getClass).addPathParameter("id", "ID Number of Object"));
+        getall.setDocumentation(new EndpointDocumentation("Get all " + objectname, ContentType.JSON, null, getClass));
+        newp.setDocumentation(new EndpointDocumentation("Add a new " + objectname, ContentType.JSON, newClass, getClass));
+        put.setDocumentation(new EndpointDocumentation("Update " + objectname, ContentType.JSON, putClass, getClass).addPathParameter("id", "ID Number of Object"));
+        del.setDocumentation(new EndpointDocumentation("Remove a " + objectname, ContentType.JSON, null, getClass).addPathParameter("id", "ID Number of Object"));
+
     }
-    
-    /**
-     *
-     * @param conversion
-     * @param UrlParameter
-     * @param data
-     */
-    public abstract void addNewItem(Conversion conversion, Map<String,String> UrlParameter,T data);
-
-    /**
-     *
-     * @param conversion
-     * @param UrlParameter
-     * @param id
-     */
-    public abstract void getSingeItem(Conversion conversion, Map<String,String> UrlParameter,String id);
-
-    /**
-     *
-     * @param conversion
-     * @param UrlParameter
-     */
-    public abstract void getAllItem(Conversion conversion, Map<String,String> UrlParameter);
 
     /**
      *
      * @param conversion
      * @param UrlParameter
      * @param data
-     * @param id
      */
-    public abstract void updateItem(Conversion conversion, Map<String,String> UrlParameter,T data,String id);
+    public abstract OBJECT addNewItem(Conversion conversion, Map<String, String> UrlParameter, OBJECT data, RestUser<USER> user);
 
     /**
      *
@@ -146,6 +245,30 @@ public abstract class JsonCRUDHelper<T> {
      * @param UrlParameter
      * @param id
      */
-    public abstract void deleteItem(Conversion conversion, Map<String,String> UrlParameter,String id);
+    public abstract OBJECT getSingeItem(Conversion conversion, Map<String, String> UrlParameter, String id, RestUser<USER> user);
+
+    /**
+     *
+     * @param conversion
+     * @param UrlParameter
+     */
+    public abstract List<OBJECT> getAllItem(Conversion conversion, Map<String, String> UrlParameter, RestUser<USER> user);
+
+    /**
+     *
+     * @param conversion
+     * @param UrlParameter
+     * @param data
+     * @param id
+     */
+    public abstract void updateItem(Conversion conversion, Map<String, String> UrlParameter, SETTER data, String id, RestUser<USER> user);
+
+    /**
+     *
+     * @param conversion
+     * @param UrlParameter
+     * @param id
+     */
+    public abstract void deleteItem(Conversion conversion, Map<String, String> UrlParameter, String id, RestUser<USER> user);
 
 }

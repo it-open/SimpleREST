@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
@@ -55,7 +55,7 @@ public class LoadBalancedRestClient extends RestClient {
             serviceurl += "/";
         }
         DefaultHttpClient httpClient = new DefaultHttpClient();
-        HttpResponse response = null;
+        CloseableHttpResponse response = null;
         long start = System.nanoTime();
         try {
 

@@ -127,7 +127,10 @@ public class Request {
 
             HttpContent content = (HttpContent) msg;
             if (!(content.content() instanceof EmptyByteBuf)) {
-                contentData = content.content().getCharSequence(0, content.content().capacity(), Charset.forName("UTF-8")).toString();
+                if (contentData == null) {
+                    contentData = "";
+                }
+                contentData += content.content().getCharSequence(0, content.content().capacity(), Charset.forName("UTF-8")).toString();
                 if (getHttpDecoder() != null) {
                     getHttpDecoder().offer(content);
                 }
