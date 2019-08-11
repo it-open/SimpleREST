@@ -1,0 +1,6 @@
+deploy:
+  image: maven:3.3.9-jdk-11
+  script:
+    - 'mvn install'
+  only:
+    - master
