@@ -32,7 +32,7 @@ public abstract class JsonCRUDHelper<GETTER extends AbstractGetter<OBJECT>, SETT
 
     RestEndpoint get, put, del, getall, newp;
 
-    private RestUser<USER> getUser(Conversion conversion) {
+    protected RestUser<USER> getUser(Conversion conversion) {
         BasicUser bu = conversion.getRequest().getUser();
         if (bu == null) {
             return null;
