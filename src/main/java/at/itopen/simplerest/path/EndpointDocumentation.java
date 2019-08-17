@@ -23,7 +23,7 @@ public class EndpointDocumentation {
     List<HttpStatus> returns = new ArrayList<>();
     private final String shortInfo;
     private String longInfo;
-    private final ContentType answerContentType;
+    private ContentType answerContentType;
     private Class in;
     private Class out;
     private boolean inlist = false;
@@ -39,6 +39,11 @@ public class EndpointDocumentation {
         this.in = null;
         this.out = null;
         returns.add(HttpStatus.OK);
+    }
+
+    public EndpointDocumentation setContentType(ContentType answerContentType) {
+        this.answerContentType = answerContentType;
+        return this;
     }
 
     /**

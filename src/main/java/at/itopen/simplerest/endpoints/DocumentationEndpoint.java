@@ -18,6 +18,7 @@ import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -232,14 +233,20 @@ public class DocumentationEndpoint extends GetEndpoint {
 
     private String ClassGetToString(Class<?> classe) {
         StringBuilder sb = new StringBuilder();
-
         if (check(classe, List.class)) {
             Type t = classe.getGenericSuperclass();
             ParameterizedType ptype = (ParameterizedType) t;
             TypeVariable typeVariable = ((TypeVariable) ptype.getActualTypeArguments()[0]);
+            Class ret = (Class) (((ParameterizedType) (typeVariable.getAnnotatedBounds()[0].getType())).getRawType());
+            if (check(ret, Number.class) || check(ret, String.class) || check(ret, Boolean.class) || check(ret, Date.class)) {
+                return ret.getSimpleName();
+            }
+            if (ret.equals(boolean.class) || ret.equals(int.class) || ret.equals(double.class) || ret.equals(float.class) || ret.equals(long.class) || ret.equals(byte[].class)) {
+                return ret.getSimpleName();
+            }
 
             sb.append("[\n");
-            sb.append(ClassGetToString((Class) (((ParameterizedType) (typeVariable.getAnnotatedBounds()[0].getType())).getRawType())));
+            sb.append(ClassGetToString(ret));
             sb.append(",... ]\n");
             return sb.toString();
         } else {
@@ -253,10 +260,30 @@ public class DocumentationEndpoint extends GetEndpoint {
                 }
 
                 if (method.getName().toLowerCase().startsWith("get")) {
+                    if (method.getParameterCount() > 0) {
+                        continue;
+                    }
+                    if (method.getReturnType() == null) {
+                        continue;
+                    }
+                    if (method.getReturnType().equals(Class.class)) {
+                        continue;
+                    }
+
                     sb.append(method.getName().substring(3).toLowerCase()).append(": ").append(returnTypetoStringGet(method)).append(",").append(doc).append("\n");
 
                 }
                 if (method.getName().toLowerCase().startsWith("is")) {
+                    if (method.getParameterCount() > 0) {
+                        continue;
+                    }
+                    if (method.getReturnType() == null) {
+                        continue;
+                    }
+                    if (method.getReturnType().equals(Class.class)) {
+                        continue;
+                    }
+
                     sb.append(method.getName().substring(2).toLowerCase()).append(": ").append(returnTypetoStringGet(method)).append(",").append(doc).append("\n");
                 }
             }
@@ -266,17 +293,36 @@ public class DocumentationEndpoint extends GetEndpoint {
     }
 
     private String returnTypetoStringGet(Method method) {
-
         if (check(method.getReturnType(), List.class)) {
             Type t = method.getAnnotatedReturnType().getType();
             ParameterizedType ptype = (ParameterizedType) t;
             StringBuilder sb = new StringBuilder("[\n");
-            sb.append(ClassGetToString((Class) (ptype.getActualTypeArguments()[0])));
-            sb.append(",... ]\n");
+            Class ret = (Class) (ptype.getActualTypeArguments()[0]);
+            String txt = null;
+            if (check(ret, Number.class) || check(ret, String.class) || check(ret, Boolean.class) || check(ret, Date.class)) {
+                txt = ret.getSimpleName();
+            }
+            if (ret.equals(boolean.class) || ret.equals(int.class) || ret.equals(double.class) || ret.equals(float.class) || ret.equals(long.class) || ret.equals(byte[].class)) {
+                txt = ret.getSimpleName();
+            }
+            if (txt == null) {
+                txt = ClassGetToString(ret);
+            }
+            sb.append(txt).append(",... ]\n");
             return sb.toString();
-        } else {
+        }
+        Class ret = method.getReturnType();
+        if (check(ret, Number.class) || check(ret, String.class) || check(ret, Boolean.class) || check(ret, Date.class)) {
             return method.getReturnType().getSimpleName();
         }
+        if (ret.equals(boolean.class) || ret.equals(int.class) || ret.equals(double.class) || ret.equals(float.class) || ret.equals(long.class) || ret.equals(byte[].class)) {
+            return ret.getSimpleName();
+        }
+
+        StringBuilder sb = new StringBuilder("{\n");
+        sb.append(ClassGetToString(ret));
+        sb.append("}\n");
+        return sb.toString();
     }
 
     private String returnTypetoStringSet(Parameter parameter) {
@@ -284,12 +330,34 @@ public class DocumentationEndpoint extends GetEndpoint {
             Type t = parameter.getAnnotatedType().getType();
             ParameterizedType ptype = (ParameterizedType) t;
             StringBuilder sb = new StringBuilder("[\n");
-            sb.append(ClassSetToString((Class) (ptype.getActualTypeArguments()[0])));
-            sb.append(",... ]\n");
+            Class ret = (Class) (ptype.getActualTypeArguments()[0]);
+            String txt = null;
+            if (check(ret, Number.class) || check(ret, String.class) || check(ret, Boolean.class) || check(ret, Date.class)) {
+                txt = ret.getSimpleName();
+            }
+            if (ret.equals(boolean.class) || ret.equals(int.class) || ret.equals(double.class) || ret.equals(float.class) || ret.equals(long.class) || ret.equals(byte[].class)) {
+                txt = ret.getSimpleName();
+            }
+            if (txt == null) {
+                txt = ClassSetToString(ret);
+            }
+            sb.append(txt).append(",... ]\n");
             return sb.toString();
-        } else {
-            return parameter.getType().getSimpleName();
+
         }
+        Class ret = parameter.getType();
+        if (check(ret, Number.class) || check(ret, String.class) || check(ret, Boolean.class) || check(ret, Date.class)) {
+            return ret.getSimpleName();
+        }
+        if (ret.equals(boolean.class) || ret.equals(int.class) || ret.equals(double.class) || ret.equals(float.class) || ret.equals(long.class) || ret.equals(byte[].class)) {
+            return ret.getSimpleName();
+        }
+
+        StringBuilder sb = new StringBuilder("{\n");
+        sb.append(ClassSetToString(ret));
+        sb.append("}\n");
+        return sb.toString();
+
     }
 
     private String ClassSetToString(Class classe) {
@@ -297,7 +365,18 @@ public class DocumentationEndpoint extends GetEndpoint {
         sb.append("{\n");
         for (Method method : classe.getDeclaredMethods()) {
             if (method.getName().toLowerCase().startsWith("set") && method.getParameterCount() == 1) {
-                sb.append(method.getName().substring(3).toLowerCase()).append(": ").append(returnTypetoStringSet(method.getParameters()[0])).append(",\n");
+                if (method.getParameters()[0] == null) {
+                    continue;
+                }
+                if (method.getParameters()[0].equals(Class.class)) {
+                    continue;
+                }
+                String doc = "";
+                RestDoc restDoc = method.getAnnotation(RestDoc.class);
+                if (restDoc != null) {
+                    doc = "  <span style='color:#888'> // " + restDoc.value() + "</span>";
+                }
+                sb.append(method.getName().substring(3).toLowerCase()).append(": ").append(returnTypetoStringSet(method.getParameters()[0])).append(",").append(doc).append("\n");
             }
 
         }
