@@ -224,7 +224,7 @@ public abstract class JsonCRUDHelper<GETTER extends AbstractGetter<OBJECT>, SETT
     public void Documentation(Class getClass, Class putClass, Class newClass, String objectname) {
 
         get.setDocumentation(new EndpointDocumentation("Get a single " + objectname, ContentType.JSON, null, getClass).addPathParameter("id", "ID Number of Object"));
-        getall.setDocumentation(new EndpointDocumentation("Get all " + objectname, ContentType.JSON, null, getClass));
+        getall.setDocumentation(new EndpointDocumentation("Get all " + objectname, ContentType.JSON, null, getClass).setOutlist(true));
         newp.setDocumentation(new EndpointDocumentation("Add a new " + objectname, ContentType.JSON, newClass, getClass));
         put.setDocumentation(new EndpointDocumentation("Update " + objectname, ContentType.JSON, putClass, getClass).addPathParameter("id", "ID Number of Object"));
         del.setDocumentation(new EndpointDocumentation("Remove a " + objectname, ContentType.JSON, null, getClass).addPathParameter("id", "ID Number of Object"));

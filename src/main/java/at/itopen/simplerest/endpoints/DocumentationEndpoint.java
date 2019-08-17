@@ -166,21 +166,39 @@ public class DocumentationEndpoint extends GetEndpoint {
             }
 
             if (doc.getIn() != null) {
-                out.append("<div class=\"card border-secondary mb-3\" style=\"max-width: 20rem;\">\n"
-                        + "            <div class=\"card-header\">In</div>\n"
-                        + "            <div class=\"card-body\">\n"
-                        + "              <pre class=\"card-text\">" + ClassSetToString(doc.getIn()) + "</pre>\n"
-                        + "            </div>\n"
-                        + "          </div>");
+                if (!doc.isInlist()) {
+                    out.append("<div class=\"card border-secondary mb-3\" style=\"max-width: 100%;\">\n"
+                            + "            <div class=\"card-header\">In</div>\n"
+                            + "            <div class=\"card-body\">\n"
+                            + "              <pre class=\"card-text\">" + ClassSetToString(doc.getIn()) + "</pre>\n"
+                            + "            </div>\n"
+                            + "          </div>");
+                } else {
+                    out.append("<div class=\"card border-secondary mb-3\" style=\"max-width: 100%;\">\n"
+                            + "            <div class=\"card-header\">In</div>\n"
+                            + "            <div class=\"card-body\">\n"
+                            + "              <pre class=\"card-text\">[<br>" + ClassSetToString(doc.getIn()) + "<br>],...</pre>\n"
+                            + "            </div>\n"
+                            + "          </div>");
+                }
 
             }
             if (doc.getOut() != null) {
-                out.append("<div class=\"card border-secondary mb-3\" style=\"max-width: 20rem;\">\n"
-                        + "            <div class=\"card-header\">Out</div>\n"
-                        + "            <div class=\"card-body\">\n"
-                        + "              <pre class=\"card-text\">" + ClassGetToString(doc.getOut()) + "</pre>\n"
-                        + "            </div>\n"
-                        + "          </div>");
+                if (!doc.isOutlist()) {
+                    out.append("<div class=\"card border-secondary mb-3\" style=\"max-width: 100%;\">\n"
+                            + "            <div class=\"card-header\">Out</div>\n"
+                            + "            <div class=\"card-body\">\n"
+                            + "              <pre class=\"card-text\">" + ClassGetToString(doc.getOut()) + "</pre>\n"
+                            + "            </div>\n"
+                            + "          </div>");
+                } else {
+                    out.append("<div class=\"card border-secondary mb-3\" style=\"max-width: 100%;\">\n"
+                            + "            <div class=\"card-header\">Out</div>\n"
+                            + "            <div class=\"card-body\">\n"
+                            + "              <pre class=\"card-text\">[<br>" + ClassGetToString(doc.getOut()) + "<br>],...</pre>\n"
+                            + "            </div>\n"
+                            + "          </div>");
+                }
 
             }
             out.append("<b>Returns</b><br><p>");
@@ -227,13 +245,19 @@ public class DocumentationEndpoint extends GetEndpoint {
         } else {
 
             sb.append("{\n");
-            for (Method method : classe.getDeclaredMethods()) {
+            for (Method method : classe.getMethods()) {
+                String doc = "";
+                RestDoc restDoc = method.getAnnotation(RestDoc.class);
+                if (restDoc != null) {
+                    doc = "  <span style='color:#888'> // " + restDoc.value() + "</span>";
+                }
+
                 if (method.getName().toLowerCase().startsWith("get")) {
-                    sb.append(method.getName().substring(3).toLowerCase()).append(": ").append(returnTypetoStringGet(method)).append(",\n");
+                    sb.append(method.getName().substring(3).toLowerCase()).append(": ").append(returnTypetoStringGet(method)).append(",").append(doc).append("\n");
 
                 }
                 if (method.getName().toLowerCase().startsWith("is")) {
-                    sb.append(method.getName().substring(2).toLowerCase()).append(": ").append(returnTypetoStringGet(method)).append(",\n");
+                    sb.append(method.getName().substring(2).toLowerCase()).append(": ").append(returnTypetoStringGet(method)).append(",").append(doc).append("\n");
                 }
             }
             sb.append("}");

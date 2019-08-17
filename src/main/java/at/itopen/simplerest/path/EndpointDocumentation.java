@@ -26,6 +26,8 @@ public class EndpointDocumentation {
     private final ContentType answerContentType;
     private Class in;
     private Class out;
+    private boolean inlist = false;
+    private boolean outlist = false;
 
     /**
      *
@@ -90,6 +92,41 @@ public class EndpointDocumentation {
      */
     public EndpointDocumentation setIn(Class in) {
         this.in = in;
+        return this;
+    }
+
+    public EndpointDocumentation setOutList(Class out) {
+        this.out = out;
+        outlist = true;
+        return this;
+    }
+
+    /**
+     *
+     * @param in
+     * @return
+     */
+    public EndpointDocumentation setInList(Class in) {
+        this.in = in;
+        inlist = true;
+        return this;
+    }
+
+    public boolean isInlist() {
+        return inlist;
+    }
+
+    public boolean isOutlist() {
+        return outlist;
+    }
+
+    public EndpointDocumentation setInlist(boolean inlist) {
+        this.inlist = inlist;
+        return this;
+    }
+
+    public EndpointDocumentation setOutlist(boolean outlist) {
+        this.outlist = outlist;
         return this;
     }
 
