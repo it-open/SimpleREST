@@ -28,8 +28,9 @@ public abstract class RestUser<T> extends BasicUser implements BasicAuthUser, Jw
 
     @Override
     public void setAuth(Conversion conversion, String name, String password) {
-        user = login(name, password);
-        if (user != null) {
+        T tuser = login(name, password);
+        if (tuser != null) {
+            user = tuser;
             setAuthenticated(true);
             auth_type = AUTH_TYPE.BASIC;
         }
@@ -43,6 +44,10 @@ public abstract class RestUser<T> extends BasicUser implements BasicAuthUser, Jw
         return user;
     }
 
+    public void setUser(T user) {
+        this.user = user;
+    }
+
     public AUTH_TYPE getAuth_type() {
         return auth_type;
     }
@@ -53,12 +58,11 @@ public abstract class RestUser<T> extends BasicUser implements BasicAuthUser, Jw
 
     @Override
     public void setJwtAuth(Conversion conversion, String Id, String issuer, String Subject) {
-        user = jwt_check(conversion, Id, issuer, Subject);
-        if (user != null) {
+        T tuser = jwt_check(conversion, Id, issuer, Subject);
+        if (tuser != null) {
+            user = tuser;
             setAuthenticated(true);
             auth_type = AUTH_TYPE.JWT;
-        } else {
-            setAuthenticated(false);
         }
     }
 
