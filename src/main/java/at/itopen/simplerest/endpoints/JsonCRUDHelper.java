@@ -53,10 +53,10 @@ public abstract class JsonCRUDHelper<GETTER extends AbstractGetter<OBJECT>, SETT
         @Override
         public void Call(Conversion conversion, Map<String, String> UrlParameter) {
             OBJECT data = newObject();
-            getData().internalSetData(data);
+            getData().ConversionSet(conversion).internalSetData(data);
             data = JsonCRUDHelper.this.addNewItem(conversion, UrlParameter, data, getUser(conversion));
             if (data != null) {
-                conversion.getResponse().setData(newGetter(data));
+                conversion.getResponse().setData(newGetter(conversion, data));
             }
         }
 
@@ -129,7 +129,7 @@ public abstract class JsonCRUDHelper<GETTER extends AbstractGetter<OBJECT>, SETT
                 List<OBJECT> erg = JsonCRUDHelper.this.getAllItem(conversion, UrlParameter, getUser(conversion));
                 List<GETTER> send = new ArrayList<>();
                 for (OBJECT o : erg) {
-                    send.add(newGetter(o));
+                    send.add(newGetter(conversion, o));
                 }
                 conversion.getResponse().setData(send);
             }
@@ -140,7 +140,7 @@ public abstract class JsonCRUDHelper<GETTER extends AbstractGetter<OBJECT>, SETT
             public void Call(Conversion conversion, Map<String, String> UrlParameter) {
                 OBJECT o = JsonCRUDHelper.this.getSingeItem(conversion, UrlParameter, UrlParameter.get("id"), getUser(conversion));
                 if (o != null) {
-                    conversion.getResponse().setData(newGetter(o));
+                    conversion.getResponse().setData(newGetter(conversion, o));
                 } else {
                     conversion.getResponse().setStatus(HttpStatus.NotFound);
                 }
@@ -160,17 +160,17 @@ public abstract class JsonCRUDHelper<GETTER extends AbstractGetter<OBJECT>, SETT
 
     }
 
-    private GETTER newGetter(OBJECT data) {
+    private GETTER newGetter(Conversion conversion, OBJECT data) {
         try {
             for (Constructor c : getterType.getClass().getConstructors()) {
                 if (c.getParameterCount() == 0) {
                     GETTER getter = (GETTER) c.newInstance();
-                    getter.internalGetData(data);
+                    getter.setConversion(conversion).internalGetData(data);
                     return getter;
                 }
             }
             GETTER getter = (GETTER) getterType.newInstance();
-            getter.internalGetData(data);
+            getter.setConversion(conversion).internalGetData(data);
             return getter;
         } catch (InstantiationException ex) {
             Logger.getLogger(JsonCRUDHelper.class.getName()).log(Level.SEVERE, null, ex);

@@ -5,6 +5,9 @@
  */
 package at.itopen.simplerest.endpoints;
 
+import at.itopen.simplerest.conversion.Conversion;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 /**
  *
  * @author roland
@@ -12,6 +15,18 @@ package at.itopen.simplerest.endpoints;
 public abstract class AbstractGetter<OBJECT> {
 
     public AbstractGetter() {
+    }
+
+    @JsonIgnore
+    private Conversion conversion;
+
+    public Conversion getConversion() {
+        return conversion;
+    }
+
+    public AbstractGetter<OBJECT> setConversion(Conversion conversion) {
+        this.conversion = conversion;
+        return this;
     }
 
     abstract public void internalGetData(OBJECT data);
