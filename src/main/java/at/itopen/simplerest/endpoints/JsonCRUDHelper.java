@@ -70,7 +70,7 @@ public abstract class JsonCRUDHelper<GETTER extends AbstractGetter<OBJECT>, SETT
 
         @Override
         public void Call(Conversion conversion, Map<String, String> UrlParameter) {
-            JsonCRUDHelper.this.updateItem(conversion, UrlParameter, getData(), UrlParameter.get("id"), getUser(conversion));
+            JsonCRUDHelper.this.updateItem(conversion, UrlParameter, (SETTER) getData().ConversionSet(conversion), UrlParameter.get("id"), getUser(conversion));
         }
 
     }
