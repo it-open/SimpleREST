@@ -269,6 +269,9 @@ public class DocumentationEndpoint extends GetEndpoint {
                     if (method.getReturnType().equals(Class.class)) {
                         continue;
                     }
+                    if (method.getReturnType().equals(Conversion.class)) {
+                        continue;
+                    }
 
                     sb.append(method.getName().substring(3).toLowerCase()).append(": ").append(returnTypetoStringGet(method)).append(",").append(doc).append("\n");
 
@@ -369,6 +372,9 @@ public class DocumentationEndpoint extends GetEndpoint {
                     continue;
                 }
                 if (method.getParameters()[0].equals(Class.class)) {
+                    continue;
+                }
+                if (method.getReturnType().equals(Conversion.class)) {
                     continue;
                 }
                 String doc = "";

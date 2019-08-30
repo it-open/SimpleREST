@@ -20,11 +20,11 @@ public abstract class AbstractSetter<OBJECT> {
     @JsonIgnore
     private Conversion conversion;
 
-    public Conversion conversion() {
+    public Conversion getConversion() {
         return conversion;
     }
 
-    public AbstractSetter<OBJECT> ConversionSet(Conversion conversion) {
+    public AbstractSetter<OBJECT> setConversion(Conversion conversion) {
         this.conversion = conversion;
         return this;
     }
