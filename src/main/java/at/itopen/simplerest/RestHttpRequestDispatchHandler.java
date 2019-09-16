@@ -117,6 +117,9 @@ public class RestHttpRequestDispatchHandler extends ChannelInboundHandlerAdapter
         System.out.println(conversion.getRequest().getMethod() + " " + conversion.getRequest().getUri() + " (" + ctx.channel().id().asLongText() + ")");
         Headerworker.work(conversion);
         EndpointWorker worker = null;
+        if (conversion.getRequest().getProtocolName().equals("EMPTY")) {
+            return;
+        }
 
         try {
             if (conversion.getRequest().getUri().getPath().isEmpty()) {
