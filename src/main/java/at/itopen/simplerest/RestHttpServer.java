@@ -5,6 +5,7 @@
  */
 package at.itopen.simplerest;
 
+import at.itopen.simplerest.conversion.Conversion;
 import at.itopen.simplerest.endpoints.DocumentationEndpoint;
 import at.itopen.simplerest.endpoints.ErrorEndpoint;
 import at.itopen.simplerest.endpoints.IndexEndpoint;
@@ -24,6 +25,8 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.util.concurrent.DefaultThreadFactory;
 import io.netty.util.internal.SystemPropertyUtil;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -39,6 +42,7 @@ public class RestHttpServer {
     private final EventLoopGroup worker;
     private final RootPath root = new RootPath();
     private LoadBalancer loadBalancer = null;
+    private final Map<String, RootPath> subdomainpath = new HashMap<String, RootPath>();
 
     /**
      * Constructor, starts the Rest Server
@@ -59,6 +63,19 @@ public class RestHttpServer {
             }
         }.start();
         return restHttpServer;
+    }
+
+    public synchronized RootPath getRootPathforSubdomain(String subdomain) {
+        if (subdomain == null) {
+            return root;
+        }
+        if (subdomain.isEmpty()) {
+            return root;
+        }
+        if (!subdomainpath.containsKey(subdomain)) {
+            subdomainpath.put(subdomain, new RootPath());
+        }
+        return subdomainpath.get(subdomain);
     }
 
     /**
@@ -163,6 +180,39 @@ public class RestHttpServer {
      *
      * @return
      */
+    public RootPath getRootEndpoint(Conversion conversion) {
+        String host = conversion.getRequest().getHost();
+        for (Map.Entry<String, RootPath> e : subdomainpath.entrySet()) {
+            String sd = e.getKey() + ".";
+            if (host.startsWith(sd)) {
+                return e.getValue();
+            }
+        }
+        return root;
+    }
+
+    /**
+     * Get the Startpoint of all Rest Calls '/' Make all Sub Path on this this
+     * Path.
+     *
+     * @return
+     */
+    public RootPath getRootEndpoint(String subdomain) {
+        for (Map.Entry<String, RootPath> e : subdomainpath.entrySet()) {
+            String sd = e.getKey() + ".";
+            if (subdomain.equals(sd)) {
+                return e.getValue();
+            }
+        }
+        return root;
+    }
+
+    /**
+     * Get the Startpoint of all Rest Calls '/' Make all Sub Path on this this
+     * Path.
+     *
+     * @return
+     */
     public RootPath getRootEndpoint() {
         return root;
     }
@@ -174,8 +224,8 @@ public class RestHttpServer {
      * @param path
      * @return
      */
-    public RestPath getPath(String path) {
-        return root.pathForLocation(path);
+    public RestPath getPath(Conversion conversion, String path) {
+        return getRootEndpoint(conversion).pathForLocation(path);
     }
 
     /**

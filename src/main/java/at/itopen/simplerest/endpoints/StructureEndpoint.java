@@ -14,15 +14,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-
 /**
  *
  * @author roland
  */
 public class StructureEndpoint extends GetEndpoint {
 
-    
-    private class Item{
+    private class Item {
+
         String name;
         boolean auth;
 
@@ -38,42 +37,38 @@ public class StructureEndpoint extends GetEndpoint {
             this.name = name;
             this.auth = auth;
         }
-        
+
     }
-    
-    private class PathItem extends Item
-    {
+
+    private class PathItem extends Item {
 
         public PathItem(String name, boolean auth) {
             super(name, auth);
         }
-        
-        
-        List<Item> subItems=new ArrayList<>();
+
+        List<Item> subItems = new ArrayList<>();
 
         public List<Item> getSubItems() {
             return subItems;
         }
-        
+
     }
-    
-    private class EndPointItem extends Item
-    {
+
+    private class EndPointItem extends Item {
 
         public EndPointItem(String method, String name, boolean auth) {
             super(name, auth);
             this.method = method;
         }
-        
-        String method;
 
+        String method;
 
         public String getMethod() {
             return method;
         }
-        
+
     }
-    
+
     /**
      *
      * @param endpointName
@@ -88,39 +83,43 @@ public class StructureEndpoint extends GetEndpoint {
      * @param UrlParameter
      */
     @Override
-    public void Call(Conversion conversion, Map<String,String> UrlParameter) {
-        PathItem root=new PathItem("/", false);
-        subPath(conversion.getServer().getRootEndpoint(),root);
+    public void Call(Conversion conversion, Map<String, String> UrlParameter) {
+        PathItem root = new PathItem("/", false);
+        subPath(conversion.getServer().getRootEndpoint(conversion), root);
         conversion.getResponse().setData(root);
-                
+
     }
-    
-    private void subPath(RestPath path,PathItem item)
-    {
-        for (RestPath sub:path.getSubPaths())
-        {
-            boolean auth=item.auth || (sub instanceof AuthenticatedRestPath);
-            PathItem pi=new PathItem(sub.getPathName(), auth);
+
+    private void subPath(RestPath path, PathItem item) {
+        for (RestPath sub : path.getSubPaths()) {
+            boolean auth = item.auth || (sub instanceof AuthenticatedRestPath);
+            PathItem pi = new PathItem(sub.getPathName(), auth);
             item.getSubItems().add(pi);
             subPath(sub, pi);
         }
-        
-        for (RestEndpoint sub:path.getEndpoints())
-        {
-            boolean auth=item.auth || (sub instanceof AuthenticatedRestEndpoint);
-            String method="ALL";
-            if (sub instanceof GetEndpoint) method="GET";
-            if (sub instanceof PostEndpoint) method="POST";
-            if (sub instanceof PutEndpoint) method="PUT";
-            if (sub instanceof DeleteEndpoint) method="DELETE";
-            if (sub instanceof PutOrPostEndpoint) method="PUT,POST";
-            
-            EndPointItem pi=new EndPointItem(method,sub.getEndpointName(), auth);
+
+        for (RestEndpoint sub : path.getEndpoints()) {
+            boolean auth = item.auth || (sub instanceof AuthenticatedRestEndpoint);
+            String method = "ALL";
+            if (sub instanceof GetEndpoint) {
+                method = "GET";
+            }
+            if (sub instanceof PostEndpoint) {
+                method = "POST";
+            }
+            if (sub instanceof PutEndpoint) {
+                method = "PUT";
+            }
+            if (sub instanceof DeleteEndpoint) {
+                method = "DELETE";
+            }
+            if (sub instanceof PutOrPostEndpoint) {
+                method = "PUT,POST";
+            }
+
+            EndPointItem pi = new EndPointItem(method, sub.getEndpointName(), auth);
             item.getSubItems().add(pi);
         }
     }
 
-    
-    
-    
 }

@@ -123,11 +123,11 @@ public class RestHttpRequestDispatchHandler extends ChannelInboundHandlerAdapter
 
         try {
             if (conversion.getRequest().getUri().getPath().isEmpty()) {
-                if (conversion.getServer().getRootEndpoint().getINDEX() != null) {
-                    worker = new EndpointWorker(conversion.getServer().getRootEndpoint().getINDEX(), null);
+                if (conversion.getServer().getRootEndpoint(conversion).getINDEX() != null) {
+                    worker = new EndpointWorker(conversion.getServer().getRootEndpoint(conversion).getINDEX(), null);
                 }
             } else {
-                worker = conversion.getServer().getRootEndpoint().findEndpoint(conversion, 0, new HashMap<>());
+                worker = conversion.getServer().getRootEndpoint(conversion).findEndpoint(conversion, 0, new HashMap<>());
             }
             if (worker != null) {
                 conversion.getResponse().setContentType(ContentType.JSON);
@@ -135,9 +135,9 @@ public class RestHttpRequestDispatchHandler extends ChannelInboundHandlerAdapter
                 worker.work(conversion);
             } else {
                 conversion.getResponse().setStatus(HttpStatus.NotFound);
-                if (conversion.getServer().getRootEndpoint().getNOT_FOUND() != null) {
+                if (conversion.getServer().getRootEndpoint(conversion).getNOT_FOUND() != null) {
                     conversion.getResponse().setContentType(ContentType.JSON);
-                    conversion.getServer().getRootEndpoint().getNOT_FOUND().CallEndpoint(conversion, null);
+                    conversion.getServer().getRootEndpoint(conversion).getNOT_FOUND().CallEndpoint(conversion, null);
                 }
             }
         } catch (Throwable e) {
@@ -146,8 +146,8 @@ public class RestHttpRequestDispatchHandler extends ChannelInboundHandlerAdapter
 
         if (conversion.getException() != null) {
             conversion.getResponse().setStatus(HttpStatus.InternalServerError);
-            if (conversion.getServer().getRootEndpoint().getEXCEPTION() != null) {
-                worker = new EndpointWorker(conversion.getServer().getRootEndpoint().getEXCEPTION(), null);
+            if (conversion.getServer().getRootEndpoint(conversion).getEXCEPTION() != null) {
+                worker = new EndpointWorker(conversion.getServer().getRootEndpoint(conversion).getEXCEPTION(), null);
                 conversion.getResponse().setContentType(ContentType.JSON);
                 worker.work(conversion);
             }

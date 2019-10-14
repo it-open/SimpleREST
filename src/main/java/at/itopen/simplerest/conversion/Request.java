@@ -33,6 +33,7 @@ public class Request {
     private String protocolName;
     private int protocolMajorVersion, protocolMinorVersion;
     private String method;
+    private String host;
     private Uri uri;
     private IpAdress sourceIp = null;
     private final HttpHeaders headers;
@@ -113,6 +114,13 @@ public class Request {
             uri = new Uri(request.uri());
             params.putAll(uri.queryParam);
             headers.addHeaders(request.headers());
+            host = headers.get("host");
+            if (host != null) {
+                if (host.contains(":")) {
+                    host = host.substring(0, host.indexOf(":"));
+                }
+            }
+
             if (method.equals("POST")) {
                 httpDecoder = new HttpPostRequestDecoder((HttpRequest) msg);
             }
@@ -137,6 +145,10 @@ public class Request {
             }
 
         }
+    }
+
+    public String getHost() {
+        return host;
     }
 
     /**

@@ -69,7 +69,7 @@ public class Json {
      */
     public static <T> T fromString(String data, TypeReference type) {
         try {
-            return getJSON_CONVERTER().readValue(data, type);
+            return (T) getJSON_CONVERTER().readValue(data, type);
         } catch (IOException ex) {
             Logger.getLogger(Json.class.getName()).log(Level.SEVERE, null, ex);
             return null;

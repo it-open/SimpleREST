@@ -49,13 +49,13 @@ public class DocumentationEndpoint extends GetEndpoint {
     public void Call(Conversion conversion, Map<String, String> UrlParameter) {
         endpoints.clear();
         StringBuilder out = new StringBuilder();
-        if (conversion.getServer().getRootEndpoint().getINDEX() instanceof IndexEndpoint) {
-            HTMLstart(out, (IndexEndpoint) conversion.getServer().getRootEndpoint().getINDEX());
+        if (conversion.getServer().getRootEndpoint(conversion).getINDEX() instanceof IndexEndpoint) {
+            HTMLstart(out, (IndexEndpoint) conversion.getServer().getRootEndpoint(conversion).getINDEX());
         } else {
             HTMLstart(out, null);
         }
         String path = "/";
-        subPath(conversion.getServer().getRootEndpoint(), path, false);
+        subPath(conversion.getServer().getRootEndpoint(conversion), path, false);
         for (String erg : endpoints.values()) {
             out.append(erg);
         }

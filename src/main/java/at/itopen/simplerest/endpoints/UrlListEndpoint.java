@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-
 /**
  *
  * @author roland
@@ -35,42 +34,47 @@ public class UrlListEndpoint extends GetEndpoint {
      * @param UrlParameter
      */
     @Override
-    public void Call(Conversion conversion, Map<String,String> UrlParameter) {
-        String path="/";
-        List<String> endpoints=new ArrayList<>();
-        subPath(conversion.getServer().getRootEndpoint(),endpoints,path,false);
+    public void Call(Conversion conversion, Map<String, String> UrlParameter) {
+        String path = "/";
+        List<String> endpoints = new ArrayList<>();
+        subPath(conversion.getServer().getRootEndpoint(conversion), endpoints, path, false);
         conversion.getResponse().setData(endpoints);
-                
+
     }
-    
-    private void subPath(RestPath path,List<String> endpoints,String pathname,boolean isauth)
-    {
-        for (RestPath sub:path.getSubPaths())
-        {
-            boolean auth=isauth || (sub instanceof AuthenticatedRestPath);
-            String newPathName=pathname+sub.getPathName()+"/";
-            subPath(sub, endpoints,newPathName,auth);
+
+    private void subPath(RestPath path, List<String> endpoints, String pathname, boolean isauth) {
+        for (RestPath sub : path.getSubPaths()) {
+            boolean auth = isauth || (sub instanceof AuthenticatedRestPath);
+            String newPathName = pathname + sub.getPathName() + "/";
+            subPath(sub, endpoints, newPathName, auth);
         }
-        
-        for (RestEndpoint sub:path.getEndpoints())
-        {
-            boolean auth=isauth || (sub instanceof AuthenticatedRestEndpoint);
-            String method="ALL";
-            if (sub instanceof GetEndpoint) method="GET";
-            if (sub instanceof PostEndpoint) method="POST";
-            if (sub instanceof PutEndpoint) method="PUT";
-            if (sub instanceof DeleteEndpoint) method="DELETE";
-            if (sub instanceof PutOrPostEndpoint) method="PUT,POST";
-            
-            String line="";
-            if (auth)
-                line+="!";
-            line+=method+" "+pathname+sub.getEndpointName();
+
+        for (RestEndpoint sub : path.getEndpoints()) {
+            boolean auth = isauth || (sub instanceof AuthenticatedRestEndpoint);
+            String method = "ALL";
+            if (sub instanceof GetEndpoint) {
+                method = "GET";
+            }
+            if (sub instanceof PostEndpoint) {
+                method = "POST";
+            }
+            if (sub instanceof PutEndpoint) {
+                method = "PUT";
+            }
+            if (sub instanceof DeleteEndpoint) {
+                method = "DELETE";
+            }
+            if (sub instanceof PutOrPostEndpoint) {
+                method = "PUT,POST";
+            }
+
+            String line = "";
+            if (auth) {
+                line += "!";
+            }
+            line += method + " " + pathname + sub.getEndpointName();
             endpoints.add(line);
         }
     }
 
-    
-    
-    
 }
