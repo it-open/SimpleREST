@@ -66,36 +66,36 @@ public abstract class StaticEndpoint extends RestEndpoint {
         }
 
         String name = fileName.toString();
-        Dynamic dynamic = null;
-        for (Dynamic d : dynamics) {
-            for (String ext : d.getExtension()) {
-                if (name.endsWith(ext)) {
-                    dynamic = d;
+
+        DynamicFile dfile = null;
+        CacheItem cacheitem = cachePolicy.get(name);
+        if (cacheitem == null) {
+            byte[] data = readStatic(name);
+            if (data != null) {
+                ContentType ct = ContentType.fromFileName(name);
+                cacheitem = new CacheItem(ct, name, data);
+                cachePolicy.offer(cacheitem);
+                dfile = new DynamicFile(data, name, ContentType.fromFileName(name));
+            } else {
+                conversion.getResponse().setStatus(HttpStatus.NotFound);
+            }
+        } else {
+            dfile = new DynamicFile(cacheitem.getData(), cacheitem.getName(), cacheitem.getType());
+        }
+
+        if (dfile != null) {
+            for (Dynamic d : dynamics) {
+                for (String ext : d.getExtension()) {
+                    if (name.endsWith(ext)) {
+                        d.call(conversion, UrlParameter, dfile);
+                    }
                 }
             }
-        }
-        if (dynamic != null) {
-            DynamicFile dfile = new DynamicFile(readStatic(fileName.toString()), name, ContentType.fromFileName(name));
-            dynamic.call(conversion, UrlParameter, dfile);
             conversion.getResponse().setContentType(dfile.getContentType());
             conversion.getResponse().setData(dfile.getData());
         } else {
-            CacheItem cacheitem = cachePolicy.get(name);
-            if (cacheitem == null) {
-                byte[] data = readStatic(name);
-                if (data != null) {
-                    ContentType ct = ContentType.fromFileName(name);
-                    cacheitem = new CacheItem(ct, name, data);
-                    cachePolicy.offer(cacheitem);
-                    conversion.getResponse().setContentType(ct);
-                    conversion.getResponse().setData(data);
-                } else {
-                    conversion.getResponse().setStatus(HttpStatus.NotFound);
-                }
-            } else {
-                conversion.getResponse().setData(cacheitem.getData());
-                conversion.getResponse().setContentType(cacheitem.getType());
-            }
+            conversion.getResponse().setStatus(HttpStatus.NotFound);
+
         }
 
     }
