@@ -160,7 +160,7 @@ public abstract class JsonCRUDHelper<GETTER extends AbstractGetter<OBJECT>, SETT
 
     }
 
-    private GETTER newGetter(Conversion conversion, OBJECT data) {
+    protected GETTER newGetter(Conversion conversion, OBJECT data) {
         try {
             for (Constructor c : getterType.getClass().getConstructors()) {
                 if (c.getParameterCount() == 0) {
@@ -184,7 +184,31 @@ public abstract class JsonCRUDHelper<GETTER extends AbstractGetter<OBJECT>, SETT
         return null;
     }
 
-    private OBJECT newObject() {
+    protected SETTER newSetter(Conversion conversion, OBJECT data) {
+        try {
+            for (Constructor c : setterType.getClass().getConstructors()) {
+                if (c.getParameterCount() == 0) {
+                    SETTER setter = (SETTER) c.newInstance();
+                    setter.setConversion(conversion).internalSetData(data);
+                    return setter;
+                }
+            }
+            SETTER setter = (SETTER) setterType.newInstance();
+            setter.setConversion(conversion).internalSetData(data);
+            return setter;
+        } catch (InstantiationException ex) {
+            Logger.getLogger(JsonCRUDHelper.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            Logger.getLogger(JsonCRUDHelper.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IllegalArgumentException ex) {
+            Logger.getLogger(JsonCRUDHelper.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (InvocationTargetException ex) {
+            Logger.getLogger(JsonCRUDHelper.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
+
+    protected OBJECT newObject() {
         try {
             for (Constructor c : objectType.getClass().getConstructors()) {
                 if (c.getParameterCount() == 0) {
