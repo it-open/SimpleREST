@@ -37,7 +37,7 @@ public class StaticResourceEndpoint extends StaticEndpoint {
     public String getFileSeperator() {
         return "/";
     }
-    
+
     /**
      *
      * @param fileName
@@ -48,7 +48,7 @@ public class StaticResourceEndpoint extends StaticEndpoint {
         String name = resourcePath + fileName;
         return readResourceFile(name);
     }
-    
+
     /**
      *
      * @param name
@@ -72,10 +72,10 @@ public class StaticResourceEndpoint extends StaticEndpoint {
 
         } catch (IOException ex) {
             Logger.getLogger(StaticResourceEndpoint.class.getName()).log(Level.SEVERE, name, ex);
+        } catch (NullPointerException ex) {
+            return null;
         }
         return new byte[0];
     }
-
-    
 
 }

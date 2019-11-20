@@ -76,7 +76,9 @@ public class RestResponse {
         erg.setGenerationMsSeconds(wr.getGenerationMsSeconds());
         erg.setInfo(wr.getInfo());
         erg.setMessage(wr.getMessage());
-        erg.setData((T) Json.fromString(getJSON().get("data").toString(), type));
+        if (getJSON().get("data") != null) {
+            erg.setData((T) Json.fromString(getJSON().get("data").toString(), type));
+        }
         return erg;
     }
 

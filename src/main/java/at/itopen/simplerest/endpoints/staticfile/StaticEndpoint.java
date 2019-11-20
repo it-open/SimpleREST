@@ -13,6 +13,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -77,6 +79,9 @@ public abstract class StaticEndpoint extends RestEndpoint {
                 cachePolicy.offer(cacheitem);
                 dfile = new DynamicFile(data, name, ContentType.fromFileName(name));
             } else {
+                if (fileName != null) {
+                    Logger.getLogger(this.getClass().getName()).log(Level.WARNING, "Static File not found:" + fileName.toString());
+                }
                 conversion.getResponse().setStatus(HttpStatus.NotFound);
             }
         } else {
