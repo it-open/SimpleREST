@@ -69,11 +69,11 @@ public class SystemCheck {
         sid.setCpu_load_avg_1(hal.getProcessor().getSystemLoadAverage(3)[0]);
         sid.setCpu_load_avg_5(hal.getProcessor().getSystemLoadAverage(3)[1]);
         sid.setCpu_load_avg_15(hal.getProcessor().getSystemLoadAverage(3)[2]);
-        sid.setCpu_load(hal.getProcessor().getSystemCpuLoadBetweenTicks());
+        sid.setCpu_load(hal.getProcessor().getSystemCpuLoadBetweenTicks(hal.getProcessor().getSystemCpuLoadTicks()));
 
         sid.setMem_max(hal.getMemory().getTotal());
         sid.setMem_used(hal.getMemory().getTotal() - hal.getMemory().getAvailable());
-        sid.setMem_swap_used_percent((100.0 / hal.getMemory().getSwapTotal()) * hal.getMemory().getSwapUsed());
+        sid.setMem_swap_used_percent((100.0 / hal.getMemory().getVirtualMemory().getSwapTotal()) * hal.getMemory().getVirtualMemory().getSwapUsed());
 
         File root = new File(".");
         sid.setDisk_max(root.getTotalSpace());
