@@ -28,6 +28,10 @@ public abstract class AllowRule<T> {
             return (levelValue >= level.levelValue);
         }
 
+        public int getLevelValue() {
+            return levelValue;
+        }
+
     }
 
     private final static Map<String, AllowLevel> levels = new HashMap<>();
