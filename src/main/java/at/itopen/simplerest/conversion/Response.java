@@ -164,7 +164,11 @@ public class Response {
      * @return
      */
     public ContentType guessandSetContentTypefromDataOrName(String name) {
-        return guessandSetContentTypefromData(guessContentTypefromName(name));
+        contentType = guessContentTypefromName(name);
+        if (ContentType.OTHER.equals(contentType)) {
+            contentType = guessandSetContentTypefromData();
+        }
+        return contentType;
     }
 
     /**
