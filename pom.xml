@@ -114,7 +114,7 @@
        <repository>
          <id>github</id>
          <name>SimpleRest</name>
-         <url>https://github.com/it-open/SimpleREST</url>
+         <url>https://maven.pkg.github.com/it-open/SimpleREST</url>
        </repository>
    </distributionManagement>
 </project>
