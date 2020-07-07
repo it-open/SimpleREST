@@ -112,7 +112,7 @@
     </build>
   <distributionManagement>
        <repository>
-         <id>it-open.at</id>
+         <id>github</id>
          <name>SimpleRest</name>
          <url>https://github.com/it-open/SimpleREST</url>
        </repository>
