@@ -110,5 +110,11 @@
             </plugin>
         </plugins>
     </build>
-  
+  <distributionManagement>
+       <repository>
+         <id>it-open.at</id>
+         <name>SimpleRest</name>
+         <url>https://github.com/it-open/SimpleREST</url>
+       </repository>
+   </distributionManagement>
 </project>
