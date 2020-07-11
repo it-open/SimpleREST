@@ -65,7 +65,7 @@ public class SystemCheck {
         sid.setCpu_packages(hal.getProcessor().getPhysicalPackageCount());
         sid.setCpu_cores(hal.getProcessor().getPhysicalProcessorCount());
         sid.setCpu_count(hal.getProcessor().getLogicalProcessorCount());
-        sid.setCpu_freq(hal.getProcessor().getVendorFreq());
+        sid.setCpu_freq(hal.getProcessor().getMaxFreq());
         sid.setCpu_load_avg_1(hal.getProcessor().getSystemLoadAverage(3)[0]);
         sid.setCpu_load_avg_5(hal.getProcessor().getSystemLoadAverage(3)[1]);
         sid.setCpu_load_avg_15(hal.getProcessor().getSystemLoadAverage(3)[2]);
