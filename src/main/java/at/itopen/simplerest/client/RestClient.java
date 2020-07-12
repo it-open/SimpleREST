@@ -10,7 +10,9 @@ import java.io.IOException;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -19,6 +21,8 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.http.HttpEntity;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
@@ -36,6 +40,7 @@ import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.conn.BasicHttpClientConnectionManager;
+import org.apache.http.message.BasicNameValuePair;
 
 /**
  *
@@ -45,6 +50,7 @@ public class RestClient {
 
     private String url;
     private Map<String, String> params = new HashMap<>();
+    private boolean multipart = true;
 
     /**
      *
@@ -72,6 +78,10 @@ public class RestClient {
     private String json = null;
     private Map<String, RestFile> files = new HashMap<>();
     private boolean ignoreSSLErrors = false;
+
+    public void setMultipart(boolean multipart) {
+        this.multipart = multipart;
+    }
 
     /**
      *
@@ -287,32 +297,47 @@ public class RestClient {
         try {
 
             if (method.equals(REST_METHOD.POST) || method.equals(REST_METHOD.PUT)) {
+                if (multipart) {
+                    HttpPost postRequest = new HttpPost(url);
+                    HttpEntity entity;
+                    for (Map.Entry<String, String> header : headers.entrySet()) {
+                        postRequest.setHeader(header.getKey(), header.getValue());
+                    }
+                    if (json == null) {
+                        MultipartEntityBuilder data = MultipartEntityBuilder.create()
+                                .setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
+                        params.entrySet().forEach((e) -> {
+                            data.addTextBody(e.getKey(), e.getValue());
+                        });
+                        files.entrySet().forEach((e) -> {
+                            RestFile file = e.getValue();
+                            data.addBinaryBody(e.getKey(), file.getData(), file.getContentType(), file.getName());
+                        });
+                        entity = data.build();
+                    } else {
+                        entity = new StringEntity(
+                                json,
+                                ContentType.APPLICATION_JSON);
+                    }
 
-                HttpPost postRequest = new HttpPost(url);
-                HttpEntity entity;
-                for (Map.Entry<String, String> header : headers.entrySet()) {
-                    postRequest.setHeader(header.getKey(), header.getValue());
-                }
-
-                if (json == null) {
-                    MultipartEntityBuilder data = MultipartEntityBuilder.create()
-                            .setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
-                    params.entrySet().forEach((e) -> {
-                        data.addTextBody(e.getKey(), e.getValue());
-                    });
-                    files.entrySet().forEach((e) -> {
-                        RestFile file = e.getValue();
-                        data.addBinaryBody(e.getKey(), file.getData(), file.getContentType(), file.getName());
-                    });
-                    entity = data.build();
+                    postRequest.setEntity(entity);
+                    response = httpClient.execute(postRequest);
                 } else {
-                    entity = new StringEntity(
-                            json,
-                            ContentType.APPLICATION_JSON);
-                }
 
-                postRequest.setEntity(entity);
-                response = httpClient.execute(postRequest);
+                    HttpPost postRequest = new HttpPost(url);
+                    for (Map.Entry<String, String> header : headers.entrySet()) {
+                        postRequest.setHeader(header.getKey(), header.getValue());
+                    }
+
+                    List<NameValuePair> postparams = new ArrayList<>();
+                    params.entrySet().forEach((e) -> {
+                        postparams.add(new BasicNameValuePair(e.getKey(), e.getValue()));
+                    });
+
+                    postRequest.setEntity(new UrlEncodedFormEntity(postparams));
+
+                    response = httpClient.execute(postRequest);
+                }
 
             }
 

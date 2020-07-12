@@ -270,7 +270,7 @@ public class RestHttpServer {
     /**
      *
      */
-    protected void shutdown() {
+    public void shutdown() {
         boss.shutdownGracefully();
         worker.shutdownGracefully();
     }
