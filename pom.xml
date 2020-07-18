@@ -3,11 +3,11 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>at.it-open</groupId>
     <artifactId>SimpleRest</artifactId>
-    <version>0.4.1</version>
+    <version>0.4.2</version>
     <packaging>jar</packaging>
     <name>Simple REST</name>
     <description>Fast and Easy Rest API based on netty. Simple to code and to extend</description>
-    <url>https://gitlab.com/IT-Open/simplerest</url>
+    <url>https://github.com/it-open/SimpleREST</url>
     <licenses>
         <license>
             <name>MIT License</name>
@@ -93,7 +93,7 @@
                     </descriptorRefs>
                     <archive>
                             <manifest>
-                                <mainClass>at.itopen.arbeitszeit.Main</mainClass>
+                         
                             </manifest>
                         </archive>
                 </configuration>
