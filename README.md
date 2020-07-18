@@ -1,5 +1,8 @@
 # Simple REST Java Library
 ![SimpleRest Logo](https://raw.githubusercontent.com/it-open/SimpleREST/master/logo/Logo-1400w.png)
+## Howto Start - Examples
+Look into the Wiki!
+https://github.com/it-open/SimpleREST/wiki
 
 A REST Library is the Base of most systems. This has to be fast and reliable. But for me as Developer it also has to be easy to use. 
 Spring.io systems are to bloated and full of things you don't need or don't know how to use it.
@@ -24,4 +27,5 @@ Loadbalancing was never so easy
 - Client Side Loadbalancer 
 - Long Lasting Messages (Messages will work even if initiater service oder initial target services dies)
 - REST Client + REST Client with Loadbalancing. (Make loadbalaned rest calls in just one Line of Code, GET, PUT, POST, DELETE)
+
 
