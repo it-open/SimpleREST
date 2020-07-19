@@ -109,6 +109,11 @@ public class Conversion {
         return server;
     }
 
+    /**
+     *
+     * @param name
+     * @param dataIn
+     */
     public void setData(String name, Object dataIn) {
         if (dataIn == null) {
             return;
@@ -116,6 +121,13 @@ public class Conversion {
         data.put(name, dataIn);
     }
 
+    /**
+     *
+     * @param <T>
+     * @param name
+     * @param classtype
+     * @return
+     */
     public <T> T getData(String name, Class<T> classtype) {
         Object out = data.get(name);
         if (out == null) {
@@ -127,6 +139,12 @@ public class Conversion {
         return null;
     }
 
+    /**
+     *
+     * @param <T>
+     * @param classtype
+     * @return
+     */
     public <T> T getData(Class<T> classtype) {
         for (Object out : data.values()) {
             if (out == null) {

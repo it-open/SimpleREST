@@ -41,6 +41,11 @@ public class EndpointDocumentation {
         returns.add(HttpStatus.OK);
     }
 
+    /**
+     *
+     * @param answerContentType
+     * @return
+     */
     public EndpointDocumentation setContentType(ContentType answerContentType) {
         this.answerContentType = answerContentType;
         return this;
@@ -100,6 +105,11 @@ public class EndpointDocumentation {
         return this;
     }
 
+    /**
+     *
+     * @param out
+     * @return
+     */
     public EndpointDocumentation setOutList(Class out) {
         this.out = out;
         outlist = true;
@@ -117,19 +127,37 @@ public class EndpointDocumentation {
         return this;
     }
 
+    /**
+     *
+     * @return
+     */
     public boolean isInlist() {
         return inlist;
     }
 
+    /**
+     *
+     * @return
+     */
     public boolean isOutlist() {
         return outlist;
     }
 
+    /**
+     *
+     * @param inlist
+     * @return
+     */
     public EndpointDocumentation setInlist(boolean inlist) {
         this.inlist = inlist;
         return this;
     }
 
+    /**
+     *
+     * @param outlist
+     * @return
+     */
     public EndpointDocumentation setOutlist(boolean outlist) {
         this.outlist = outlist;
         return this;

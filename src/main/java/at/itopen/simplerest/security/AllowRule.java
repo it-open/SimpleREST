@@ -13,21 +13,38 @@ import java.util.Map;
 /**
  *
  * @author roland
+ * @param <T>
  */
 public abstract class AllowRule<T> {
 
+    /**
+     *
+     */
     public static class AllowLevel {
 
         int levelValue;
 
+        /**
+         *
+         * @param levelValue
+         */
         public AllowLevel(int levelValue) {
             this.levelValue = levelValue;
         }
 
+        /**
+         *
+         * @param level
+         * @return
+         */
         public boolean can(AllowLevel level) {
             return (levelValue >= level.levelValue);
         }
 
+        /**
+         *
+         * @return
+         */
         public int getLevelValue() {
             return levelValue;
         }
@@ -40,17 +57,38 @@ public abstract class AllowRule<T> {
         addAllowLevel("none", new AllowLevel(0));
     }
 
+    /**
+     *
+     * @param name
+     * @param level
+     */
     public static void addAllowLevel(String name, AllowLevel level) {
         levels.put(name.toUpperCase(), level);
     }
 
+    /**
+     *
+     * @param name
+     * @return
+     */
     public static AllowLevel getAllowLevel(String name) {
         return levels.get(name.toUpperCase());
     }
 
+    /**
+     *
+     */
     public AllowRule() {
     }
 
+    /**
+     *
+     * @param conversion
+     * @param data
+     * @param user
+     * @param accessType
+     * @return
+     */
     public abstract boolean check(Conversion conversion, T data, RestUser user, AccessType accessType);
 
 }

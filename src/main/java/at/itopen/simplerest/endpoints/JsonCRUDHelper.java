@@ -26,12 +26,20 @@ import java.util.logging.Logger;
 /**
  *
  * @author roland
- * @param <T>
+ * @param <GETTER>
+ * @param <SETTER>
+ * @param <OBJECT>
+ * @param <USER>
  */
 public abstract class JsonCRUDHelper<GETTER extends AbstractGetter<OBJECT>, SETTER extends AbstractSetter<OBJECT>, OBJECT, USER> {
 
     RestEndpoint get, put, del, getall, newp;
 
+    /**
+     *
+     * @param conversion
+     * @return
+     */
     protected RestUser<USER> getUser(Conversion conversion) {
         BasicUser bu = conversion.getRequest().getUser();
         if (bu == null) {
@@ -79,22 +87,42 @@ public abstract class JsonCRUDHelper<GETTER extends AbstractGetter<OBJECT>, SETT
     final Class<SETTER> setterType;
     final Class<OBJECT> objectType;
 
+    /**
+     *
+     * @return
+     */
     public Class<GETTER> getGetterType() {
         return getterType;
     }
 
+    /**
+     *
+     * @return
+     */
     public Class<OBJECT> getObjectType() {
         return objectType;
     }
 
+    /**
+     *
+     * @return
+     */
     public Class<SETTER> getSetterType() {
         return setterType;
     }
 
+    /**
+     *
+     * @param ep
+     */
     public void addGlobalEntry(RestEndpoint ep) {
         sub.addRestEndpoint(ep);
     }
 
+    /**
+     *
+     * @param ep
+     */
     public void addIDEntry(RestEndpoint ep) {
         sub.getSubPath(":id").addRestEndpoint(ep);
     }
@@ -105,7 +133,7 @@ public abstract class JsonCRUDHelper<GETTER extends AbstractGetter<OBJECT>, SETT
      *
      * @param entry
      * @param parentPath
-     * @param dataClass
+     * @param doku
      */
     public JsonCRUDHelper(String entry, RestPath parentPath, String doku) {
 
@@ -160,6 +188,12 @@ public abstract class JsonCRUDHelper<GETTER extends AbstractGetter<OBJECT>, SETT
 
     }
 
+    /**
+     *
+     * @param conversion
+     * @param data
+     * @return
+     */
     protected GETTER newGetter(Conversion conversion, OBJECT data) {
         try {
             for (Constructor c : getterType.getClass().getConstructors()) {
@@ -184,6 +218,12 @@ public abstract class JsonCRUDHelper<GETTER extends AbstractGetter<OBJECT>, SETT
         return null;
     }
 
+    /**
+     *
+     * @param conversion
+     * @param data
+     * @return
+     */
     protected SETTER newSetter(Conversion conversion, OBJECT data) {
         try {
             for (Constructor c : setterType.getClass().getConstructors()) {
@@ -208,6 +248,10 @@ public abstract class JsonCRUDHelper<GETTER extends AbstractGetter<OBJECT>, SETT
         return null;
     }
 
+    /**
+     *
+     * @return
+     */
     protected OBJECT newObject() {
         try {
             for (Constructor c : objectType.getClass().getConstructors()) {
@@ -228,6 +272,13 @@ public abstract class JsonCRUDHelper<GETTER extends AbstractGetter<OBJECT>, SETT
         return null;
     }
 
+    /**
+     *
+     * @param items
+     * @param user
+     * @param conversion
+     * @return
+     */
     public List<OBJECT> filterRead(List<OBJECT> items, RestUser<USER> user, Conversion conversion) {
         List<OBJECT> erg = new ArrayList<>();
         for (OBJECT item : items) {
@@ -260,6 +311,8 @@ public abstract class JsonCRUDHelper<GETTER extends AbstractGetter<OBJECT>, SETT
      * @param conversion
      * @param UrlParameter
      * @param data
+     * @param user
+     * @return
      */
     public abstract OBJECT addNewItem(Conversion conversion, Map<String, String> UrlParameter, OBJECT data, RestUser<USER> user);
 
@@ -268,6 +321,8 @@ public abstract class JsonCRUDHelper<GETTER extends AbstractGetter<OBJECT>, SETT
      * @param conversion
      * @param UrlParameter
      * @param id
+     * @param user
+     * @return
      */
     public abstract OBJECT getSingeItem(Conversion conversion, Map<String, String> UrlParameter, String id, RestUser<USER> user);
 
@@ -275,6 +330,8 @@ public abstract class JsonCRUDHelper<GETTER extends AbstractGetter<OBJECT>, SETT
      *
      * @param conversion
      * @param UrlParameter
+     * @param user
+     * @return
      */
     public abstract List<OBJECT> getAllItem(Conversion conversion, Map<String, String> UrlParameter, RestUser<USER> user);
 
@@ -284,6 +341,7 @@ public abstract class JsonCRUDHelper<GETTER extends AbstractGetter<OBJECT>, SETT
      * @param UrlParameter
      * @param data
      * @param id
+     * @param user
      */
     public abstract void updateItem(Conversion conversion, Map<String, String> UrlParameter, SETTER data, String id, RestUser<USER> user);
 
@@ -292,6 +350,7 @@ public abstract class JsonCRUDHelper<GETTER extends AbstractGetter<OBJECT>, SETT
      * @param conversion
      * @param UrlParameter
      * @param id
+     * @param user
      */
     public abstract void deleteItem(Conversion conversion, Map<String, String> UrlParameter, String id, RestUser<USER> user);
 

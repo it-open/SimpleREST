@@ -72,6 +72,11 @@ public abstract class MessageQueueEndpoint<T> extends RestEndpoint {
         }
     }
 
+    /**
+     *
+     * @param conversion
+     * @param UrlParameter
+     */
     @Override
     public void Call(Conversion conversion, Map<String, String> UrlParameter) {
 
@@ -121,6 +126,11 @@ public abstract class MessageQueueEndpoint<T> extends RestEndpoint {
      */
     public abstract void work(T data);
 
+    /**
+     *
+     * @param conversion
+     * @return
+     */
     @Override
     protected boolean checkEndpoint(Conversion conversion) {
         if ("POST".equals(conversion.getRequest().getMethod())) {

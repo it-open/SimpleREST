@@ -6,9 +6,7 @@
 package at.itopen.simplerest.endpoints;
 
 import at.itopen.simplerest.conversion.Conversion;
-import at.itopen.simplerest.path.RestEndpoint;
 import java.util.Map;
-
 
 /**
  *
@@ -20,6 +18,7 @@ public class IndexEndpoint extends GetEndpoint {
      *
      */
     public class IndexData {
+
         String programmName;
         String apiVersion;
         String maintainer;
@@ -70,13 +69,11 @@ public class IndexEndpoint extends GetEndpoint {
         public String getProgrammName() {
             return programmName;
         }
-        
-        
-        
+
     }
-        
+
     private IndexData data;
-    
+
     /**
      *
      * @param programmName
@@ -86,18 +83,18 @@ public class IndexEndpoint extends GetEndpoint {
      */
     public IndexEndpoint(String programmName, String apiVersion, String maintainer, String email) {
         super("INDEX");
-        data=new IndexData(programmName, apiVersion, maintainer, email);
+        data = new IndexData(programmName, apiVersion, maintainer, email);
     }
-    
+
     /**
      *
      * @param conversion
      * @param UrlParameter
      */
     @Override
-    public void Call(Conversion conversion, Map<String,String> UrlParameter) {
+    public void Call(Conversion conversion, Map<String, String> UrlParameter) {
         conversion.getResponse().setData(data);
-        
+
     }
 
     /**
@@ -108,11 +105,13 @@ public class IndexEndpoint extends GetEndpoint {
         return data;
     }
 
+    /**
+     *
+     * @return
+     */
     @Override
     public String getEndpointName() {
         return super.getEndpointName(); //To change body of generated methods, choose Tools | Templates.
     }
-    
-    
-    
+
 }

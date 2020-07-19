@@ -2622,6 +2622,10 @@ public enum ContentType {
      *
      */
     XM("audio/xm", "xm", "xm"),
+
+    /**
+     *
+     */
     XLSX("application/vnd.ms-excel", "xlsx", "xlsx"),
     /**
      *

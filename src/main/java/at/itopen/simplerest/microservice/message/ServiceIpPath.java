@@ -23,6 +23,12 @@ public class ServiceIpPath extends RestPath {
         super(pathName);
     }
 
+    /**
+     *
+     * @param conversion
+     * @param pathData
+     * @return
+     */
     @Override
     protected boolean checkPath(Conversion conversion, String pathData) {
         String sourceIP = conversion.getRequest().getSourceIp().toString();

@@ -79,6 +79,10 @@ public class RestClient {
     private Map<String, RestFile> files = new HashMap<>();
     private boolean ignoreSSLErrors = false;
 
+    /**
+     *
+     * @param multipart
+     */
     public void setMultipart(boolean multipart) {
         this.multipart = multipart;
     }
@@ -168,6 +172,11 @@ public class RestClient {
         return this;
     }
 
+    /**
+     *
+     * @param ignoreSSLErrors
+     * @return
+     */
     public RestClient setIgnoreSSLErrors(boolean ignoreSSLErrors) {
         this.ignoreSSLErrors = ignoreSSLErrors;
         return this;
@@ -231,18 +240,35 @@ public class RestClient {
         return this;
     }
 
+    /**
+     *
+     * @param user
+     * @param pass
+     * @return
+     */
     public RestClient authBasic(String user, String pass) {
 
         headers.put("Authorization", "Basic " + Base64.encodeBase64String((user + ":" + pass).getBytes()));
         return this;
     }
 
+    /**
+     *
+     * @param key
+     * @return
+     */
     public RestClient authKey(String key) {
 
         headers.put("Authorization", "Bearer " + key);
         return this;
     }
 
+    /**
+     *
+     * @return @throws KeyStoreException
+     * @throws NoSuchAlgorithmException
+     * @throws KeyManagementException
+     */
     public CloseableHttpClient getAllSSLClient() throws KeyStoreException, NoSuchAlgorithmException, KeyManagementException {
 
         TrustManager[] trustAllCerts = new TrustManager[]{new X509TrustManager() {

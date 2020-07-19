@@ -69,6 +69,12 @@ public class RestResponse {
         return null;
     }
 
+    /**
+     *
+     * @param <T>
+     * @param type
+     * @return
+     */
     public <T> WrappedResponse<T> getWrappedResponse(Class<T> type) {
         WrappedResponse wr = Json.fromString(getDataAsString(), WrappedResponse.class);
         WrappedResponse<T> erg = new WrappedResponse<>();
@@ -82,6 +88,12 @@ public class RestResponse {
         return erg;
     }
 
+    /**
+     *
+     * @param <T>
+     * @param type
+     * @return
+     */
     public <T> T getResponse(Class<T> type) {
 
         return Json.fromString(getDataAsString(), type);

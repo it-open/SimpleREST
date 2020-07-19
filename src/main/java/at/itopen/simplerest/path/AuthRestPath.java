@@ -19,12 +19,19 @@ public class AuthRestPath extends RestPath implements AuthenticatedRestPath {
     /**
      *
      * @param pathName
+     * @param types
      */
     public AuthRestPath(String pathName, RestUser.AUTH_TYPE... types) {
         super(pathName);
         this.types = types;
     }
 
+    /**
+     *
+     * @param conversion
+     * @param pathData
+     * @return
+     */
     @Override
     protected boolean checkPath(Conversion conversion, String pathData) {
         if (conversion.getRequest().getUser() == null) {

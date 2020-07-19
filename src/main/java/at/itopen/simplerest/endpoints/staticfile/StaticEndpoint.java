@@ -34,6 +34,10 @@ public abstract class StaticEndpoint extends RestEndpoint {
         this.cachePolicy = cachePolicy;
     }
 
+    /**
+     *
+     * @param dynamic
+     */
     public void addDynamic(Dynamic dynamic) {
         dynamics.add(dynamic);
     }
@@ -46,6 +50,11 @@ public abstract class StaticEndpoint extends RestEndpoint {
         return File.separator;
     }
 
+    /**
+     *
+     * @param conversion
+     * @param UrlParameter
+     */
     @Override
     public void Call(Conversion conversion, Map<String, String> UrlParameter) {
         StringBuilder fileName = new StringBuilder("");

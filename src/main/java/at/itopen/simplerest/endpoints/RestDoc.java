@@ -18,6 +18,10 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 public @interface RestDoc {
 
+    /**
+     *
+     * @return
+     */
     String value() default "";
 
 }

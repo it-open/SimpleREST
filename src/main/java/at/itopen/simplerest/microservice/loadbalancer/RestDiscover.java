@@ -24,6 +24,11 @@ public class RestDiscover extends JsonPostEndpoint<RestDiscoverQuestion> {
         super(endpointName);
     }
 
+    /**
+     *
+     * @param conversion
+     * @param UrlParameter
+     */
     @Override
     public void Call(Conversion conversion, Map<String, String> UrlParameter) {
 

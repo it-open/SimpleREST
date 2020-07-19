@@ -142,6 +142,10 @@ public class Uri {
         return getParam(name, null);
     }
 
+    /**
+     *
+     * @return
+     */
     @Override
     public String toString() {
         StringBuilder out=new StringBuilder(String.join("/", path));

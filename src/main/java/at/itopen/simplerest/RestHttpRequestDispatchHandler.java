@@ -199,6 +199,11 @@ public class RestHttpRequestDispatchHandler extends ChannelInboundHandlerAdapter
 
     }
 
+    /**
+     *
+     * @param ctx
+     * @return
+     */
     public Conversion getConn(ChannelHandlerContext ctx) {
         String key = ctx.channel().id().asLongText();
         if (connections.containsKey(key)) {

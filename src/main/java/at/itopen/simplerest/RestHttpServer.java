@@ -65,6 +65,11 @@ public class RestHttpServer {
         return restHttpServer;
     }
 
+    /**
+     *
+     * @param subdomain
+     * @return
+     */
     public synchronized RootPath getRootPathforSubdomain(String subdomain) {
         if (subdomain == null) {
             return root;
@@ -178,6 +183,7 @@ public class RestHttpServer {
      * Get the Startpoint of all Rest Calls '/' Make all Sub Path on this this
      * Path.
      *
+     * @param conversion
      * @return
      */
     public RootPath getRootEndpoint(Conversion conversion) {
@@ -195,6 +201,7 @@ public class RestHttpServer {
      * Get the Startpoint of all Rest Calls '/' Make all Sub Path on this this
      * Path.
      *
+     * @param subdomain
      * @return
      */
     public RootPath getRootEndpoint(String subdomain) {
@@ -221,6 +228,7 @@ public class RestHttpServer {
      * Get the Startpoint of all Rest Calls '/' Make all Sub Path on this this
      * Path.
      *
+     * @param conversion
      * @param path
      * @return
      */

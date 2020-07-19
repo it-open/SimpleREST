@@ -11,24 +11,41 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 /**
  *
  * @author roland
+ * @param <OBJECT>
  */
 public abstract class AbstractGetter<OBJECT> {
 
+    /**
+     *
+     */
     public AbstractGetter() {
     }
 
     @JsonIgnore
     private Conversion conversion;
 
+    /**
+     *
+     * @return
+     */
     public Conversion getConversion() {
         return conversion;
     }
 
+    /**
+     *
+     * @param conversion
+     * @return
+     */
     public AbstractGetter<OBJECT> setConversion(Conversion conversion) {
         this.conversion = conversion;
         return this;
     }
 
+    /**
+     *
+     * @param data
+     */
     abstract public void internalGetData(OBJECT data);
 
 }

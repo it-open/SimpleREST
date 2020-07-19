@@ -23,8 +23,11 @@ public class InfoEndpoint extends RestEndpoint{
         super(name);
     }
     
-    
-
+    /**
+     *
+     * @param conversion
+     * @param UrlParameter
+     */
     @Override
     public void Call(Conversion conversion, Map<String, String> UrlParameter) {
         conversion.getResponse().setData(conversion.getRequest());
