@@ -3,6 +3,14 @@
 ## Howto Start - Examples
 Look into the Wiki!
 https://github.com/it-open/SimpleREST/wiki
+## Maven
+```xml
+<dependency>
+  <groupId>at.itopen</groupId>
+  <artifactId>SimpleRest</artifactId>
+  <version>0.4.2</version>
+</dependency>
+```
 
 A REST Library is the Base of most systems. This has to be fast and reliable. But for me as Developer it also has to be easy to use. 
 Spring.io systems are to bloated and full of things you don't need or don't know how to use it.
