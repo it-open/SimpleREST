@@ -8,9 +8,14 @@ https://github.com/it-open/SimpleREST/wiki
 <dependency>
   <groupId>at.itopen</groupId>
   <artifactId>SimpleRest</artifactId>
-  <version>0.4.3</version>
+  <version>0.4.5</version>
 </dependency>
 ```
+##Updateing
+
+Updateing to 4.5 can break compiling because of Static Code Analysis some Names have been changed (either Case or there were '_' in Names)
+All functions are the same or better/faster
+
 
 A REST Library is the Base of most systems. This has to be fast and reliable. But for me as Developer it also has to be easy to use. 
 Spring.io systems are to bloated and full of things you don't need or don't know how to use it.
