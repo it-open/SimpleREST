@@ -20,14 +20,14 @@ public class Test1 {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        RestHttpServer server = RestHttpServer.Start(9001);
+        RestHttpServer server = RestHttpServer.start(9001);
         LoadBalancerConfig config = new LoadBalancerConfig(server, "http://<IP>:<PORT>/", "test2");
         config.addInitialDiscoverUrl("http://127.0.0.1:9000");
         config.setSharedSecret("Roland Schuller");
         server.enableLoadBalancer(config);
         server.getRootEndpoint().addRestEndpoint(new GetEndpoint("ping") {
             @Override
-            public void Call(Conversion conversion, Map<String, String> UrlParameter) {
+            public void call(Conversion conversion, Map<String, String> urlParameter) {
                 System.out.println("Ping:" + conversion.getRequest().getParam("num"));
             }
         });

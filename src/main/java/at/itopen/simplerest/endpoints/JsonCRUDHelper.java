@@ -26,43 +26,47 @@ import java.util.logging.Logger;
 /**
  *
  * @author roland
- * @param <GETTER>
- * @param <SETTER>
- * @param <OBJECT>
- * @param <USER>
+ * @param <G> Getter
+ * @param <S> Setter
+ * @param <O> Object
+ * @param <U> User
  */
-public abstract class JsonCRUDHelper<GETTER extends AbstractGetter<OBJECT>, SETTER extends AbstractSetter<OBJECT>, OBJECT, USER> {
+public abstract class JsonCRUDHelper<G extends AbstractGetter<O>, S extends AbstractSetter<O>, O, U> {
 
-    RestEndpoint get, put, del, getall, newp;
+    RestEndpoint get;
+    RestEndpoint put;
+    RestEndpoint del;
+    RestEndpoint getall;
+    RestEndpoint newp;
 
     /**
      *
      * @param conversion
      * @return
      */
-    protected RestUser<USER> getUser(Conversion conversion) {
+    protected RestUser<U> getUser(Conversion conversion) {
         BasicUser bu = conversion.getRequest().getUser();
         if (bu == null) {
             return null;
         }
         if (bu instanceof RestUser) {
-            return ((RestUser<USER>) bu);
+            return (RestUser<U>) bu;
         } else {
             return null;
         }
     }
 
-    private class PostNew extends JsonPutOrPostEndpoint<SETTER> {
+    private class PostNew extends JsonPutOrPostEndpoint<S> {
 
         public PostNew(String endpointName, Class dataClass) {
             super(endpointName, dataClass);
         }
 
         @Override
-        public void Call(Conversion conversion, Map<String, String> UrlParameter) {
-            OBJECT data = newObject();
+        public void call(Conversion conversion, Map<String, String> urlParameter) {
+            O data = newObject();
             getData().setConversion(conversion).internalSetData(data);
-            data = JsonCRUDHelper.this.addNewItem(conversion, UrlParameter, data, getUser(conversion));
+            data = JsonCRUDHelper.this.addNewItem(conversion, urlParameter, data, getUser(conversion));
             if (data != null) {
                 conversion.getResponse().setData(newGetter(conversion, data));
             }
@@ -70,28 +74,28 @@ public abstract class JsonCRUDHelper<GETTER extends AbstractGetter<OBJECT>, SETT
 
     }
 
-    private class PostUpdate extends JsonPutOrPostEndpoint<SETTER> {
+    private class PostUpdate extends JsonPutOrPostEndpoint<S> {
 
         public PostUpdate(String endpointName, Class dataClass) {
             super(endpointName, dataClass);
         }
 
         @Override
-        public void Call(Conversion conversion, Map<String, String> UrlParameter) {
-            JsonCRUDHelper.this.updateItem(conversion, UrlParameter, (SETTER) getData().setConversion(conversion), UrlParameter.get("id"), getUser(conversion));
+        public void call(Conversion conversion, Map<String, String> urlParameter) {
+            JsonCRUDHelper.this.updateItem(conversion, urlParameter, (S) getData().setConversion(conversion), urlParameter.get("id"), getUser(conversion));
         }
 
     }
 
-    final Class<GETTER> getterType;
-    final Class<SETTER> setterType;
-    final Class<OBJECT> objectType;
+    final Class<G> getterType;
+    final Class<S> setterType;
+    final Class<O> objectType;
 
     /**
      *
      * @return
      */
-    public Class<GETTER> getGetterType() {
+    public Class<G> getGetterType() {
         return getterType;
     }
 
@@ -99,7 +103,7 @@ public abstract class JsonCRUDHelper<GETTER extends AbstractGetter<OBJECT>, SETT
      *
      * @return
      */
-    public Class<OBJECT> getObjectType() {
+    public Class<O> getObjectType() {
         return objectType;
     }
 
@@ -107,7 +111,7 @@ public abstract class JsonCRUDHelper<GETTER extends AbstractGetter<OBJECT>, SETT
      *
      * @return
      */
-    public Class<SETTER> getSetterType() {
+    public Class<S> getSetterType() {
         return setterType;
     }
 
@@ -153,10 +157,10 @@ public abstract class JsonCRUDHelper<GETTER extends AbstractGetter<OBJECT>, SETT
 
         getall = parentPath.addRestEndpoint(new GetEndpoint(entry) {
             @Override
-            public void Call(Conversion conversion, Map<String, String> UrlParameter) {
-                List<OBJECT> erg = JsonCRUDHelper.this.getAllItem(conversion, UrlParameter, getUser(conversion));
-                List<GETTER> send = new ArrayList<>();
-                for (OBJECT o : erg) {
+            public void call(Conversion conversion, Map<String, String> urlParameter) {
+                List<O> erg = JsonCRUDHelper.this.getAllItem(conversion, urlParameter, getUser(conversion));
+                List<G> send = new ArrayList<>();
+                for (O o : erg) {
                     send.add(newGetter(conversion, o));
                 }
                 conversion.getResponse().setData(send);
@@ -165,8 +169,8 @@ public abstract class JsonCRUDHelper<GETTER extends AbstractGetter<OBJECT>, SETT
 
         get = sub.addRestEndpoint(new GetEndpoint(":id") {
             @Override
-            public void Call(Conversion conversion, Map<String, String> UrlParameter) {
-                OBJECT o = JsonCRUDHelper.this.getSingeItem(conversion, UrlParameter, UrlParameter.get("id"), getUser(conversion));
+            public void call(Conversion conversion, Map<String, String> urlParameter) {
+                O o = JsonCRUDHelper.this.getSingeItem(conversion, urlParameter, urlParameter.get("id"), getUser(conversion));
                 if (o != null) {
                     conversion.getResponse().setData(newGetter(conversion, o));
                 } else {
@@ -179,12 +183,12 @@ public abstract class JsonCRUDHelper<GETTER extends AbstractGetter<OBJECT>, SETT
 
         del = sub.addRestEndpoint(new DeleteEndpoint(":id") {
             @Override
-            public void Call(Conversion conversion, Map<String, String> UrlParameter) {
-                JsonCRUDHelper.this.deleteItem(conversion, UrlParameter, UrlParameter.get("id"), getUser(conversion));
+            public void call(Conversion conversion, Map<String, String> urlParameter) {
+                JsonCRUDHelper.this.deleteItem(conversion, urlParameter, urlParameter.get("id"), getUser(conversion));
             }
         });
 
-        Documentation(getterType, setterclass, setterclass, doku);
+        documentation(getterType, setterclass, setterclass, doku);
 
     }
 
@@ -194,28 +198,22 @@ public abstract class JsonCRUDHelper<GETTER extends AbstractGetter<OBJECT>, SETT
      * @param data
      * @return
      */
-    protected GETTER newGetter(Conversion conversion, OBJECT data) {
+    protected G newGetter(Conversion conversion, O data) {
         try {
             for (Constructor c : getterType.getClass().getConstructors()) {
                 if (c.getParameterCount() == 0) {
-                    GETTER getter = (GETTER) c.newInstance();
+                    G getter = (G) c.newInstance();
                     getter.setConversion(conversion).internalGetData(data);
                     return getter;
                 }
             }
-            GETTER getter = (GETTER) getterType.newInstance();
+            G getter = (G) getterType.newInstance();
             getter.setConversion(conversion).internalGetData(data);
             return getter;
-        } catch (InstantiationException ex) {
+        } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | SecurityException ex) {
             Logger.getLogger(JsonCRUDHelper.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            Logger.getLogger(JsonCRUDHelper.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IllegalArgumentException ex) {
-            Logger.getLogger(JsonCRUDHelper.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (InvocationTargetException ex) {
-            Logger.getLogger(JsonCRUDHelper.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
         }
-        return null;
     }
 
     /**
@@ -224,25 +222,19 @@ public abstract class JsonCRUDHelper<GETTER extends AbstractGetter<OBJECT>, SETT
      * @param data
      * @return
      */
-    protected SETTER newSetter(Conversion conversion, OBJECT data) {
+    protected S newSetter(Conversion conversion, O data) {
         try {
             for (Constructor c : setterType.getClass().getConstructors()) {
                 if (c.getParameterCount() == 0) {
-                    SETTER setter = (SETTER) c.newInstance();
+                    S setter = (S) c.newInstance();
                     setter.setConversion(conversion).internalSetData(data);
                     return setter;
                 }
             }
-            SETTER setter = (SETTER) setterType.newInstance();
+            S setter = (S) setterType.newInstance();
             setter.setConversion(conversion).internalSetData(data);
             return setter;
-        } catch (InstantiationException ex) {
-            Logger.getLogger(JsonCRUDHelper.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            Logger.getLogger(JsonCRUDHelper.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IllegalArgumentException ex) {
-            Logger.getLogger(JsonCRUDHelper.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (InvocationTargetException ex) {
+        } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | SecurityException ex) {
             Logger.getLogger(JsonCRUDHelper.class.getName()).log(Level.SEVERE, null, ex);
         }
         return null;
@@ -252,22 +244,16 @@ public abstract class JsonCRUDHelper<GETTER extends AbstractGetter<OBJECT>, SETT
      *
      * @return
      */
-    protected OBJECT newObject() {
+    protected O newObject() {
         try {
             for (Constructor c : objectType.getClass().getConstructors()) {
                 if (c.getParameterCount() == 0) {
-                    return (OBJECT) c.newInstance();
+                    return (O) c.newInstance();
                 }
             }
-            return (OBJECT) objectType.newInstance();
-        } catch (InstantiationException ex) {
-            Logger.getLogger(JsonCRUDHelper.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            Logger.getLogger(JsonCRUDHelper.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IllegalArgumentException ex) {
-            Logger.getLogger(JsonCRUDHelper.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (InvocationTargetException ex) {
-            Logger.getLogger(JsonCRUDHelper.class.getName()).log(Level.SEVERE, null, ex);
+            return (O) objectType.newInstance();
+        } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | SecurityException ex) {
+
         }
         return null;
     }
@@ -279,9 +265,9 @@ public abstract class JsonCRUDHelper<GETTER extends AbstractGetter<OBJECT>, SETT
      * @param conversion
      * @return
      */
-    public List<OBJECT> filterRead(List<OBJECT> items, RestUser<USER> user, Conversion conversion) {
-        List<OBJECT> erg = new ArrayList<>();
-        for (OBJECT item : items) {
+    public List<O> filterRead(List<O> items, RestUser<U> user, Conversion conversion) {
+        List<O> erg = new ArrayList<>();
+        for (O item : items) {
             if (user.may(conversion, item, RestUser.AccessType.READ)) {
                 erg.add(item);
             }
@@ -296,7 +282,7 @@ public abstract class JsonCRUDHelper<GETTER extends AbstractGetter<OBJECT>, SETT
      * @param newClass
      * @param objectname
      */
-    public void Documentation(Class getClass, Class putClass, Class newClass, String objectname) {
+    public void documentation(Class getClass, Class putClass, Class newClass, String objectname) {
 
         get.setDocumentation(new EndpointDocumentation("Get a single " + objectname, ContentType.JSON, null, getClass).addPathParameter("id", "ID Number of Object"));
         getall.setDocumentation(new EndpointDocumentation("Get all " + objectname, ContentType.JSON, null, getClass).setOutlist(true));
@@ -309,49 +295,49 @@ public abstract class JsonCRUDHelper<GETTER extends AbstractGetter<OBJECT>, SETT
     /**
      *
      * @param conversion
-     * @param UrlParameter
+     * @param urlParameter
      * @param data
      * @param user
      * @return
      */
-    public abstract OBJECT addNewItem(Conversion conversion, Map<String, String> UrlParameter, OBJECT data, RestUser<USER> user);
+    public abstract O addNewItem(Conversion conversion, Map<String, String> urlParameter, O data, RestUser<U> user);
 
     /**
      *
      * @param conversion
-     * @param UrlParameter
+     * @param urlParameter
      * @param id
      * @param user
      * @return
      */
-    public abstract OBJECT getSingeItem(Conversion conversion, Map<String, String> UrlParameter, String id, RestUser<USER> user);
+    public abstract O getSingeItem(Conversion conversion, Map<String, String> urlParameter, String id, RestUser<U> user);
 
     /**
      *
      * @param conversion
-     * @param UrlParameter
+     * @param urlParameter
      * @param user
      * @return
      */
-    public abstract List<OBJECT> getAllItem(Conversion conversion, Map<String, String> UrlParameter, RestUser<USER> user);
+    public abstract List<O> getAllItem(Conversion conversion, Map<String, String> urlParameter, RestUser<U> user);
 
     /**
      *
      * @param conversion
-     * @param UrlParameter
+     * @param urlParameter
      * @param data
      * @param id
      * @param user
      */
-    public abstract void updateItem(Conversion conversion, Map<String, String> UrlParameter, SETTER data, String id, RestUser<USER> user);
+    public abstract void updateItem(Conversion conversion, Map<String, String> urlParameter, S data, String id, RestUser<U> user);
 
     /**
      *
      * @param conversion
-     * @param UrlParameter
+     * @param urlParameter
      * @param id
      * @param user
      */
-    public abstract void deleteItem(Conversion conversion, Map<String, String> UrlParameter, String id, RestUser<USER> user);
+    public abstract void deleteItem(Conversion conversion, Map<String, String> urlParameter, String id, RestUser<U> user);
 
 }

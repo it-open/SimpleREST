@@ -35,9 +35,9 @@ public abstract class Dynamic {
     /**
      *
      * @param conversion
-     * @param UrlParameter
+     * @param urlParameter
      * @param file
      */
-    public abstract void call(Conversion conversion, Map<String, String> UrlParameter, DynamicFile file);
+    public abstract void call(Conversion conversion, Map<String, String> urlParameter, DynamicFile file);
 
 }

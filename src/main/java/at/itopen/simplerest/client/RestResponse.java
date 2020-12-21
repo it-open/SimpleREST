@@ -5,7 +5,7 @@
  */
 package at.itopen.simplerest.client;
 
-import at.itopen.simplerest.Json;
+import at.itopen.simplerest.JsonHelper;
 import com.fasterxml.jackson.databind.JsonNode;
 import java.io.IOException;
 import java.util.Locale;
@@ -62,7 +62,7 @@ public class RestResponse {
      */
     public JsonNode getJSON() {
         try {
-            return Json.getJSON_CONVERTER().readTree(getDataAsString());
+            return JsonHelper.getJsonConverter().readTree(getDataAsString());
         } catch (IOException ex) {
             Logger.getLogger(RestResponse.class.getName()).log(Level.SEVERE, getDataAsString(), ex);
         }
@@ -76,14 +76,14 @@ public class RestResponse {
      * @return
      */
     public <T> WrappedResponse<T> getWrappedResponse(Class<T> type) {
-        WrappedResponse wr = Json.fromString(getDataAsString(), WrappedResponse.class);
+        WrappedResponse wr = JsonHelper.fromString(getDataAsString(), WrappedResponse.class);
         WrappedResponse<T> erg = new WrappedResponse<>();
         erg.setCode(wr.getCode());
         erg.setGenerationMsSeconds(wr.getGenerationMsSeconds());
         erg.setInfo(wr.getInfo());
         erg.setMessage(wr.getMessage());
         if (getJSON().get("data") != null) {
-            erg.setData((T) Json.fromString(getJSON().get("data").toString(), type));
+            erg.setData((T) JsonHelper.fromString(getJSON().get("data").toString(), type));
         }
         return erg;
     }
@@ -96,7 +96,7 @@ public class RestResponse {
      */
     public <T> T getResponse(Class<T> type) {
 
-        return Json.fromString(getDataAsString(), type);
+        return JsonHelper.fromString(getDataAsString(), type);
 
     }
 

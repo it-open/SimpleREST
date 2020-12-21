@@ -23,7 +23,7 @@ import org.apache.commons.codec.binary.Base64;
  *
  * @author roland
  */
-public class Encryption {
+public class EncryptionHelper {
 
     /**
      *
@@ -32,8 +32,8 @@ public class Encryption {
      * @param value
      * @return
      */
-    public static String AESencrypt(String key, String initVector, String value) {
-        return Base64.encodeBase64URLSafeString(AESencrypt(key, initVector, value.getBytes()));
+    public static String aesEncrypt(String key, String initVector, String value) {
+        return Base64.encodeBase64URLSafeString(aesEncrypt(key, initVector, value.getBytes()));
     }
 
     /**
@@ -43,7 +43,7 @@ public class Encryption {
      * @param value
      * @return
      */
-    public static byte[] AESencrypt(String key, String initVector, byte[] value) {
+    public static byte[] aesEncrypt(String key, String initVector, byte[] value) {
         try {
             IvParameterSpec iv = new IvParameterSpec(initVector.getBytes("UTF-8"));
             SecretKeySpec skeySpec = new SecretKeySpec(key.getBytes("UTF-8"), "AES");
@@ -66,8 +66,8 @@ public class Encryption {
      * @param encrypted
      * @return
      */
-    public static String AESdecrypt(String key, String initVector, String encrypted) {
-        return new String(AESdecrypt(key, initVector, Base64.decodeBase64(encrypted)));
+    public static String aesDecrypt(String key, String initVector, String encrypted) {
+        return new String(aesDecrypt(key, initVector, Base64.decodeBase64(encrypted)));
     }
 
     /**
@@ -77,7 +77,7 @@ public class Encryption {
      * @param encrypted
      * @return
      */
-    public static byte[] AESdecrypt(String key, String initVector, byte[] encrypted) {
+    public static byte[] aesDecrypt(String key, String initVector, byte[] encrypted) {
         try {
             IvParameterSpec iv = new IvParameterSpec(initVector.getBytes("UTF-8"));
             SecretKeySpec skeySpec = new SecretKeySpec(key.getBytes("UTF-8"), "AES");
@@ -130,7 +130,7 @@ public class Encryption {
      * @param input
      * @return
      */
-    public static String SHA512(String input) {
+    public static String sha512(String input) {
         try {
             // getInstance() method is called with algorithm SHA-512
             MessageDigest md = MessageDigest.getInstance("SHA-512");

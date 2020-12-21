@@ -33,7 +33,7 @@ public class ServiceIpPath extends RestPath {
     protected boolean checkPath(Conversion conversion, String pathData) {
         String sourceIP = conversion.getRequest().getSourceIp().toString();
         for (Service service : getRootPath().getRestHttpServer().getLoadBalancer().getServices().getAllServices()) {
-            if (sourceIP.equals(service.getInfo().getNet_ip())) {
+            if (sourceIP.equals(service.getInfo().getNetIp())) {
                 return true;
             }
         }

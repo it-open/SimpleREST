@@ -28,10 +28,10 @@ public class RestStatus extends GetEndpoint {
     /**
      *
      * @param conversion
-     * @param UrlParameter
+     * @param urlParameter
      */
     @Override
-    public void Call(Conversion conversion, Map<String, String> UrlParameter) {
+    public void call(Conversion conversion, Map<String, String> urlParameter) {
         LoadBalancer lb = getRootPath().getRestHttpServer().getLoadBalancer();
         Service me = new Service();
         me.setLastseen(System.currentTimeMillis());

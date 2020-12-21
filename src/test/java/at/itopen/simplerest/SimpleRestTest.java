@@ -28,11 +28,11 @@ public class SimpleRestTest {
 
     @BeforeClass
     public static void setUpClass() throws Exception {
-        server = RestHttpServer.Start(9000);
+        server = RestHttpServer.start(9000);
         server.getRootEndpoint().addSubPath("test").addRestEndpoint(new GetEndpoint(":id") {
             @Override
-            public void Call(Conversion conversion, Map<String, String> UrlParameter) {
-                TestJson tj = new TestJson(UrlParameter.get("id"), Integer.MAX_VALUE, Double.MAX_VALUE);
+            public void call(Conversion conversion, Map<String, String> urlParameter) {
+                TestJson tj = new TestJson(urlParameter.get("id"), Integer.MAX_VALUE, Double.MAX_VALUE);
                 conversion.getResponse().setData(tj);
             }
         });
@@ -45,7 +45,7 @@ public class SimpleRestTest {
     //
     @Test
     public void testRestGet() {
-        RestClient rc = new RestClient("http://localhost:9000/test/hallo", RestClient.REST_METHOD.GET);
+        RestClient rc = new RestClient("http://localhost:9000/test/hallo", RestClient.RESTMETHOD.GET);
         RestResponse rr = rc.toSingle(false);
         assertNotNull(rr);
         WrappedResponse<TestJson> erg = rr.getWrappedResponse(TestJson.class);

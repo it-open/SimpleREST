@@ -27,7 +27,6 @@ import io.netty.util.ReferenceCountUtil;
 import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Logger;
 
 /**
  * The Dispatcher does the Magic. It Handles all Netty requests
@@ -36,7 +35,7 @@ import java.util.logging.Logger;
  */
 public class RestHttpRequestDispatchHandler extends ChannelInboundHandlerAdapter {
 
-    private static final Logger LOG = Logger.getLogger(RestHttpRequestDispatchHandler.class.getName());
+    //private static final Logger LOG = Logger.getLogger(RestHttpRequestDispatchHandler.class.getName());
     private final Map<String, Conversion> connections = new HashMap<>();
     private final RestHttpServer server;
 
@@ -58,7 +57,7 @@ public class RestHttpRequestDispatchHandler extends ChannelInboundHandlerAdapter
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
 
         try {
-            if ((msg instanceof HttpMessage) && HttpUtil.is100ContinueExpected((HttpMessage) msg)) {
+            if (msg instanceof HttpMessage && HttpUtil.is100ContinueExpected((HttpMessage) msg)) {
                 ctx.write(new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.CONTINUE));
             }
 
@@ -97,7 +96,7 @@ public class RestHttpRequestDispatchHandler extends ChannelInboundHandlerAdapter
 
         Conversion conversion = getConn(ctx);
         if (conversion.getRequest().getHttpDecoder() != null) {
-            if ((conversion.getRequest().getHttpDecoder().isMultipart()) && (!conversion.getRequest().getHttpDecoder().hasNext())) {
+            if (conversion.getRequest().getHttpDecoder().isMultipart() && !conversion.getRequest().getHttpDecoder().hasNext()) {
                 return;
             }
         }
@@ -117,7 +116,7 @@ public class RestHttpRequestDispatchHandler extends ChannelInboundHandlerAdapter
         System.out.println(conversion.getRequest().getMethod() + " " + conversion.getRequest().getUri() + " (" + ctx.channel().id().asLongText() + ")");
         Headerworker.work(conversion);
         EndpointWorker worker = null;
-        if (conversion.getRequest().getProtocolName().equals("EMPTY")) {
+        if ("EMPTY".equals(conversion.getRequest().getProtocolName())) {
             return;
         }
 
@@ -135,12 +134,12 @@ public class RestHttpRequestDispatchHandler extends ChannelInboundHandlerAdapter
                 worker.work(conversion);
             } else {
                 conversion.getResponse().setStatus(HttpStatus.NotFound);
-                if (conversion.getServer().getRootEndpoint(conversion).getNOT_FOUND() != null) {
+                if (conversion.getServer().getRootEndpoint(conversion).getNOTFOUND() != null) {
                     conversion.getResponse().setContentType(ContentType.JSON);
-                    conversion.getServer().getRootEndpoint(conversion).getNOT_FOUND().CallEndpoint(conversion, null);
+                    conversion.getServer().getRootEndpoint(conversion).getNOTFOUND().CallEndpoint(conversion, null);
                 }
             }
-        } catch (Throwable e) {
+        } catch (Exception e) {
             conversion.setException(e);
         }
 
@@ -158,16 +157,16 @@ public class RestHttpRequestDispatchHandler extends ChannelInboundHandlerAdapter
                 String json = "";
                 if (conversion.getResponse().isWrapJson()) {
                     ResponseWrapper wrapper = new ResponseWrapper(conversion.getResponse().getStatus().getCode(), conversion.getResponse().getStatus().getDescription(), conversion.getResponse().getStatusMessage(), conversion.getNanoDuration(), conversion.getResponse().getData());
-                    json = Json.toString(wrapper);
+                    json = JsonHelper.toString(wrapper);
                 } else if (conversion.getResponse().getData() instanceof String) {
                     if (conversion.getResponse().isConvertStringToJson()) {
-                        json = Json.toString(conversion.getResponse().getData());
+                        json = JsonHelper.toString(conversion.getResponse().getData());
                     } else {
                         json = (String) conversion.getResponse().getData();
                     }
 
                 } else {
-                    json = Json.toString(conversion.getResponse().getData());
+                    json = JsonHelper.toString(conversion.getResponse().getData());
                 }
                 ByteBuf bb = Unpooled.copiedBuffer(json, Charset.defaultCharset());
                 writeJSON(ctx, HttpResponseStatus.valueOf(conversion.getResponse().getStatus().getCode()), bb, conversion.getResponse());
@@ -183,7 +182,7 @@ public class RestHttpRequestDispatchHandler extends ChannelInboundHandlerAdapter
                     write(ctx, HttpResponseStatus.valueOf(conversion.getResponse().getStatus().getCode()), bb, conversion.getResponse().getContentType().getMimeType(), conversion.getResponse());
                 } else {
                     ResponseWrapper wrapper = new ResponseWrapper(conversion.getResponse().getStatus().getCode(), conversion.getResponse().getStatus().getDescription(), conversion.getResponse().getStatusMessage(), conversion.getNanoDuration(), conversion.getResponse().getData());
-                    String json = Json.toString(wrapper);
+                    String json = JsonHelper.toString(wrapper);
                     bb = Unpooled.copiedBuffer(json, Charset.defaultCharset());
                     writeJSON(ctx, HttpResponseStatus.valueOf(conversion.getResponse().getStatus().getCode()), bb, conversion.getResponse());
                 }
@@ -191,7 +190,7 @@ public class RestHttpRequestDispatchHandler extends ChannelInboundHandlerAdapter
 
         } else {
             ResponseWrapper wrapper = new ResponseWrapper(conversion.getResponse().getStatus().getCode(), conversion.getResponse().getStatus().getDescription(), conversion.getResponse().getStatusMessage(), conversion.getNanoDuration(), conversion.getResponse().getData());
-            String json = Json.toString(wrapper);
+            String json = JsonHelper.toString(wrapper);
             ByteBuf bb = Unpooled.copiedBuffer(json, Charset.defaultCharset());
             writeJSON(ctx, HttpResponseStatus.valueOf(conversion.getResponse().getStatus().getCode()), bb, conversion.getResponse());
 

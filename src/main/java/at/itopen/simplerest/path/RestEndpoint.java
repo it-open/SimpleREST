@@ -91,17 +91,17 @@ public abstract class RestEndpoint {
     /**
      *
      * @param conversion
-     * @param UrlParameter
+     * @param urlParameter
      */
-    public void CallEndpoint(Conversion conversion, Map<String, String> UrlParameter) {
-        Call(conversion, UrlParameter);
+    public void CallEndpoint(Conversion conversion, Map<String, String> urlParameter) {
+        call(conversion, urlParameter);
     }
 
     /**
      *
      * @param conversion
-     * @param UrlParameter
+     * @param urlParameter
      */
-    public abstract void Call(Conversion conversion, Map<String, String> UrlParameter);
+    public abstract void call(Conversion conversion, Map<String, String> urlParameter);
 
 }

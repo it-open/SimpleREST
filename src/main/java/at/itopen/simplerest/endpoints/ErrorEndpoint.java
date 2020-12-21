@@ -43,8 +43,6 @@ public class ErrorEndpoint extends RestEndpoint {
 
     }
 
-    private ErrorData data;
-
     /**
      *
      */
@@ -56,12 +54,12 @@ public class ErrorEndpoint extends RestEndpoint {
     /**
      *
      * @param conversion
-     * @param UrlParameter
+     * @param urlParameter
      */
     @Override
-    public void Call(Conversion conversion, Map<String, String> UrlParameter) {
+    public void call(Conversion conversion, Map<String, String> urlParameter) {
         Throwable exception = conversion.getException();
-        data = new ErrorData(exception.getMessage());
+        ErrorData data = new ErrorData(exception.getMessage());
         for (StackTraceElement stackTraceElement : exception.getStackTrace()) {
             data.addLine(stackTraceElement.toString());
         }

@@ -20,6 +20,7 @@ import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -38,28 +39,28 @@ public class DocumentationEndpoint extends GetEndpoint {
         setDocumentation(new EndpointDocumentation("Rest Documentation", ContentType.HTML, null, null).addReturns(HttpStatus.OK).setLongInfo("Documentation of the Rest API using Bootstrap"));
     }
 
-    TreeMap<String, String> endpoints = new TreeMap<>();
+    Map<String, String> endpoints = new TreeMap<>();
 
     /**
      *
      * @param conversion
-     * @param UrlParameter
+     * @param urlParameter
      */
     @Override
-    public void Call(Conversion conversion, Map<String, String> UrlParameter) {
+    public void call(Conversion conversion, Map<String, String> urlParameter) {
         endpoints.clear();
         StringBuilder out = new StringBuilder();
         if (conversion.getServer().getRootEndpoint(conversion).getINDEX() instanceof IndexEndpoint) {
-            HTMLstart(out, (IndexEndpoint) conversion.getServer().getRootEndpoint(conversion).getINDEX());
+            htmlStart(out, (IndexEndpoint) conversion.getServer().getRootEndpoint(conversion).getINDEX());
         } else {
-            HTMLstart(out, null);
+            htmlStart(out, null);
         }
         String path = "/";
         subPath(conversion.getServer().getRootEndpoint(conversion), path, false);
         for (String erg : endpoints.values()) {
             out.append(erg);
         }
-        HTMLEnd(out);
+        htmlEnd(out);
         conversion.getResponse().setContentType(ContentType.HTML);
         conversion.getResponse().setData(out.toString());
 
@@ -67,14 +68,16 @@ public class DocumentationEndpoint extends GetEndpoint {
 
     private void subPath(RestPath path, String pathname, boolean isauth) {
         for (RestPath sub : path.getSubPaths()) {
-            boolean auth = isauth || (sub instanceof AuthenticatedRestPath);
+            boolean auth = isauth || sub instanceof AuthenticatedRestPath;
             String newPathName = pathname + sub.getPathName() + "/";
-            DocPath(path, pathname);
             subPath(sub, newPathName, auth);
         }
 
         for (RestEndpoint sub : path.getEndpoints()) {
-            boolean auth = isauth || (sub instanceof AuthenticatedRestEndpoint);
+            if (sub == null) {
+                continue;
+            }
+            boolean auth = isauth || sub instanceof AuthenticatedRestEndpoint;
             String method = "ALL";
             if (sub instanceof GetEndpoint) {
                 method = "GET";
@@ -96,13 +99,16 @@ public class DocumentationEndpoint extends GetEndpoint {
             if (auth) {
                 line += "!";
             }
+            if (pathname == null) {
+                pathname = "";
+            }
             line += pathname + sub.getEndpointName();
-            DocEndpoint(sub, line, method);
+            docEndpoint(sub, line, method);
 
         }
     }
 
-    private void DocEndpoint(RestEndpoint endpoint, String path, String method) {
+    private void docEndpoint(RestEndpoint endpoint, String path, String method) {
         StringBuilder out = new StringBuilder();
         String color = "success";
         if (method.contains("DELETE")) {
@@ -171,14 +177,14 @@ public class DocumentationEndpoint extends GetEndpoint {
                     out.append("<div class=\"card border-secondary mb-3\" style=\"max-width: 100%;\">\n"
                             + "            <div class=\"card-header\">In</div>\n"
                             + "            <div class=\"card-body\">\n"
-                            + "              <pre class=\"card-text\">" + ClassSetToString(doc.getIn()) + "</pre>\n"
+                            + "              <pre class=\"card-text\">" + classSetToString(doc.getIn()) + "</pre>\n"
                             + "            </div>\n"
                             + "          </div>");
                 } else {
                     out.append("<div class=\"card border-secondary mb-3\" style=\"max-width: 100%;\">\n"
                             + "            <div class=\"card-header\">In</div>\n"
                             + "            <div class=\"card-body\">\n"
-                            + "              <pre class=\"card-text\">[<br>" + ClassSetToString(doc.getIn()) + "<br>],...</pre>\n"
+                            + "              <pre class=\"card-text\">[<br>" + classSetToString(doc.getIn()) + "<br>],...</pre>\n"
                             + "            </div>\n"
                             + "          </div>");
                 }
@@ -189,14 +195,14 @@ public class DocumentationEndpoint extends GetEndpoint {
                     out.append("<div class=\"card border-secondary mb-3\" style=\"max-width: 100%;\">\n"
                             + "            <div class=\"card-header\">Out</div>\n"
                             + "            <div class=\"card-body\">\n"
-                            + "              <pre class=\"card-text\">" + ClassGetToString(doc.getOut()) + "</pre>\n"
+                            + "              <pre class=\"card-text\">" + classGetToString(doc.getOut()) + "</pre>\n"
                             + "            </div>\n"
                             + "          </div>");
                 } else {
                     out.append("<div class=\"card border-secondary mb-3\" style=\"max-width: 100%;\">\n"
                             + "            <div class=\"card-header\">Out</div>\n"
                             + "            <div class=\"card-body\">\n"
-                            + "              <pre class=\"card-text\">[<br>" + ClassGetToString(doc.getOut()) + "<br>],...</pre>\n"
+                            + "              <pre class=\"card-text\">[<br>" + classGetToString(doc.getOut()) + "<br>],...</pre>\n"
                             + "            </div>\n"
                             + "          </div>");
                 }
@@ -231,12 +237,12 @@ public class DocumentationEndpoint extends GetEndpoint {
         return check(test.getSuperclass(), testto);
     }
 
-    private String ClassGetToString(Class<?> classe) {
+    private String classGetToString(Class<?> classe) {
         StringBuilder sb = new StringBuilder();
         if (check(classe, List.class)) {
             Type t = classe.getGenericSuperclass();
             ParameterizedType ptype = (ParameterizedType) t;
-            TypeVariable typeVariable = ((TypeVariable) ptype.getActualTypeArguments()[0]);
+            TypeVariable typeVariable = (TypeVariable) ptype.getActualTypeArguments()[0];
             Class ret = (Class) (((ParameterizedType) (typeVariable.getAnnotatedBounds()[0].getType())).getRawType());
             if (check(ret, Number.class) || check(ret, String.class) || check(ret, Boolean.class) || check(ret, Date.class)) {
                 return ret.getSimpleName();
@@ -246,7 +252,7 @@ public class DocumentationEndpoint extends GetEndpoint {
             }
 
             sb.append("[\n");
-            sb.append(ClassGetToString(ret));
+            sb.append(classGetToString(ret));
             sb.append(",... ]\n");
             return sb.toString();
         } else {
@@ -259,7 +265,7 @@ public class DocumentationEndpoint extends GetEndpoint {
                     doc = "  <span style='color:#888'> // " + restDoc.value() + "</span>";
                 }
 
-                if (method.getName().toLowerCase().startsWith("get")) {
+                if (method.getName().toLowerCase(Locale.getDefault()).startsWith("get")) {
                     if (method.getParameterCount() > 0) {
                         continue;
                     }
@@ -273,10 +279,10 @@ public class DocumentationEndpoint extends GetEndpoint {
                         continue;
                     }
 
-                    sb.append(method.getName().substring(3).toLowerCase()).append(": ").append(returnTypetoStringGet(method)).append(",").append(doc).append("\n");
+                    sb.append(method.getName().substring(3).toLowerCase(Locale.getDefault())).append(": ").append(returnTypetoStringGet(method)).append(",").append(doc).append("\n");
 
                 }
-                if (method.getName().toLowerCase().startsWith("is")) {
+                if (method.getName().toLowerCase(Locale.getDefault()).startsWith("is")) {
                     if (method.getParameterCount() > 0) {
                         continue;
                     }
@@ -287,7 +293,7 @@ public class DocumentationEndpoint extends GetEndpoint {
                         continue;
                     }
 
-                    sb.append(method.getName().substring(2).toLowerCase()).append(": ").append(returnTypetoStringGet(method)).append(",").append(doc).append("\n");
+                    sb.append(method.getName().substring(2).toLowerCase(Locale.getDefault())).append(": ").append(returnTypetoStringGet(method)).append(",").append(doc).append("\n");
                 }
             }
             sb.append("}");
@@ -309,7 +315,7 @@ public class DocumentationEndpoint extends GetEndpoint {
                 txt = ret.getSimpleName();
             }
             if (txt == null) {
-                txt = ClassGetToString(ret);
+                txt = classGetToString(ret);
             }
             sb.append(txt).append(",... ]\n");
             return sb.toString();
@@ -323,7 +329,7 @@ public class DocumentationEndpoint extends GetEndpoint {
         }
 
         StringBuilder sb = new StringBuilder("{\n");
-        sb.append(ClassGetToString(ret));
+        sb.append(classGetToString(ret));
         sb.append("}\n");
         return sb.toString();
     }
@@ -342,7 +348,7 @@ public class DocumentationEndpoint extends GetEndpoint {
                 txt = ret.getSimpleName();
             }
             if (txt == null) {
-                txt = ClassSetToString(ret);
+                txt = classSetToString(ret);
             }
             sb.append(txt).append(",... ]\n");
             return sb.toString();
@@ -357,17 +363,17 @@ public class DocumentationEndpoint extends GetEndpoint {
         }
 
         StringBuilder sb = new StringBuilder("{\n");
-        sb.append(ClassSetToString(ret));
+        sb.append(classSetToString(ret));
         sb.append("}\n");
         return sb.toString();
 
     }
 
-    private String ClassSetToString(Class classe) {
+    private String classSetToString(Class classe) {
         StringBuilder sb = new StringBuilder();
         sb.append("{\n");
         for (Method method : classe.getDeclaredMethods()) {
-            if (method.getName().toLowerCase().startsWith("set") && method.getParameterCount() == 1) {
+            if (method.getName().toLowerCase(Locale.getDefault()).startsWith("set") && method.getParameterCount() == 1) {
                 if (method.getParameters()[0] == null) {
                     continue;
                 }
@@ -382,7 +388,7 @@ public class DocumentationEndpoint extends GetEndpoint {
                 if (restDoc != null) {
                     doc = "  <span style='color:#888'> // " + restDoc.value() + "</span>";
                 }
-                sb.append(method.getName().substring(3).toLowerCase()).append(": ").append(returnTypetoStringSet(method.getParameters()[0])).append(",").append(doc).append("\n");
+                sb.append(method.getName().substring(3).toLowerCase(Locale.getDefault())).append(": ").append(returnTypetoStringSet(method.getParameters()[0])).append(",").append(doc).append("\n");
             }
 
         }
@@ -390,11 +396,7 @@ public class DocumentationEndpoint extends GetEndpoint {
         return sb.toString();
     }
 
-    private void DocPath(RestPath restPath, String path) {
-
-    }
-
-    private void HTMLstart(StringBuilder out, IndexEndpoint info) {
+    private void htmlStart(StringBuilder out, IndexEndpoint info) {
 
         String title = "SimpleRest Api Doc";
         if (info != null) {
@@ -418,7 +420,7 @@ public class DocumentationEndpoint extends GetEndpoint {
         out.append("<div id=\"accordion\">");
     }
 
-    private void HTMLEnd(StringBuilder out) {
+    private void htmlEnd(StringBuilder out) {
         out.append("</div> <!-- Optional JavaScript -->\n"
                 + "    <!-- jQuery first, then Popper.js, then Bootstrap JS -->\n"
                 + "    <script src=\"https://code.jquery.com/jquery-3.2.1.slim.min.js\" integrity=\"sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN\" crossorigin=\"anonymous\"></script>\n"

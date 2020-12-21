@@ -18,12 +18,6 @@ public class MessageAnswer {
 
     /**
      *
-     */
-    public MessageAnswer() {
-    }
-
-    /**
-     *
      * @param position
      * @param finished
      * @param working

@@ -12,7 +12,7 @@ import at.itopen.simplerest.path.RestEndpoint;
  *
  * @author roland
  */
-public abstract class GetEndpoint extends RestEndpoint{
+public abstract class GetEndpoint extends RestEndpoint {
 
     /**
      *
@@ -29,12 +29,11 @@ public abstract class GetEndpoint extends RestEndpoint{
      */
     @Override
     protected boolean checkEndpoint(Conversion conversion) {
-        if ("GET".equals(conversion.getRequest().getMethod()))
+        if ("GET".equals(conversion.getRequest().getMethod())) {
             return super.checkEndpoint(conversion); //To change body of generated methods, choose Tools | Templates.
-        else
+        } else {
             return false;
+        }
     }
-
-   
 
 }

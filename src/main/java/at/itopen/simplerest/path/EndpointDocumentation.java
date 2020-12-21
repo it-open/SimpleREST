@@ -188,10 +188,10 @@ public class EndpointDocumentation {
     /**
      *
      * @param path
-     * @param Type
+     * @param type
      * @return
      */
-    public String toHTML(String path, String Type) {
+    public String toHTML(String path, String type) {
         return super.toString(); //To change body of generated methods, choose Tools | Templates.
     }
 

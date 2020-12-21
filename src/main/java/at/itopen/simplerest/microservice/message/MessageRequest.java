@@ -29,12 +29,6 @@ public class MessageRequest<T> {
 
     /**
      *
-     */
-    public MessageRequest() {
-    }
-
-    /**
-     *
      * @param data
      */
     public MessageRequest(T data) {

@@ -5,7 +5,7 @@
  */
 package at.itopen.simplerest.microservice.loadbalancer;
 
-import at.itopen.simplerest.Json;
+import at.itopen.simplerest.JsonHelper;
 import at.itopen.simplerest.client.RestClient;
 import at.itopen.simplerest.client.RestResponse;
 import at.itopen.simplerest.conversion.Conversion;
@@ -82,13 +82,13 @@ public final class LoadBalancer {
         config.getRestHttpServer().getRootEndpoint().addSubPath("loadbalancer").addRestEndpoint(new RestStatus("status"));
         config.getRestHttpServer().getRootEndpoint().addSubPath("loadbalancer").addSubPath(new ServiceIpPath("guarantor")).addRestEndpoint(new PostEndpoint("introduce") {
             @Override
-            public void Call(Conversion conversion, Map<String, String> UrlParameter) {
+            public void call(Conversion conversion, Map<String, String> urlParameter) {
                 getGuarantor().introduced(conversion.getRequest().getContentData());
             }
         });
         config.getRestHttpServer().getRootEndpoint().addSubPath("loadbalancer").addSubPath(new ServiceIpPath("guarantor")).addRestEndpoint(new JsonPostEndpoint<MessageStatus>("state") {
             @Override
-            public void Call(Conversion conversion, Map<String, String> UrlParameter) {
+            public void call(Conversion conversion, Map<String, String> urlParameter) {
                 getGuarantor().status(getData());
             }
         });
@@ -101,7 +101,7 @@ public final class LoadBalancer {
      * @param method
      * @return
      */
-    public LoadBalancedRestClient RestClient(String url, RestClient.REST_METHOD method) {
+    public LoadBalancedRestClient restClient(String url, RestClient.RESTMETHOD method) {
         return new LoadBalancedRestClient(config.getRestHttpServer(), url, method);
     }
 
@@ -159,14 +159,14 @@ public final class LoadBalancer {
     public void serviceStatecheck() {
         for (Service service : getServices().getAllServices()) {
             long time = (System.currentTimeMillis() - service.getLastseen()) / 1000;
-            Service.SERVICE_STATUS status = Service.SERVICE_STATUS.ACTIVE;
-            if (time > config.getService_stale_seconds()) {
-                status = Service.SERVICE_STATUS.STALE;
+            Service.SERVICESTATUS status = Service.SERVICESTATUS.ACTIVE;
+            if (time > config.getServiceStaleSeconds()) {
+                status = Service.SERVICESTATUS.STALE;
             }
-            if (time > config.getService_gone_seconds()) {
-                status = Service.SERVICE_STATUS.GONE;
+            if (time > config.getServiceGoneSeconds()) {
+                status = Service.SERVICESTATUS.GONE;
             }
-            if (time > (config.getService_gone_seconds() * 2)) {
+            if (time > (config.getServiceGoneSeconds() * 2)) {
                 getServices().removeService(service);
             }
             service.setStatus(status);
@@ -198,11 +198,11 @@ public final class LoadBalancer {
                 if (service.getStatus() == null) {
                     continue;
                 }
-                if (!service.getStatus().equals(Service.SERVICE_STATUS.ACTIVE)) {
+                if (!service.getStatus().equals(Service.SERVICESTATUS.ACTIVE)) {
                     checkService(service.getBaseurl());
                     continue;
                 }
-                if ((service.getLastseen() + config.getService_recheck_seconds()) > System.currentTimeMillis()) {
+                if ((service.getLastseen() + config.getServiceRecheckSeconds()) > System.currentTimeMillis()) {
                     checkService(service.getBaseurl());
                 }
             }
@@ -217,10 +217,10 @@ public final class LoadBalancer {
     public String encryptUrl(RestDiscoverQuestion restDiscoverQuestion) {
 
         String key = getConfig().getServiceid();
-        String initv = Encryption.correctINITV("" + restDiscoverQuestion.getTimestamp());
+        String initv = EncryptionHelper.correctINITV("" + restDiscoverQuestion.getTimestamp());
 
         if (getConfig().getSharedSecret() != null) {
-            key = Encryption.AESencrypt(getConfig().getSharedSecret(), initv, key);
+            key = EncryptionHelper.aesEncrypt(getConfig().getSharedSecret(), initv, key);
         }
 
         return key;
@@ -234,9 +234,9 @@ public final class LoadBalancer {
      */
     public String decryptUrl(RestDiscoverQuestion restDiscoverQuestion, String key) {
 
-        String initv = Encryption.correctINITV("" + restDiscoverQuestion.getTimestamp());
+        String initv = EncryptionHelper.correctINITV("" + restDiscoverQuestion.getTimestamp());
         if (getConfig().getSharedSecret() != null) {
-            key = Encryption.AESdecrypt(getConfig().getSharedSecret(), initv, key);
+            key = EncryptionHelper.aesDecrypt(getConfig().getSharedSecret(), initv, key);
         }
 
         return key;
@@ -256,12 +256,12 @@ public final class LoadBalancer {
 
             url += "loadbalancer/" + key + "/remote";
 
-            RestResponse response = new RestClient(url, RestClient.REST_METHOD.POST).setJson(Json.toString(restDiscoverQuestion)).toSingle(false);
+            RestResponse response = new RestClient(url, RestClient.RESTMETHOD.POST).setJson(JsonHelper.toString(restDiscoverQuestion)).toSingle(false);
             if (response == null) {
                 return;
             }
             if (response.getStatusCode() == 200) {
-                RestDiscoverAnswer answer = Json.fromString(response.getDataAsString(), RestDiscoverAnswer.class);
+                RestDiscoverAnswer answer = JsonHelper.fromString(response.getDataAsString(), RestDiscoverAnswer.class);
                 long timediff = System.currentTimeMillis() - answer.getTimestamp();
 
                 for (RestService restService : answer.getServices()) {
@@ -277,7 +277,7 @@ public final class LoadBalancer {
                         service.setBaseurl(restService.getBaseurl());
                     }
                     service.setType(restService.getType());
-                    long time = (restService.getLastseen() - timediff);
+                    long time = restService.getLastseen() - timediff;
                     if (time > service.getLastseen()) {
                         service.setInfo(restService.getInfo());
                         service.setLastseen(time);

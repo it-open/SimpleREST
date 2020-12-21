@@ -31,10 +31,10 @@ public class UrlListEndpoint extends GetEndpoint {
     /**
      *
      * @param conversion
-     * @param UrlParameter
+     * @param urlParameter
      */
     @Override
-    public void Call(Conversion conversion, Map<String, String> UrlParameter) {
+    public void call(Conversion conversion, Map<String, String> urlParameter) {
         String path = "/";
         List<String> endpoints = new ArrayList<>();
         subPath(conversion.getServer().getRootEndpoint(conversion), endpoints, path, false);
@@ -44,13 +44,13 @@ public class UrlListEndpoint extends GetEndpoint {
 
     private void subPath(RestPath path, List<String> endpoints, String pathname, boolean isauth) {
         for (RestPath sub : path.getSubPaths()) {
-            boolean auth = isauth || (sub instanceof AuthenticatedRestPath);
+            boolean auth = isauth || sub instanceof AuthenticatedRestPath;
             String newPathName = pathname + sub.getPathName() + "/";
             subPath(sub, endpoints, newPathName, auth);
         }
 
         for (RestEndpoint sub : path.getEndpoints()) {
-            boolean auth = isauth || (sub instanceof AuthenticatedRestEndpoint);
+            boolean auth = isauth || sub instanceof AuthenticatedRestEndpoint;
             String method = "ALL";
             if (sub instanceof GetEndpoint) {
                 method = "GET";

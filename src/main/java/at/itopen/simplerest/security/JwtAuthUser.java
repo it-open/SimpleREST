@@ -16,10 +16,10 @@ public interface JwtAuthUser {
     /**
      *
      * @param conversion
-     * @param Id
+     * @param id
      * @param issuer
-     * @param Subject
+     * @param subject
      */
-    public void setJwtAuth(Conversion conversion, String Id, String issuer, String Subject);
+    void setJwtAuth(Conversion conversion, String id, String issuer, String subject);
 
 }

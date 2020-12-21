@@ -20,16 +20,19 @@ import java.util.logging.Logger;
  *
  * @author roland
  */
-public class Json {
+public final class JsonHelper {
 
     private static final ObjectMapper JSON_CONVERTER = new ObjectMapper();
 
+    private JsonHelper() {
+    }
+
     /**
-     * A Global Json Converter vrom Jackson
+     * A Global JsonHelper Converter vrom Jackson
      *
      * @return
      */
-    public static ObjectMapper getJSON_CONVERTER() {
+    public static ObjectMapper getJsonConverter() {
         return JSON_CONVERTER;
     }
 
@@ -46,68 +49,68 @@ public class Json {
 
     /**
      *
-     * @param <T>
-     * @param data
-     * @param type
-     * @return
+     * @param <T> Type
+     * @param data Data
+     * @param type typeClass
+     * @return Object fromString
      */
     public static <T> T fromString(String data, Class<T> type) {
         try {
-            return getJSON_CONVERTER().readValue(data, type);
+            return getJsonConverter().readValue(data, type);
         } catch (IOException ex) {
-            Logger.getLogger(Json.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(JsonHelper.class.getName()).log(Level.SEVERE, null, ex);
             return null;
         }
     }
 
     /**
      *
-     * @param <T>
-     * @param data
-     * @param type
-     * @return
+     * @param <T> Type
+     * @param data Data
+     * @param type type Reference
+     * @return Object fromString
      */
     public static <T> T fromString(String data, TypeReference type) {
         try {
-            return (T) getJSON_CONVERTER().readValue(data, type);
+            return (T) getJsonConverter().readValue(data, type);
         } catch (IOException ex) {
-            Logger.getLogger(Json.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(JsonHelper.class.getName()).log(Level.SEVERE, null, ex);
             return null;
         }
     }
 
     /**
      *
-     * @param data
-     * @return
+     * @param data Data
+     * @return as String
      */
     public static String toString(Object data) {
         try {
-            return getJSON_CONVERTER().writeValueAsString(data);
+            return getJsonConverter().writeValueAsString(data);
         } catch (JsonProcessingException ex) {
-            Logger.getLogger(Json.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(JsonHelper.class.getName()).log(Level.SEVERE, null, ex);
             return null;
         }
     }
 
     /**
      *
-     * @param data
-     * @return
+     * @param data Data
+     * @return Node from String
      */
     public static JsonNode fromString(String data) {
         try {
-            return getJSON_CONVERTER().readTree(data);
+            return getJsonConverter().readTree(data);
         } catch (IOException ex) {
-            Logger.getLogger(Json.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(JsonHelper.class.getName()).log(Level.SEVERE, null, ex);
             return null;
         }
     }
 
     /**
      *
-     * @param jsonNode
-     * @return
+     * @param jsonNode Node
+     * @return Pretty Printed Node
      */
     public static String prettyPrintJsonString(JsonNode jsonNode) {
         try {

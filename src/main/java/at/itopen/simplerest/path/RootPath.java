@@ -45,16 +45,16 @@ public class RootPath extends RestPath {
      *
      * @return
      */
-    public RestEndpoint getNOT_FOUND() {
+    public RestEndpoint getNOTFOUND() {
         return NOT_FOUND;
     }
 
     /**
      *
-     * @param NOT_FOUND
+     * @param notFound
      */
-    public void setNOT_FOUND(RestEndpoint NOT_FOUND) {
-        this.NOT_FOUND = NOT_FOUND;
+    public void setNOTFOUND(RestEndpoint notFound) {
+        this.NOT_FOUND = notFound;
     }
 
     /**
@@ -67,10 +67,10 @@ public class RootPath extends RestPath {
 
     /**
      *
-     * @param INDEX
+     * @param index
      */
-    public void setINDEX(RestEndpoint INDEX) {
-        this.INDEX = INDEX;
+    public void setINDEX(RestEndpoint index) {
+        this.INDEX = index;
     }
 
     /**
@@ -83,10 +83,10 @@ public class RootPath extends RestPath {
 
     /**
      *
-     * @param EXCEPTION
+     * @param exception
      */
-    public void setEXCEPTION(RestEndpoint EXCEPTION) {
-        this.EXCEPTION = EXCEPTION;
+    public void setEXCEPTION(RestEndpoint exception) {
+        this.EXCEPTION = exception;
     }
 
 }

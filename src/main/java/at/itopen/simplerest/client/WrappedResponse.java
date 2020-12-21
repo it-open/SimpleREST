@@ -8,7 +8,7 @@ package at.itopen.simplerest.client;
 /**
  *
  * @author roland
- * @param <T>
+ * @param <T> Type
  */
 public class WrappedResponse<T> {
 
@@ -87,11 +87,5 @@ public class WrappedResponse<T> {
     private String info;
     private double generationMsSeconds;
     private T data;
-
-    /**
-     *
-     */
-    public WrappedResponse() {
-    }
 
 }

@@ -10,18 +10,18 @@ package at.itopen.simplerest.endpoints.staticfile;
  * @author roland
  */
 public interface CachePolicyInterface {
-    
+
     /**
      *
      * @param cacheItem
      */
-    public void offer(CacheItem cacheItem);
+    void offer(CacheItem cacheItem);
 
     /**
      *
-     * @param Name
+     * @param name
      * @return
      */
-    public CacheItem get(String Name);
-    
+    CacheItem get(String name);
+
 }

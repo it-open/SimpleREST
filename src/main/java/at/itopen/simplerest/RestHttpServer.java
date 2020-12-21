@@ -50,7 +50,7 @@ public class RestHttpServer {
      * @param port Port to run at
      * @return the HTTP Server. Not really needed
      */
-    public static RestHttpServer Start(int port) {
+    public static RestHttpServer start(int port) {
         final RestHttpServer restHttpServer = new RestHttpServer(port);
         new Thread("Start Server") {
             @Override
@@ -138,7 +138,7 @@ public class RestHttpServer {
      * found
      */
     public void enableNotFoundHandling() {
-        root.setNOT_FOUND(new NotFoundEndpoint());
+        root.setNOTFOUND(new NotFoundEndpoint());
     }
 
     /**
@@ -261,7 +261,7 @@ public class RestHttpServer {
         try {
             ServerBootstrap bootstrap = new ServerBootstrap();
             bootstrap.group(boss, worker).channel(NioServerSocketChannel.class).childHandler(
-                    new RestHttpServerInitializer(RestHttpServer.this));
+                    new RestHttpServerInitializer(this));
             setChannelOptions(bootstrap);
 
             Channel ch = bootstrap.bind(port).sync().channel();

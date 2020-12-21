@@ -53,15 +53,15 @@ public abstract class StaticEndpoint extends RestEndpoint {
     /**
      *
      * @param conversion
-     * @param UrlParameter
+     * @param urlParameter
      */
     @Override
-    public void Call(Conversion conversion, Map<String, String> UrlParameter) {
+    public void call(Conversion conversion, Map<String, String> urlParameter) {
         StringBuilder fileName = new StringBuilder("");
         boolean index = true;
-        if (UrlParameter != null) {
-            for (int i = 0; UrlParameter.containsKey("" + i); i++) {
-                String part = UrlParameter.get("" + i);
+        if (urlParameter != null) {
+            for (int i = 0; urlParameter.containsKey("" + i); i++) {
+                String part = urlParameter.get("" + i);
                 if (part.startsWith("..")) {
                     part = "";
                 }
@@ -101,7 +101,7 @@ public abstract class StaticEndpoint extends RestEndpoint {
             for (Dynamic d : dynamics) {
                 for (String ext : d.getExtension()) {
                     if (name.endsWith(ext)) {
-                        d.call(conversion, UrlParameter, dfile);
+                        d.call(conversion, urlParameter, dfile);
                     }
                 }
             }

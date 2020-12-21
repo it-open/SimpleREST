@@ -8,12 +8,13 @@ package at.itopen.simplerest.security;
 import at.itopen.simplerest.conversion.Conversion;
 import at.itopen.simplerest.security.RestUser.AccessType;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 /**
  *
  * @author roland
- * @param <T>
+ * @param <T> Type
  */
 public abstract class AllowRule<T> {
 
@@ -38,7 +39,7 @@ public abstract class AllowRule<T> {
          * @return
          */
         public boolean can(AllowLevel level) {
-            return (levelValue >= level.levelValue);
+            return levelValue >= level.levelValue;
         }
 
         /**
@@ -63,7 +64,7 @@ public abstract class AllowRule<T> {
      * @param level
      */
     public static void addAllowLevel(String name, AllowLevel level) {
-        levels.put(name.toUpperCase(), level);
+        levels.put(name.toUpperCase(Locale.getDefault()), level);
     }
 
     /**
@@ -72,13 +73,7 @@ public abstract class AllowRule<T> {
      * @return
      */
     public static AllowLevel getAllowLevel(String name) {
-        return levels.get(name.toUpperCase());
-    }
-
-    /**
-     *
-     */
-    public AllowRule() {
+        return levels.get(name.toUpperCase(Locale.getDefault()));
     }
 
     /**

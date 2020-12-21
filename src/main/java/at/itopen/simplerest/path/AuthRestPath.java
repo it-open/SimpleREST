@@ -14,14 +14,14 @@ import at.itopen.simplerest.security.RestUser;
  */
 public class AuthRestPath extends RestPath implements AuthenticatedRestPath {
 
-    RestUser.AUTH_TYPE[] types;
+    RestUser.AUTHTYPE[] types;
 
     /**
      *
      * @param pathName
      * @param types
      */
-    public AuthRestPath(String pathName, RestUser.AUTH_TYPE... types) {
+    public AuthRestPath(String pathName, RestUser.AUTHTYPE... types) {
         super(pathName);
         this.types = types;
     }
@@ -41,8 +41,8 @@ public class AuthRestPath extends RestPath implements AuthenticatedRestPath {
             return false;
         }
         if (conversion.getRequest().getUser() instanceof RestUser) {
-            for (RestUser.AUTH_TYPE type : types) {
-                if (type.equals(((RestUser) conversion.getRequest().getUser()).getAuth_type())) {
+            for (RestUser.AUTHTYPE type : types) {
+                if (type.equals(((RestUser) conversion.getRequest().getUser()).getAuthType())) {
                     return true;
                 }
             }

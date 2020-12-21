@@ -23,7 +23,7 @@ public class JsonIT {
     }
 
     /**
-     * Test of fromString method, of class Json.
+     * Test of fromString method, of class JsonHelper.
      */
     @Test
     public void testFromString_String_Class() {
@@ -32,8 +32,8 @@ public class JsonIT {
         data.add("Test1");
         data.add("'\"Test2\"'");
 
-        String json = Json.toString(data);
-        List<String> result = Json.fromString(json, List.class);
+        String json = JsonHelper.toString(data);
+        List<String> result = JsonHelper.fromString(json, List.class);
 
         assertEquals(data, result);
 

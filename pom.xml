@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>at.itopen</groupId>
     <artifactId>SimpleRest</artifactId>
-    <version>0.4.3</version>
+    <version>0.4.5</version>
     <packaging>jar</packaging>
     <name>Simple REST</name>
     <description>Fast and Easy Rest API based on netty. Simple to code and to extend</description>

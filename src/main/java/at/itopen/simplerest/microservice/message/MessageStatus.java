@@ -17,12 +17,6 @@ public class MessageStatus {
 
     /**
      *
-     */
-    public MessageStatus() {
-    }
-
-    /**
-     *
      * @param finished
      * @param working
      * @param messageid

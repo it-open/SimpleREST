@@ -37,10 +37,11 @@ public class StaticFileEndpoint extends StaticEndpoint {
     public byte[] readStatic(String fileName) {
         try {
             String name = basePath.getAbsolutePath() + fileName;
-            File in=new File(name);
-            if (!in.exists()) return null;
-            byte[] data=java.nio.file.Files.readAllBytes(in.toPath());
-            return data;
+            File in = new File(name);
+            if (!in.exists()) {
+                return null;
+            }
+            return java.nio.file.Files.readAllBytes(in.toPath());
         } catch (IOException ex) {
             Logger.getLogger(StaticFileEndpoint.class.getName()).log(Level.SEVERE, null, ex);
         }

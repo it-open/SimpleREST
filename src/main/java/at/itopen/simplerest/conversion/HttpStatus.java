@@ -189,7 +189,7 @@ public enum HttpStatus {
     private final String description;
     private final String jsonString;
 
-    private HttpStatus(int code, String name, String description) {
+    HttpStatus(int code, String name, String description) {
         this.code = code;
         this.name = name;
         this.description = description;

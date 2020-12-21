@@ -12,7 +12,7 @@ import at.itopen.simplerest.path.RestEndpoint;
  *
  * @author roland
  */
-public abstract class DeleteEndpoint extends RestEndpoint{
+public abstract class DeleteEndpoint extends RestEndpoint {
 
     /**
      *
@@ -29,12 +29,11 @@ public abstract class DeleteEndpoint extends RestEndpoint{
      */
     @Override
     protected boolean checkEndpoint(Conversion conversion) {
-        if ("DELETE".equals(conversion.getRequest().getMethod()))
+        if ("DELETE".equals(conversion.getRequest().getMethod())) {
             return super.checkEndpoint(conversion); //To change body of generated methods, choose Tools | Templates.
-        else
+        } else {
             return false;
+        }
     }
-
-   
 
 }

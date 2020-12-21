@@ -12,9 +12,9 @@ import java.util.Map;
  *
  * @author roland
  */
-public class FullCachePolicy implements CachePolicyInterface{
-    
-    private final Map<String,CacheItem> cacheData=new HashMap<>();
+public class FullCachePolicy implements CachePolicyInterface {
+
+    private final Map<String, CacheItem> cacheData = new HashMap<>();
 
     /**
      *
@@ -27,17 +27,16 @@ public class FullCachePolicy implements CachePolicyInterface{
 
     /**
      *
-     * @param Name
+     * @param name
      * @return
      */
     @Override
-    public CacheItem get(String Name) {
-        if (cacheData.containsKey(Name)) 
-            return cacheData.get(Name);
-        else
+    public CacheItem get(String name) {
+        if (cacheData.containsKey(name)) {
+            return cacheData.get(name);
+        } else {
             return null;
+        }
     }
 
-    
-    
 }

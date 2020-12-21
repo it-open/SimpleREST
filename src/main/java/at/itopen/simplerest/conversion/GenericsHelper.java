@@ -19,7 +19,10 @@ import java.util.Map;
  *
  * @author roland
  */
-public class GenericsHelper {
+public final class GenericsHelper {
+
+    private GenericsHelper() {
+    }
 
     /**
      *
@@ -61,8 +64,8 @@ public class GenericsHelper {
                 enclosingClass != null;
                 enclosingClass = enclosingClass.getEnclosingClass()) {
             try {
-                Field this$0 = instanceClass.getDeclaredField("this$0");
-                Object outerInstance = this$0.get(instance);
+                Field this0 = instanceClass.getDeclaredField("this$0");
+                Object outerInstance = this0.get(instance);
                 Class<?> outerClass = outerInstance.getClass();
                 nestedOuterTypes.add(outerClass);
                 Map<Type, Type> outerTypeMap = new HashMap<Type, Type>();
@@ -80,9 +83,8 @@ public class GenericsHelper {
                         actualType = (TypeVariable<?>) entry.getValue();
                     }
                 }
-            } catch (NoSuchFieldException e) {
-                /* this should never happen */ } catch (IllegalAccessException e) {
-                /* this might happen */
+            } catch (NoSuchFieldException | IllegalAccessException | IllegalArgumentException | SecurityException e) {
+
             }
 
         }

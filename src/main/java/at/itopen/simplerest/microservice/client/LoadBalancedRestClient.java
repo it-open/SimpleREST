@@ -7,7 +7,7 @@ package at.itopen.simplerest.microservice.client;
 
 import at.itopen.simplerest.RestHttpServer;
 import at.itopen.simplerest.client.RestClient;
-import at.itopen.simplerest.client.RestClient.REST_METHOD;
+import at.itopen.simplerest.client.RestClient.RESTMETHOD;
 import at.itopen.simplerest.client.RestFile;
 import at.itopen.simplerest.client.RestResponse;
 import at.itopen.simplerest.microservice.loadbalancer.Service;
@@ -42,7 +42,7 @@ public class LoadBalancedRestClient extends RestClient {
      * @param url
      * @param method
      */
-    public LoadBalancedRestClient(RestHttpServer restHttpServer, String url, REST_METHOD method) {
+    public LoadBalancedRestClient(RestHttpServer restHttpServer, String url, RESTMETHOD method) {
         super(url, method);
         this.restHttpServer = restHttpServer;
 
@@ -59,7 +59,7 @@ public class LoadBalancedRestClient extends RestClient {
         long start = System.nanoTime();
         try {
 
-            if (getMethod().equals(REST_METHOD.POST) || getMethod().equals(REST_METHOD.PUT)) {
+            if (getMethod().equals(RESTMETHOD.POST) || getMethod().equals(RESTMETHOD.PUT)) {
 
                 HttpPost postRequest = new HttpPost(serviceurl + url);
                 HttpEntity entity;
@@ -86,7 +86,7 @@ public class LoadBalancedRestClient extends RestClient {
 
             }
 
-            if (getMethod().equals(REST_METHOD.GET)) {
+            if (getMethod().equals(RESTMETHOD.GET)) {
 
                 StringBuilder out = new StringBuilder();
                 getParams().entrySet().forEach((e) -> {
@@ -103,7 +103,7 @@ public class LoadBalancedRestClient extends RestClient {
 
             }
 
-            if (getMethod().equals(REST_METHOD.DELETE)) {
+            if (getMethod().equals(RESTMETHOD.DELETE)) {
 
                 StringBuilder out = new StringBuilder();
                 getParams().entrySet().forEach((e) -> {
@@ -135,7 +135,7 @@ public class LoadBalancedRestClient extends RestClient {
             return null;
         }
         double rmax = 0;
-        rmax = all.stream().map((service) -> service.getRating()).reduce(rmax, (accumulator, _item) -> accumulator + _item);
+        rmax = all.stream().map((service) -> service.getRating()).reduce(rmax, (accumulator, item) -> accumulator + item);
         double rseek = Math.random() * rmax;
         for (Service service : all) {
             rseek -= service.getRating();
@@ -327,7 +327,7 @@ public class LoadBalancedRestClient extends RestClient {
         }
         message.setTargetUrl(getUrl());
         message.setSenderId(restHttpServer.getLoadBalancer().getConfig().getServiceid());
-        if (getMethod().equals(REST_METHOD.POST) || getMethod().equals(REST_METHOD.PUT)) {
+        if (getMethod().equals(RESTMETHOD.POST) || getMethod().equals(RESTMETHOD.PUT)) {
 
             message.setHeaders(getHeaders());
 

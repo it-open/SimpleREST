@@ -18,13 +18,6 @@ public class AuthorizationBasicDataHeaderWorker extends AbstractHeaderWorker {
 
     /**
      *
-     */
-    public AuthorizationBasicDataHeaderWorker() {
-
-    }
-
-    /**
-     *
      * @param conversion
      */
     @Override

@@ -19,6 +19,6 @@ public interface CookieAuthUser {
      * @param conversion
      * @param cookie
      */
-    public void setCookieAuth(Conversion conversion, Cookie cookie);
+    void setCookieAuth(Conversion conversion, Cookie cookie);
 
 }

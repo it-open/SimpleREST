@@ -89,10 +89,10 @@ public class IndexEndpoint extends GetEndpoint {
     /**
      *
      * @param conversion
-     * @param UrlParameter
+     * @param urlParameter
      */
     @Override
-    public void Call(Conversion conversion, Map<String, String> UrlParameter) {
+    public void call(Conversion conversion, Map<String, String> urlParameter) {
         conversion.getResponse().setData(data);
 
     }
@@ -103,15 +103,6 @@ public class IndexEndpoint extends GetEndpoint {
      */
     public IndexData getData() {
         return data;
-    }
-
-    /**
-     *
-     * @return
-     */
-    @Override
-    public String getEndpointName() {
-        return super.getEndpointName(); //To change body of generated methods, choose Tools | Templates.
     }
 
 }

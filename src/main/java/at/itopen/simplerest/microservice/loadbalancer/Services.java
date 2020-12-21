@@ -62,7 +62,7 @@ public class Services {
                         }
                         accessvalues = newRating;
 
-                    } catch (Throwable t) {
+                    } catch (Exception t) {
                         Logger.getLogger(Services.class.getName()).log(Level.SEVERE, "AccessCounter", t);
                     }
                 }
@@ -132,7 +132,7 @@ public class Services {
     public List<Service> getAllActiveServices() {
         List<Service> out = new ArrayList<>();
         services.values().forEach((lists) -> {
-            lists.stream().filter((s) -> (s.getStatus().equals(Service.SERVICE_STATUS.ACTIVE))).sorted(new Comparator<Service>() {
+            lists.stream().filter(s -> (s.getStatus().equals(Service.SERVICESTATUS.ACTIVE))).sorted(new Comparator<Service>() {
                 @Override
                 public int compare(Service o1, Service o2) {
                     return new Double(o1.getRating()).compareTo(o2.getRating());
@@ -167,7 +167,6 @@ public class Services {
      * @return
      */
     public Service getRandomForServiceType(String servicetype) {
-        List<String> out = new ArrayList<>();
         List<Service> all = new ArrayList<>(getServiceType(servicetype));
         all.sort((Service o1, Service o2) -> new Double(o1.getRating()).compareTo(o2.getRating()));
         if (!all.isEmpty()) {
@@ -243,7 +242,7 @@ public class Services {
                 if (service.getStatus() == null) {
                     continue;
                 }
-                if (service.getStatus().equals(Service.SERVICE_STATUS.ACTIVE)) {
+                if (service.getStatus().equals(Service.SERVICESTATUS.ACTIVE)) {
                     return false;
                 }
             }

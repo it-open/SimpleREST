@@ -7,7 +7,7 @@ package at.itopen.simplerest.conversion;
 
 import at.itopen.simplerest.security.BasicUser;
 import at.itopen.simplerest.security.DefaultUser;
-import at.itopen.simplerest.security.RestSecurity;
+import at.itopen.simplerest.security.RestSecurityHelper;
 import io.netty.buffer.EmptyByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.HttpContent;
@@ -31,7 +31,8 @@ import java.util.logging.Logger;
 public class Request {
 
     private String protocolName;
-    private int protocolMajorVersion, protocolMinorVersion;
+    private int protocolMajorVersion;
+    private int protocolMinorVersion;
     private String method;
     private String host;
     private Uri uri;
@@ -40,7 +41,7 @@ public class Request {
     private String contentData = null;
     private Map<String, String> params;
     private List<Cookie> cookies;
-    private transient ChannelHandlerContext ctx;
+    // private transient ChannelHandlerContext ctx;
     private Map<String, MultipartFile> files;
     private transient HttpPostRequestDecoder httpDecoder = null;
     private BasicUser user;
@@ -51,7 +52,7 @@ public class Request {
      */
     public Request(ChannelHandlerContext ctx) {
 
-        this.ctx = ctx;
+        //this.ctx = ctx;
         headers = new HttpHeaders();
         protocolName = "EMPTY";
         protocolMajorVersion = 0;
@@ -88,7 +89,7 @@ public class Request {
     public BasicUser getUser() {
         if (user == null) {
             try {
-                user = (BasicUser) RestSecurity.getUserClass().getConstructor().newInstance();
+                user = (BasicUser) RestSecurityHelper.getUserClass().getConstructor().newInstance();
             } catch (NoSuchMethodException | SecurityException | InstantiationException | InvocationTargetException | IllegalAccessException | IllegalArgumentException ex) {
                 Logger.getLogger(Request.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -121,7 +122,7 @@ public class Request {
                 }
             }
 
-            if (method.equals("POST")) {
+            if ("POST".equals(method)) {
                 httpDecoder = new HttpPostRequestDecoder((HttpRequest) msg);
             }
 

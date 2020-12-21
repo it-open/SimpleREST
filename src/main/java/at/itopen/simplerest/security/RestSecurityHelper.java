@@ -22,12 +22,12 @@ import javax.crypto.SecretKey;
  *
  * @author roland
  */
-public class RestSecurity {
+public final class RestSecurityHelper {
 
     private static Class userClass = DefaultUser.class;
     private static SecretKey JwtSecretKey;
     private static CompressionCodec JwtCompressionCodec = null;
- 
+
     static {
         setJwtCompressionCodec(CompressionCodecs.DEFLATE);
     }
@@ -50,45 +50,47 @@ public class RestSecurity {
 
     /**
      *
-     * @param JwtCompressionCodec
+     * @param jwtCompressionCodec
      */
-    public static void setJwtCompressionCodec(CompressionCodec JwtCompressionCodec) {
-        RestSecurity.JwtCompressionCodec = JwtCompressionCodec;
+    public static void setJwtCompressionCodec(CompressionCodec jwtCompressionCodec) {
+        RestSecurityHelper.JwtCompressionCodec = jwtCompressionCodec;
     }
 
     /**
      *
-     * @param JwtSecretKey
+     * @param jwtSecretKey
      */
-    public static void setJwtSecretKey(SecretKey JwtSecretKey) {
-        RestSecurity.JwtSecretKey = JwtSecretKey;
+    public static void setJwtSecretKey(SecretKey jwtSecretKey) {
+        RestSecurityHelper.JwtSecretKey = jwtSecretKey;
 
     }
 
-    
     /**
      *
-     * @param Id
+     * @param id
      * @param issuer
-     * @param Subject
+     * @param subject
      * @param expiration
      * @return
      */
-    public static String JWS_BUILD(String Id, String issuer, String Subject, Date expiration) {
+    public static String JWSBUILD(String id, String issuer, String subject, Date expiration) {
         JwtBuilder builder = Jwts.builder()
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setId(Id)
+                .setId(id)
                 .compressWith(JwtCompressionCodec);
-       
-        if (JwtSecretKey!=null)
+
+        if (JwtSecretKey != null) {
             builder.signWith(JwtSecretKey);
-        if (expiration!=null)
+        }
+        if (expiration != null) {
             builder.setExpiration(expiration);
-        if (Subject!=null)
-            builder.setSubject(Subject);
-        if (issuer!=null)
+        }
+        if (subject != null) {
+            builder.setSubject(subject);
+        }
+        if (issuer != null) {
             builder.setIssuer(issuer);
-                
+        }
 
         return builder.compact();
 
@@ -125,35 +127,36 @@ public class RestSecurity {
 
         /**
          *
-         * @param Id
+         * @param id
          * @param issuer
-         * @param Subject
+         * @param subject
          */
-        public JwtInfo(String Id, String issuer, String Subject) {
-            this.Id = Id;
+        public JwtInfo(String id, String issuer, String subject) {
+            this.Id = id;
             this.issuer = issuer;
-            this.Subject = Subject;
+            this.Subject = subject;
         }
 
     }
 
     /**
      *
-     * @param JwsData
+     * @param jwsData
      * @return
      */
-    public static JwtInfo JWS_DECRYPT(String JwsData) {
+    public static JwtInfo JWSDECRYPT(String jwsData) {
         Jwt jwt = null;
         try {
-            JwtParser parser=Jwts.parser();
-            if (JwtSecretKey!=null)
+            JwtParser parser = Jwts.parser();
+            if (JwtSecretKey != null) {
                 parser.setSigningKey(JwtSecretKey);
-            jwt = parser.parse(JwsData);
+            }
+            jwt = parser.parse(jwsData);
         } catch (ExpiredJwtException | MalformedJwtException | SecurityException | UnsupportedJwtException | IllegalArgumentException ex) {
 
         }
         if (jwt != null) {
-            DefaultClaims body=(DefaultClaims)jwt.getBody();
+            DefaultClaims body = (DefaultClaims) jwt.getBody();
             return new JwtInfo(body.getId(), body.getIssuer(), body.getSubject());
         } else {
             return null;

@@ -27,15 +27,15 @@ public class RestDiscover extends JsonPostEndpoint<RestDiscoverQuestion> {
     /**
      *
      * @param conversion
-     * @param UrlParameter
+     * @param urlParameter
      */
     @Override
-    public void Call(Conversion conversion, Map<String, String> UrlParameter) {
+    public void call(Conversion conversion, Map<String, String> urlParameter) {
 
         LoadBalancer lb = getRootPath().getRestHttpServer().getLoadBalancer();
 
         RestDiscoverQuestion question = getData();
-        String security = UrlParameter.get("security");
+        String security = urlParameter.get("security");
 
         String key = lb.decryptUrl(question, security);
         if (question.getSenderid().equals(key)) {

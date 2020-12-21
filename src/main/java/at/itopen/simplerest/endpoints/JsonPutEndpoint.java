@@ -5,7 +5,7 @@
  */
 package at.itopen.simplerest.endpoints;
 
-import at.itopen.simplerest.Json;
+import at.itopen.simplerest.JsonHelper;
 import at.itopen.simplerest.conversion.Conversion;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -14,7 +14,7 @@ import java.util.Map;
 /**
  *
  * @author roland
- * @param <T>
+ * @param <T> Type
  */
 public abstract class JsonPutEndpoint<T> extends PutEndpoint {
 
@@ -42,14 +42,14 @@ public abstract class JsonPutEndpoint<T> extends PutEndpoint {
     /**
      *
      * @param conversion
-     * @param UrlParameter
+     * @param urlParameter
      */
     @Override
-    public void CallEndpoint(Conversion conversion, Map<String, String> UrlParameter) {
+    public void CallEndpoint(Conversion conversion, Map<String, String> urlParameter) {
         if (conversion.getRequest().getContentData() != null) {
-            data = (T) Json.fromString(conversion.getRequest().getContentData(), genericType);
+            data = (T) JsonHelper.fromString(conversion.getRequest().getContentData(), genericType);
         }
-        super.CallEndpoint(conversion, UrlParameter); //To change body of generated methods, choose Tools | Templates.
+        super.CallEndpoint(conversion, urlParameter); //To change body of generated methods, choose Tools | Templates.
     }
 
 }

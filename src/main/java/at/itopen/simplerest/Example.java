@@ -25,14 +25,17 @@ import java.util.logging.Logger;
  *
  * @author roland
  */
-public class Example {
+public final class Example {
+
+    private Example() {
+    }
 
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) {
 
-        RestHttpServer server = RestHttpServer.Start(3000);
+        RestHttpServer server = RestHttpServer.start(3000);
         server.enableIndex("TestProg", "1.0", "IT-Open", "office@it-open.at");
         server.enableExceptionHandling();
         server.enableNotFoundHandling();
@@ -43,14 +46,14 @@ public class Example {
         try {
             server.getRootPathforSubdomain("test").addRestEndpoint(new RestEndpoint("test") {
                 @Override
-                public void Call(Conversion conversion, Map<String, String> UrlParameter) {
+                public void call(Conversion conversion, Map<String, String> urlParameter) {
                     conversion.getResponse().setData("Super Subdomain");
                 }
 
             });
             server.getRootEndpoint().addRestEndpoint(new RestEndpoint("test") {
                 @Override
-                public void Call(Conversion conversion, Map<String, String> UrlParameter) {
+                public void call(Conversion conversion, Map<String, String> urlParameter) {
                     conversion.getResponse().setData("Super");
                 }
 
@@ -58,7 +61,7 @@ public class Example {
             server.getRootEndpoint().addSubPath(new RestPath("html")).setCatchAllEndPoint(new StaticFileEndpoint(new File("/home/roland/src/bergland-amtstafel/web"), new NoCachePolicy()));
             server.getRootEndpoint().addRestEndpoint(new GetEndpoint("image") {
                 @Override
-                public void Call(Conversion conversion, Map<String, String> UrlParameter) {
+                public void call(Conversion conversion, Map<String, String> urlParameter) {
                     conversion.getResponse().setContentType(ContentType.JPEG);
                     File fis;
                     try {
@@ -73,7 +76,7 @@ public class Example {
             });
             server.getRootEndpoint().addRestEndpoint(new RestEndpoint("upload") {
                 @Override
-                public void Call(Conversion conversion, Map<String, String> UrlParameter) {
+                public void call(Conversion conversion, Map<String, String> urlParameter) {
                     System.out.println(conversion.getRequest().getFiles().get("data").getName());
                 }
 
@@ -88,33 +91,33 @@ public class Example {
             CRUDHelper helper = new CRUDHelper("data", server.getRootEndpoint()) {
 
                 @Override
-                public void addNewItem(Conversion conversion, Map<String, String> UrlParameter) {
+                public void addNewItem(Conversion conversion, Map<String, String> urlParameter) {
                     data.add("Hallo");
                 }
 
                 @Override
-                public void getSingeItem(Conversion conversion, Map<String, String> UrlParameter) {
-                    String index = UrlParameter.get("id");
+                public void getSingeItem(Conversion conversion, Map<String, String> urlParameter) {
+                    String index = urlParameter.get("id");
                     conversion.getResponse().setData(data.get(Integer.parseInt(index)));
                 }
 
                 @Override
-                public void getAllItem(Conversion conversion, Map<String, String> UrlParameter) {
+                public void getAllItem(Conversion conversion, Map<String, String> urlParameter) {
                     conversion.getResponse().setData(data);
                 }
 
                 @Override
-                public void updateItem(Conversion conversion, Map<String, String> UrlParameter) {
+                public void updateItem(Conversion conversion, Map<String, String> urlParameter) {
                     //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
                 }
 
                 @Override
-                public void deleteItem(Conversion conversion, Map<String, String> UrlParameter) {
-                    String index = UrlParameter.get("id");
+                public void deleteItem(Conversion conversion, Map<String, String> urlParameter) {
+                    String index = urlParameter.get("id");
                     data.remove(Integer.parseInt(index));
                 }
             };
-            helper.Documentation(JsonUser.class, JsonUser.class, JsonUser.class, "User");
+            helper.documentation(JsonUser.class, JsonUser.class, JsonUser.class, "User");
         } catch (Exception ex) {
             Logger.getLogger(Example.class.getName()).log(Level.SEVERE, null, ex);
         }

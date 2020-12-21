@@ -47,15 +47,15 @@ public class DefaultUser extends BasicUser implements BasicAuthUser, JwtAuthUser
 
     /**
      *
-     * @param Id
+     * @param id
      * @param issuer
-     * @param Subject
+     * @param subject
      */
     @Override
-    public void setJwtAuth(Conversion conversion, String Id, String issuer, String Subject) {
+    public void setJwtAuth(Conversion conversion, String id, String issuer, String subject) {
         this.name = issuer;
-        this.id = Id;
-        this.subject = Subject;
+        this.id = id;
+        this.subject = subject;
     }
 
     /**

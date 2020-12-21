@@ -5,7 +5,7 @@
  */
 package at.itopen.simplerest.microservice.message;
 
-import at.itopen.simplerest.Json;
+import at.itopen.simplerest.JsonHelper;
 import at.itopen.simplerest.microservice.loadbalancer.Service;
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -29,10 +29,10 @@ public class GuarantorMessage {
      * @param rawJson
      */
     public GuarantorMessage(String rawJson) {
-        this.request = Json.fromString(rawJson, MessageRequest.class);
-        JsonNode node = Json.fromString(rawJson);
+        this.request = JsonHelper.fromString(rawJson, MessageRequest.class);
+        JsonNode node = JsonHelper.fromString(rawJson);
         JsonNode data = node.get("data");
-        this.rawJson = Json.prettyPrintJsonString(data);
+        this.rawJson = JsonHelper.prettyPrintJsonString(data);
         this.fistSeen = System.currentTimeMillis();
         this.lastSeen = System.currentTimeMillis();
     }

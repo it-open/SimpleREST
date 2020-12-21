@@ -5,7 +5,7 @@
  */
 package at.itopen.simplerest.microservice.message;
 
-import at.itopen.simplerest.Json;
+import at.itopen.simplerest.JsonHelper;
 import at.itopen.simplerest.client.RestClient;
 import at.itopen.simplerest.microservice.client.LoadBalancedRestClient;
 import at.itopen.simplerest.microservice.loadbalancer.LoadBalancer;
@@ -56,11 +56,11 @@ public class Guarantor {
     }
 
     private void resendMessage(GuarantorMessage gm) {
-        LoadBalancedRestClient lbrc = loadBalancer.RestClient(gm.getRequest().getTargetUrl(), RestClient.REST_METHOD.POST);
+        LoadBalancedRestClient lbrc = loadBalancer.restClient(gm.getRequest().getTargetUrl(), RestClient.RESTMETHOD.POST);
         gm.getRequest().getHeaders().entrySet().forEach((header) -> {
             lbrc.setHeader(header.getKey(), header.getValue());
         });
-        Object json = Json.fromString(gm.getRawJson(), Object.class);
+        Object json = JsonHelper.fromString(gm.getRawJson(), Object.class);
         Service receiverService = gm.getReceiverService();
         if (receiverService != null) {
             lbrc.sendMessagetoQueue(receiverService.getType(), new MessageRequest<>(json));

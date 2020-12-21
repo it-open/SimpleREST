@@ -14,23 +14,20 @@ public class Service {
     /**
      *
      */
-    public static enum SERVICE_STATUS {
+    public enum SERVICESTATUS {
 
         /**
          *
          */
         SEEN,
-
         /**
          *
          */
         ACTIVE,
-
         /**
          *
          */
         STALE,
-
         /**
          *
          */
@@ -40,7 +37,7 @@ public class Service {
     private String id;
     private String type;
     private String baseurl;
-    private SERVICE_STATUS status;
+    private SERVICESTATUS status;
     private long lastseen = 0;
     private SystemInfoData info;
     private double rating = 0;
@@ -118,14 +115,14 @@ public class Service {
     /**
      * @return the status
      */
-    public SERVICE_STATUS getStatus() {
+    public SERVICESTATUS getStatus() {
         return status;
     }
 
     /**
      * @param status the status to set
      */
-    public void setStatus(SERVICE_STATUS status) {
+    public void setStatus(SERVICESTATUS status) {
         this.status = status;
     }
 

@@ -28,10 +28,10 @@ public class IpAdress {
      * @param inetSocketAddress
      */
     public IpAdress(InetSocketAddress inetSocketAddress) {
-        adress=inetSocketAddress.getAddress().getAddress();
-        port=inetSocketAddress.getPort();
+        adress = inetSocketAddress.getAddress().getAddress();
+        port = inetSocketAddress.getPort();
     }
-    
+
     /**
      *
      * @param addr
@@ -72,13 +72,13 @@ public class IpAdress {
     public String getIpAdressAsString() {
         return toString();
     }
-    
+
     /**
      *
      * @return
      */
     public String getLocationAsString() {
-        return getIpAdressAsString()+":"+getPort();
+        return getIpAdressAsString() + ":" + getPort();
     }
 
     /**
@@ -102,7 +102,7 @@ public class IpAdress {
         long num = 0;
         for (int i = 0; i < this.adress.length; i++) {
             int power = 3 - i;
-            num += ((this.adress[i] % 256 * Math.pow(256, power)));
+            num += this.adress[i] % 256 * Math.pow(256, power);
         }
         return num;
     }

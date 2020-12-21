@@ -18,13 +18,6 @@ public class CookieDataHeaderWorker extends AbstractHeaderWorker {
 
     /**
      *
-     */
-    public CookieDataHeaderWorker() {
-
-    }
-
-    /**
-     *
      * @param conversion
      */
     @Override

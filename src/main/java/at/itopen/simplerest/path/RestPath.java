@@ -133,7 +133,7 @@ public class RestPath {
      */
     public EndpointWorker findEndpoint(Conversion conversion, int depth, Map<String, String> pathParameter) {
         List<String> uriPath = conversion.getRequest().getUri().getPath();
-        if (depth == (uriPath.size() - 1)) {
+        if (depth == uriPath.size() - 1) {
             EndpointWorker endpointWorker = findEndpoint(uriPath.get(depth), pathParameter, conversion);
             if (endpointWorker != null) {
                 return endpointWorker;

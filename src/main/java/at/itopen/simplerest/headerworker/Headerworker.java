@@ -60,10 +60,8 @@ public class Headerworker {
         List<String> names = new ArrayList<>();
         names.addAll(request.getHeaders().getNames());
         for (String name : names) {
-            for (String value : request.getHeaders().getAll(name)) {
-                for (AbstractHeaderWorker abstractHeaderWorker : gotoList(name, "")) {
-                    abstractHeaderWorker.work(conversion);
-                }
+            for (AbstractHeaderWorker abstractHeaderWorker : gotoList(name, "")) {
+                abstractHeaderWorker.work(conversion);
             }
             for (String value : request.getHeaders().getAll(name)) {
                 for (AbstractHeaderWorker abstractHeaderWorker : gotoList(name, value)) {

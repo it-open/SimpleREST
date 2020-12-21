@@ -5,11 +5,13 @@
  */
 package at.itopen.simplerest.client;
 
-import at.itopen.simplerest.Json;
+import at.itopen.simplerest.JsonHelper;
 import java.io.IOException;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -55,7 +57,7 @@ public class RestClient {
     /**
      *
      */
-    public static enum REST_METHOD {
+    public enum RESTMETHOD {
 
         /**
          *
@@ -74,7 +76,7 @@ public class RestClient {
          */
         DELETE
     };
-    private REST_METHOD method;
+    private RESTMETHOD method;
     private String json = null;
     private Map<String, RestFile> files = new HashMap<>();
     private boolean ignoreSSLErrors = false;
@@ -92,7 +94,7 @@ public class RestClient {
      * @param url
      * @param method
      */
-    public RestClient(String url, REST_METHOD method) {
+    public RestClient(String url, RESTMETHOD method) {
         if (url.startsWith("/")) {
             url = url.substring(1);
         }
@@ -130,7 +132,7 @@ public class RestClient {
      *
      * @return
      */
-    public REST_METHOD getMethod() {
+    public RESTMETHOD getMethod() {
         return method;
     }
 
@@ -192,7 +194,7 @@ public class RestClient {
         if (json != null) {
             throw new RuntimeException("JSON already set. No Files allowed!");
         }
-        if (method.equals(REST_METHOD.POST) || method.equals(REST_METHOD.PUT)) {
+        if (method.equals(RESTMETHOD.POST) || method.equals(RESTMETHOD.PUT)) {
             files.put(name, file);
         } else {
             throw new RuntimeException("Files only Allowed on GET or PUT");
@@ -212,7 +214,7 @@ public class RestClient {
         if (!files.isEmpty()) {
             throw new RuntimeException("Files already set. No JSON allowed!");
         }
-        if (method.equals(REST_METHOD.POST) || method.equals(REST_METHOD.PUT)) {
+        if (method.equals(RESTMETHOD.POST) || method.equals(RESTMETHOD.PUT)) {
             this.json = json;
         } else {
             throw new RuntimeException("No JSON allowed on GET or DELETE");
@@ -226,17 +228,17 @@ public class RestClient {
      * @return
      */
     public RestClient setJson(Object object) {
-        return setJson(Json.toString(object));
+        return setJson(JsonHelper.toString(object));
     }
 
     /**
      *
      * @param key
-     * @param Value
+     * @param value
      * @return
      */
-    public RestClient setHeader(String key, String Value) {
-        headers.put(key, Value);
+    public RestClient setHeader(String key, String value) {
+        headers.put(key, value);
         return this;
     }
 
@@ -274,17 +276,20 @@ public class RestClient {
         TrustManager[] trustAllCerts = new TrustManager[]{new X509TrustManager() {
 
             @Override
-            public java.security.cert.X509Certificate[] getAcceptedIssuers() {
-                return null;
+            public X509Certificate[] getAcceptedIssuers() {
+                return new X509Certificate[0];
             }
 
             @Override
-            public void checkClientTrusted(java.security.cert.X509Certificate[] certs, String authType) {
+            public void checkClientTrusted(X509Certificate[] arg0, String arg1) throws CertificateException {
+
             }
 
             @Override
-            public void checkServerTrusted(java.security.cert.X509Certificate[] certs, String authType) {
+            public void checkServerTrusted(X509Certificate[] arg0, String arg1) throws CertificateException {
+
             }
+
         }};
 
         HttpClientBuilder builder = HttpClientBuilder.create();
@@ -322,7 +327,7 @@ public class RestClient {
         long start = System.nanoTime();
         try {
 
-            if (method.equals(REST_METHOD.POST) || method.equals(REST_METHOD.PUT)) {
+            if (method.equals(RESTMETHOD.POST) || method.equals(RESTMETHOD.PUT)) {
                 if (multipart) {
                     HttpPost postRequest = new HttpPost(url);
                     HttpEntity entity;
@@ -367,7 +372,7 @@ public class RestClient {
 
             }
 
-            if (method.equals(REST_METHOD.GET)) {
+            if (method.equals(RESTMETHOD.GET)) {
 
                 StringBuilder out = new StringBuilder();
                 params.entrySet().forEach((e) -> {
@@ -387,7 +392,7 @@ public class RestClient {
 
             }
 
-            if (method.equals(REST_METHOD.DELETE)) {
+            if (method.equals(RESTMETHOD.DELETE)) {
 
                 StringBuilder out = new StringBuilder();
                 params.entrySet().forEach((e) -> {

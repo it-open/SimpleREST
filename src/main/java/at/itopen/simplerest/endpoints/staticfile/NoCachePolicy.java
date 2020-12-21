@@ -9,7 +9,7 @@ package at.itopen.simplerest.endpoints.staticfile;
  *
  * @author roland
  */
-public class NoCachePolicy implements CachePolicyInterface{
+public class NoCachePolicy implements CachePolicyInterface {
 
     /**
      *
@@ -17,19 +17,17 @@ public class NoCachePolicy implements CachePolicyInterface{
      */
     @Override
     public void offer(CacheItem cacheItem) {
-        
+
     }
 
     /**
      *
-     * @param Name
+     * @param name
      * @return
      */
     @Override
-    public CacheItem get(String Name) {
+    public CacheItem get(String name) {
         return null;
     }
 
-    
-    
 }

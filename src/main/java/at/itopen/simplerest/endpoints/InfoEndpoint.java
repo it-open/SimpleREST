@@ -26,10 +26,10 @@ public class InfoEndpoint extends RestEndpoint{
     /**
      *
      * @param conversion
-     * @param UrlParameter
+     * @param urlParameter
      */
     @Override
-    public void Call(Conversion conversion, Map<String, String> UrlParameter) {
+    public void call(Conversion conversion, Map<String, String> urlParameter) {
         conversion.getResponse().setData(conversion.getRequest());
         
     }

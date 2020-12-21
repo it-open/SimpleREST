@@ -9,6 +9,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.URLConnection;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -2622,7 +2623,6 @@ public enum ContentType {
      *
      */
     XM("audio/xm", "xm", "xm"),
-
     /**
      *
      */
@@ -3120,7 +3120,7 @@ public enum ContentType {
         for (ContentType type : values()) {
             if (type.mimeType != null) {
                 // NOTE: this may overwrite this mapping
-                mimeTypeMap.put(type.mimeType.toLowerCase(), type);
+                mimeTypeMap.put(type.mimeType.toLowerCase(Locale.getDefault()), type);
             }
             if (type.fileExtensions != null) {
                 for (String fileExtension : type.fileExtensions) {
@@ -3135,7 +3135,7 @@ public enum ContentType {
     private final String simpleName;
     private final String[] fileExtensions;
 
-    private ContentType(String mimeType, String simpleName, String... fileExtensions) {
+    ContentType(String mimeType, String simpleName, String... fileExtensions) {
         this.mimeType = mimeType;
         this.simpleName = simpleName;
         this.fileExtensions = fileExtensions;
@@ -3177,7 +3177,7 @@ public enum ContentType {
     public static ContentType fromMimeType(String mimeType) {
         // NOTE: mimeType can be null
         if (mimeType != null) {
-            mimeType = mimeType.toLowerCase();
+            mimeType = mimeType.toLowerCase(Locale.getDefault());
         }
         ContentType type = mimeTypeMap.get(mimeType);
         if (type == null) {
@@ -3197,7 +3197,7 @@ public enum ContentType {
      */
     public static ContentType fromFileExtension(String fileExtension) {
         // NOTE: mimeType can be null
-        ContentType type = fileExtensionMap.get(fileExtension.toLowerCase());
+        ContentType type = fileExtensionMap.get(fileExtension.toLowerCase(Locale.getDefault()));
         if (type == null) {
             return OTHER;
         } else {

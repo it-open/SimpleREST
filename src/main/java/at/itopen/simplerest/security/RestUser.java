@@ -15,7 +15,7 @@ import java.util.Map;
 /**
  *
  * @author roland
- * @param <T>
+ * @param <T> Type
  */
 public abstract class RestUser<T> extends BasicUser implements BasicAuthUser, JwtAuthUser {
 
@@ -24,7 +24,7 @@ public abstract class RestUser<T> extends BasicUser implements BasicAuthUser, Jw
     /**
      *
      */
-    public static enum AUTH_TYPE {
+    public enum AUTHTYPE {
 
         /**
          *
@@ -36,7 +36,7 @@ public abstract class RestUser<T> extends BasicUser implements BasicAuthUser, Jw
         JWT
     }
 
-    private AUTH_TYPE auth_type = null;
+    private AUTHTYPE auth_type = null;
 
     /**
      *
@@ -50,7 +50,7 @@ public abstract class RestUser<T> extends BasicUser implements BasicAuthUser, Jw
         if (tuser != null) {
             user = tuser;
             setAuthenticated(true);
-            auth_type = AUTH_TYPE.BASIC;
+            auth_type = AUTHTYPE.BASIC;
         }
     }
 
@@ -89,7 +89,7 @@ public abstract class RestUser<T> extends BasicUser implements BasicAuthUser, Jw
      *
      * @return
      */
-    public AUTH_TYPE getAuth_type() {
+    public AUTHTYPE getAuthType() {
         return auth_type;
     }
 
@@ -119,29 +119,29 @@ public abstract class RestUser<T> extends BasicUser implements BasicAuthUser, Jw
     /**
      *
      * @param conversion
-     * @param Id
+     * @param id
      * @param issuer
-     * @param Subject
+     * @param subject
      */
     @Override
-    public void setJwtAuth(Conversion conversion, String Id, String issuer, String Subject) {
-        T tuser = jwt_check(conversion, Id, issuer, Subject);
+    public void setJwtAuth(Conversion conversion, String id, String issuer, String subject) {
+        T tuser = jwtCheck(conversion, id, issuer, subject);
         if (tuser != null) {
             user = tuser;
             setAuthenticated(true);
-            auth_type = AUTH_TYPE.JWT;
+            auth_type = AUTHTYPE.JWT;
         }
     }
 
     /**
      *
      * @param conversion
-     * @param Id
+     * @param id
      * @param issuer
-     * @param Subject
+     * @param subject
      * @return
      */
-    abstract protected T jwt_check(Conversion conversion, String Id, String issuer, String Subject);
+    abstract protected T jwtCheck(Conversion conversion, String id, String issuer, String subject);
 
     /**
      *
@@ -164,10 +164,7 @@ public abstract class RestUser<T> extends BasicUser implements BasicAuthUser, Jw
         if (((RestUser) conversion.getRequest().getUser()).getUser() == null) {
             return false;
         }
-        if (getLevel(((RestUser<T>) conversion.getRequest().getUser()).getUser()) >= level.levelValue) {
-            return true;
-        }
-        return false;
+        return (getLevel(((RestUser<T>) conversion.getRequest().getUser()).getUser()) >= level.levelValue);
     }
 
     /**
@@ -182,10 +179,7 @@ public abstract class RestUser<T> extends BasicUser implements BasicAuthUser, Jw
         if (conversion.getRequest().getUser() == null) {
             return false;
         }
-        if (((RestUser) conversion.getRequest().getUser()).getUser() == null) {
-            return false;
-        }
-        return true;
+        return !(((RestUser) conversion.getRequest().getUser()).getUser() == null);
 
     }
 
@@ -230,7 +224,7 @@ public abstract class RestUser<T> extends BasicUser implements BasicAuthUser, Jw
             return false;
         }
         for (AllowRule rule : allowRules.get(object.getClass())) {
-            boolean test = (rule.check(conversion, object, this, accessType));
+            boolean test = rule.check(conversion, object, this, accessType);
             if (test == false) {
                 return false;
             }

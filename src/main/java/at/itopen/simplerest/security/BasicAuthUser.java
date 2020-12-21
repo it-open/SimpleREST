@@ -19,6 +19,6 @@ public interface BasicAuthUser {
      * @param name
      * @param password
      */
-    public void setAuth(Conversion conversion, String name, String password);
+    void setAuth(Conversion conversion, String name, String password);
 
 }

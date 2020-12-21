@@ -38,7 +38,7 @@ public class LoadBalancerConfig {
         this.serviceid = UUID.randomUUID().toString();
         this.restHttpServer = restHttpServer;
         baseurl = baseurl.replace("<PORT>", "" + restHttpServer.getPort());
-        baseurl = baseurl.replace("<IP>", SystemCheck.getInstance().getaktSystemInfoData().getNet_ip());
+        baseurl = baseurl.replace("<IP>", SystemCheck.getInstance().getaktSystemInfoData().getNetIp());
         this.baseurl = baseurl;
         this.servicetype = servicetype;
         this.serviceRating = new BaseServiceRating();
@@ -129,7 +129,7 @@ public class LoadBalancerConfig {
      * @param sharedSecret
      */
     public void setSharedSecret(String sharedSecret) {
-        this.sharedSecret = Encryption.correctKEY(sharedSecret);
+        this.sharedSecret = EncryptionHelper.correctKEY(sharedSecret);
     }
 
     /**
@@ -142,42 +142,42 @@ public class LoadBalancerConfig {
     /**
      * @return the service_recheck_seconds
      */
-    public int getService_recheck_seconds() {
+    public int getServiceRecheckSeconds() {
         return service_recheck_seconds;
     }
 
     /**
      * @param service_recheck_seconds the service_recheck_seconds to set
      */
-    public void setService_recheck_seconds(int service_recheck_seconds) {
+    public void setServiceRecheckSeconds(int service_recheck_seconds) {
         this.service_recheck_seconds = service_recheck_seconds;
     }
 
     /**
      * @return the service_stale_seconds
      */
-    public int getService_stale_seconds() {
+    public int getServiceStaleSeconds() {
         return service_stale_seconds;
     }
 
     /**
      * @param service_stale_seconds the service_stale_seconds to set
      */
-    public void setService_stale_seconds(int service_stale_seconds) {
+    public void setServiceStaleSeconds(int service_stale_seconds) {
         this.service_stale_seconds = service_stale_seconds;
     }
 
     /**
      * @return the service_gone_seconds
      */
-    public int getService_gone_seconds() {
+    public int getServiceGoneSeconds() {
         return service_gone_seconds;
     }
 
     /**
      * @param service_gone_seconds the service_gone_seconds to set
      */
-    public void setService_gone_seconds(int service_gone_seconds) {
+    public void setServiceGoneSeconds(int service_gone_seconds) {
         this.service_gone_seconds = service_gone_seconds;
     }
 

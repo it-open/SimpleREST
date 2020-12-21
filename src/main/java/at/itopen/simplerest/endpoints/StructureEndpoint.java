@@ -80,10 +80,10 @@ public class StructureEndpoint extends GetEndpoint {
     /**
      *
      * @param conversion
-     * @param UrlParameter
+     * @param urlParameter
      */
     @Override
-    public void Call(Conversion conversion, Map<String, String> UrlParameter) {
+    public void call(Conversion conversion, Map<String, String> urlParameter) {
         PathItem root = new PathItem("/", false);
         subPath(conversion.getServer().getRootEndpoint(conversion), root);
         conversion.getResponse().setData(root);
@@ -92,14 +92,14 @@ public class StructureEndpoint extends GetEndpoint {
 
     private void subPath(RestPath path, PathItem item) {
         for (RestPath sub : path.getSubPaths()) {
-            boolean auth = item.auth || (sub instanceof AuthenticatedRestPath);
+            boolean auth = item.auth || sub instanceof AuthenticatedRestPath;
             PathItem pi = new PathItem(sub.getPathName(), auth);
             item.getSubItems().add(pi);
             subPath(sub, pi);
         }
 
         for (RestEndpoint sub : path.getEndpoints()) {
-            boolean auth = item.auth || (sub instanceof AuthenticatedRestEndpoint);
+            boolean auth = item.auth || sub instanceof AuthenticatedRestEndpoint;
             String method = "ALL";
             if (sub instanceof GetEndpoint) {
                 method = "GET";

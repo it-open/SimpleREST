@@ -11,15 +11,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 /**
  *
  * @author roland
- * @param <OBJECT>
+ * @param <O> Object
  */
-public abstract class AbstractSetter<OBJECT> {
-
-    /**
-     *
-     */
-    public AbstractSetter() {
-    }
+public abstract class AbstractSetter<O> {
 
     @JsonIgnore
     private Conversion conversion;
@@ -37,7 +31,7 @@ public abstract class AbstractSetter<OBJECT> {
      * @param conversion
      * @return
      */
-    public AbstractSetter<OBJECT> setConversion(Conversion conversion) {
+    public AbstractSetter<O> setConversion(Conversion conversion) {
         this.conversion = conversion;
         return this;
     }
@@ -46,6 +40,6 @@ public abstract class AbstractSetter<OBJECT> {
      *
      * @param data
      */
-    abstract public void internalSetData(OBJECT data);
+    abstract public void internalSetData(O data);
 
 }

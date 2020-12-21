@@ -5,14 +5,13 @@
  */
 package at.itopen.simplerest.microservice.message;
 
-import at.itopen.simplerest.Json;
+import at.itopen.simplerest.JsonHelper;
 import at.itopen.simplerest.client.RestClient;
 import at.itopen.simplerest.conversion.Conversion;
 import at.itopen.simplerest.microservice.client.LoadBalancedRestClient;
 import at.itopen.simplerest.microservice.loadbalancer.LoadBalancer;
 import at.itopen.simplerest.path.RestEndpoint;
 import com.fasterxml.jackson.core.type.TypeReference;
-import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.LinkedList;
 import java.util.Map;
@@ -23,11 +22,11 @@ import java.util.logging.Logger;
 /**
  *
  * @author roland
- * @param <T>
+ * @param <T> Type
  */
 public abstract class MessageQueueEndpoint<T> extends RestEndpoint {
 
-    private Class genericType = null;
+    // private Class genericType = null;
     private MessageRequest<T> aktWorking = null;
     private final LoadBalancer loadBalancer;
     private final Queue<MessageRequest<T>> messagequeue = new LinkedList<>();
@@ -41,7 +40,7 @@ public abstract class MessageQueueEndpoint<T> extends RestEndpoint {
         super(endpointName);
         this.loadBalancer = loadBalancer;
         Type sooper = getClass().getGenericSuperclass();
-        genericType = (Class) ((ParameterizedType) sooper).getActualTypeArguments()[0];
+        //   genericType = (Class) ((ParameterizedType) sooper).getActualTypeArguments()[0];
         new Thread("MessageQueue:" + this.getClass().getName()) {
             @Override
             public void run() {
@@ -65,7 +64,7 @@ public abstract class MessageQueueEndpoint<T> extends RestEndpoint {
     }
 
     private void signal(MessageRequest<T> message, boolean processing, boolean finished) {
-        LoadBalancedRestClient lbrc = loadBalancer.RestClient("/loadbalancer/guarantor/state", RestClient.REST_METHOD.POST);
+        LoadBalancedRestClient lbrc = loadBalancer.restClient("/loadbalancer/guarantor/state", RestClient.RESTMETHOD.POST);
         lbrc.setJson(new MessageStatus(finished, processing, message.getMessageid()));
         for (String guarantorid : message.getGuarantorServiceIds()) {
             lbrc.toDistinctServiceFireAndForget(guarantorid, false);
@@ -75,18 +74,18 @@ public abstract class MessageQueueEndpoint<T> extends RestEndpoint {
     /**
      *
      * @param conversion
-     * @param UrlParameter
+     * @param urlParameter
      */
     @Override
-    public void Call(Conversion conversion, Map<String, String> UrlParameter) {
+    public void call(Conversion conversion, Map<String, String> urlParameter) {
 
         if ("POST".equals(conversion.getRequest().getMethod())) {
             MessageRequest<T> mrequest = null;
-            T data;
+            // T data;
             if (conversion.getRequest().getContentData() != null) {
-                mrequest = (MessageRequest<T>) Json.fromString(conversion.getRequest().getContentData(), new TypeReference<MessageRequest<T>>() {
+                mrequest = (MessageRequest<T>) JsonHelper.fromString(conversion.getRequest().getContentData(), new TypeReference<MessageRequest<T>>() {
                 });
-                data = mrequest.getData();
+                //data = mrequest.getData();
             }
             if (mrequest != null) {
                 messagequeue.add(mrequest);
@@ -117,7 +116,7 @@ public abstract class MessageQueueEndpoint<T> extends RestEndpoint {
         if (aktWorking == null) {
             return false;
         }
-        return (aktWorking.getMessageid().equals(id));
+        return aktWorking.getMessageid().equals(id);
     }
 
     /**

@@ -26,10 +26,10 @@ public class JsonUserEndpoint extends JsonPostEndpoint<JsonUser>{
     /**
      * Endpoint is Called. Data loaded
      * @param conversion the request and Response Object
-     * @param UrlParameter Path Parameters if there are any
+     * @param urlParameter Path Parameters if there are any
      */
     @Override
-    public void Call(Conversion conversion, Map<String,String> UrlParameter) {
+    public void call(Conversion conversion, Map<String,String> urlParameter) {
         System.out.println("User:"+getData().getUsername()+" : "+getData().getPassword());
     }
     
